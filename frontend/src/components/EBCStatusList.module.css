@@ -1,0 +1,36 @@
+.table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-family: "RobotoCondensed";
+  font-size: 0.95rem;
+}
+
+.table th:first-child,
+.table td:first-child {
+  width: 10%;
+  white-space: nowrap;
+}
+
+.table th:last-child,
+.table td:last-child {
+  width: auto;
+}
+
+.table th {
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 1px solid #ccc;
+}
+
+.table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+  vertical-align: top;
+}
+
+.empty {
+  opacity: 0.7;
+  font-size: 1.2rem;
+  font-family: "RobotoCondensed";
+}

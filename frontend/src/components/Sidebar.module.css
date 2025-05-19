@@ -1,0 +1,188 @@
+.mainContainer { 
+    position: relative;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 17%;
+    height: 100%;
+}
+
+.bbbLogo {
+    margin-top: 8%;
+    max-width: 90%;
+    user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    pointer-events: auto; /* optional: still allows interaction like clicking */
+}
+
+.menuItems {
+    padding-left: 0;
+    list-style-type: none;
+    width: 100%;
+    font-size: 1.6rem;
+    font-family: "TruenoRg";
+    color: var(--greyDark);
+}
+
+.navIcon {
+    font-family: "FontAwesomeSolid";
+    margin-right: 0.5rem;
+    width: 3vw;
+    /* background-color: pink; */
+    font-size: 2.1rem;
+    
+    /* font-weight: 900; */
+}
+
+.menuItem {
+    font-size: 1.2rem;
+    padding-left: 1rem;
+    font-family: "RobotoCondensed";
+    height: 3rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    transition: background 0.2s linear;
+    color: var(--coalLight);
+}
+
+.menuItem:hover {
+    background: var(--coal);
+    color: white;
+}
+
+.menuItemSelected {
+    color: var(--greyLight);
+    font-family: "RobotoCondensedBold";
+    /* font-weight: bold; */
+    background: var(--coal);
+    text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.44);
+    display: flex;
+    align-items: center;
+    position: relative;
+    height: 3rem;
+    justify-content: flex-start;
+    font-size: 1.2rem;
+    padding-left: 1.5rem;
+}
+
+.selectedTrapezium  {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 0rem;
+    z-index: 10;
+    background: white;
+    transition: width 0.2s linear;
+}
+
+
+.selectedTrapeziumSelected {
+    width: 0.4rem;
+}
+
+
+.triangleHidden {
+    border-right: 0rem solid white;
+    transition: all 0.2s linear;
+    position: absolute;
+    right: -0.5rem;
+}
+
+.triangle {
+    right: 0.4rem;
+    border-top: 2rem solid transparent;
+    border-bottom: 2rem solid transparent;
+    border-right: 1rem solid white;
+}
+
+.bbbNavFooter {
+    font-family: "TruenoBd";
+    font-size: 1rem;
+    text-align: center;
+    padding: 1rem;
+    padding-bottom: 1.4rem;
+    position: absolute;
+    bottom: 0;
+    color: white;
+}
+
+.logoutContainer {
+    font-family: "RobotoCondensed";
+    /* font-weight: bold; */
+    font-size: 1.4rem;
+    text-align: center;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    padding-bottom: 3.8rem;
+    position: absolute;
+    bottom: 0;
+    color: white;
+    cursor: pointer;
+    /* background-color: pink; */
+}
+
+.logoutContainer:hover {
+    opacity: 0.7;
+}
+
+.logoutIcon {
+    font-size: 1.4rem;
+    margin-left: 0.6rem;
+    font-family: "FontAwesomeSolid";
+}
+
+.disabledAdmin {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+@media only screen and (max-width: 1000px) {
+    .mainContainer { 
+        width: 9%;
+        height: 100%;
+    }
+
+    .menuItems {
+        margin-top: 2rem;
+    }
+    .menuItem {
+        justify-content: center;
+        font-size: 0;
+        padding-left: 0;
+    }
+    .navIcon {
+        font-size: 2.2rem;
+        margin-left: 0.6rem;
+    }
+
+    .selectedTrapeziumSelected {
+        width: 0.3rem;
+    }
+
+    .triangle {
+        right: 0.3rem;
+        border-top: 2rem solid transparent;
+        border-bottom: 2rem solid transparent;
+        border-right: 0.7rem solid white;
+    }
+
+    .bbbNavFooter {
+        font-size: 0.8rem;
+    }
+
+    .logoutContainer {
+        font-size: 0rem;
+        padding-bottom: 5rem;
+    }
+}
