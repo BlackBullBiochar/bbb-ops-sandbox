@@ -90,6 +90,35 @@ router.post('/', upload.single('file'), async (req, res) => {
         }));
       }
 
+      const timestamp = () => {
+        const now = new Date();
+        return {
+          date: now.toISOString().split('T')[0],
+          time: now.toTimeString().slice(0, 5).replace(':', '-')
+        };
+      };
+
+      const { date: uploadDate, time: uploadTime } = timestamp();
+
+      const logRows = rows
+        .filter(row => row['Charcode ID'])  // only log if ID exists
+        .map(row => ({
+          ID: row['Charcode ID'],
+          status: row['EBC Cert Status'],
+          reason: row['EBC Status Reason'],
+          date: uploadDate,
+          time: uploadTime
+        }));
+
+      // batch send to EBCStatus.js
+      for (const row of logRows) {
+        await axios.post('http://localhost:5000/api/ebcstatus/add', {
+          charcodeId: row.ID,
+          status: row.status,
+          reason: row.reason
+        });
+      }
+
       // ------------------- EBC STATUS SECTION ----------------------
 
     const tempUploadRes = await axios.get('http://localhost:5000/api/upload');
@@ -150,7 +179,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     // save as one document
     const doc = new Charcodes({ filename, filetype: ext === '.csv' ? 'csv' : 'json', data: rows });
     await doc.save();
-
+    
     res.json({ message: 'Charcodes file saved', count: rows.length });
   } catch (err) {
     console.error('Upload error:', err);
