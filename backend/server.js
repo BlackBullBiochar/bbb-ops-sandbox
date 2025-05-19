@@ -8,6 +8,7 @@ const checkRoutes = require('./routes/checks');
 const uploadRoutes = require('./routes/upload');
 const charcodesRoute = require('./routes/charcodes');
 const formsRoute     = require('./routes/forms'); 
+const ebcStatusRoutes = require('./routes/EbcStatus');
 
 const app = express();
 const PORT = 5000;
@@ -23,6 +24,7 @@ app.use('/api/checks', checkRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/charcodes', charcodesRoute);
 app.use('/api/forms', formsRoute);
+app.use('/api/ebcstatus', ebcStatusRoutes);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI, { 
