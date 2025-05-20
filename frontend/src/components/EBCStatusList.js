@@ -1,32 +1,33 @@
 import React from 'react';
 import styles from './EBCStatusList.module.css';
 
-const EbcStatusList = ({ entry1 = [], entry2 = [] }) => {
-  const maxLength = Math.max(entry1.length, entry2.length);
+const EbcStatusList = ({ ebcEntries = [] }) => {
+  console.log('EBC Entries:', ebcEntries);
+  if (!Array.isArray(ebcEntries) || ebcEntries.length === 0) {
+    return <div className={styles.empty}>No EBC Data</div>;
+  }
 
   return (
-    <div>
-      {maxLength > 0 ? (
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>ARA Reasons</th>
-              <th>JNR Reasons</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.from({ length: maxLength }).map((_, i) => (
-              <tr key={i}>
-                <td>{entry1[i] || ''}</td>
-                <td>{entry2[i] || ''}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <div className={styles.empty}>No EBC Reasons</div>
-      )}
-    </div>
+    <table className={styles.table}>
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Reason</th>
+          <th>Date</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {ebcEntries.map((entry, i) => (
+          <tr key={i}>
+            <td>{entry['date']}</td>
+            <td>{entry['time']}</td>
+            <td>{entry['status']}</td>
+            <td>{entry['reason']}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 };
 

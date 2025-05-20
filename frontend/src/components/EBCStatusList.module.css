@@ -6,17 +6,6 @@
   font-size: 0.95rem;
 }
 
-.table th:first-child,
-.table td:first-child {
-  width: 10%;
-  white-space: nowrap;
-}
-
-.table th:last-child,
-.table td:last-child {
-  width: auto;
-}
-
 .table th {
   text-align: left;
   padding: 0.5rem;

@@ -8,7 +8,7 @@ const checkRoutes = require('./routes/checks');
 const uploadRoutes = require('./routes/upload');
 const charcodesRoute = require('./routes/charcodes');
 const formsRoute     = require('./routes/forms'); 
-const ebcStatusRoutes = require('./routes/ebcstatus');
+const ebcStatusRoutes = require('./routes/EBCStatus');
 
 const app = express();
 const PORT = 5000;

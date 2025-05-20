@@ -1,19 +1,18 @@
-const express   = require('express');
-const router    = express.Router();
-const multer    = require('multer');
-const csv       = require('csv-parser');
-const path      = require('path');
+const express = require('express');
+const router = express.Router();
+const multer = require('multer');
+const csv = require('csv-parser');
+const path = require('path');
 const Charcodes = require('../models/charcodes');
 const { Readable } = require('stream');
 const axios = require('axios');
-
 
 const upload = multer({ storage: multer.memoryStorage() });
 
 const cleanString = (s) =>
   String(s)
-    .replace(/[^\x20-\x7E]/g, ' ')   // remove non-printable ASCII including `�`
-    .replace(/\s+/g, ' ')            // collapse whitespace
+    .replace(/[^\x20-\x7E]/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
 
 function normalizeDateString(d) {
@@ -26,23 +25,22 @@ function normalizeDateString(d) {
   return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 }
 
-// 1) POST /api/charcodes
-//    Upload an entire CSV or JSON as one Charcodes document
+// POST /api/charcodes
 router.post('/', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
-  const ext     = path.extname(req.file.originalname).toLowerCase();
+  const ext = path.extname(req.file.originalname).toLowerCase();
   const rawName = req.body.customName || req.file.originalname;
   const filename = rawName
     .trim()
-    .replace(/\s+/g, '_')             // spaces → underscores
-    .replace(/[^a-zA-Z0-9-_.]/g, ''); // strip other bad chars
+    .replace(/\s+/g, '_')
+    .replace(/[^a-zA-Z0-9-_.]/g, '');
 
   try {
     let rows = [];
 
+    // Parse file
     if (ext === '.csv') {
-      // parse CSV into rows[]
       await new Promise((resolve, reject) => {
         Readable.from(req.file.buffer)
           .pipe(csv())
@@ -51,14 +49,12 @@ router.post('/', upload.single('file'), async (req, res) => {
             for (const key in rawRow) {
               const cleanKey = cleanString(key);
               const cleanValue = cleanString(rawRow[key]);
-          
               cleanRow[cleanKey] = cleanValue;
             }
-          
-            // Normalize any known date fields
+
             if (cleanRow['Date']) cleanRow['Date'] = normalizeDateString(cleanRow['Date']);
             if (cleanRow['Produced']) cleanRow['Produced'] = normalizeDateString(cleanRow['Produced']);
-          
+
             rows.push(cleanRow);
           })
           .on('end', resolve)
@@ -71,55 +67,25 @@ router.post('/', upload.single('file'), async (req, res) => {
       return res.status(400).json({ error: 'Only .csv or .json supported' });
     }
 
-    // Normalize any DD/MM/YYYY → YYYY-MM-DD in `row.date`
+    // Ensure date formatting
     rows = rows.map(row => {
       if (row.Produced) row.Produced = normalizeDateString(row.Produced);
       return row;
     });
-    
-    const lower = filename.toLowerCase();      // or rawName.toLowerCase()
-      let siteVal = null;
-      if (lower.includes('ara')) siteVal = 'ara';
-      else if (lower.includes('jnr')) siteVal = 'jnr';
 
-      // if we found a site, tack it onto every row
-      if (siteVal) {
-        rows = rows.map(row => ({
-          ...row,
-          site: siteVal
-        }));
-      }
+    // Add site column
+    const lowerFilename = filename.toLowerCase();
+    let siteVal = null;
+    if (lowerFilename.includes('ara')) siteVal = 'ara';
+    else if (lowerFilename.includes('jnr')) siteVal = 'jnr';
+    else siteVal = 'unknown';
 
-      const timestamp = () => {
-        const now = new Date();
-        return {
-          date: now.toISOString().split('T')[0],
-          time: now.toTimeString().slice(0, 5).replace(':', '-')
-        };
-      };
+    rows = rows.map(row => ({
+      ...row,
+      site: siteVal
+    }));
 
-      const { date: uploadDate, time: uploadTime } = timestamp();
-
-      const logRows = rows
-        .filter(row => row['Charcode ID'])  // only log if ID exists
-        .map(row => ({
-          ID: row['Charcode ID'],
-          status: row['EBC Cert Status'],
-          reason: row['EBC Status Reason'],
-          date: uploadDate,
-          time: uploadTime
-        }));
-
-      // batch send to EBCStatus.js
-      for (const row of logRows) {
-        await axios.post('http://localhost:5000/api/ebcstatus/add', {
-          charcodeId: row.ID,
-          status: row.status,
-          reason: row.reason
-        });
-      }
-
-      // ------------------- EBC STATUS SECTION ----------------------
+    // ------------------- EBC STATUS SECTION ----------------------
 
     const tempUploadRes = await axios.get('http://localhost:5000/api/upload');
     const tempUploadDocs = tempUploadRes.data;
@@ -131,7 +97,6 @@ router.post('/', upload.single('file'), async (req, res) => {
         const [datePart] = String(row.timestamp || '').split(' ');
         if (!datePart) return;
 
-        // ARA temps
         const t1 = parseFloat(row['Reactor 1 Temperature (°C)']);
         const t2 = parseFloat(row['Reactor 2 Temperature (°C)']);
         if (!isNaN(t1)) {
@@ -143,7 +108,6 @@ router.post('/', upload.single('file'), async (req, res) => {
           tempBySiteAndDate.ara[datePart].push(t2);
         }
 
-        // JNR temps
         const tJNR = parseFloat(row['T5 Pyrolysis Temperature (°C)']);
         if (!isNaN(tJNR)) {
           if (!tempBySiteAndDate.jnr[datePart]) tempBySiteAndDate.jnr[datePart] = [];
@@ -152,34 +116,66 @@ router.post('/', upload.single('file'), async (req, res) => {
       });
     });
 
-    const inSpec = (t) => t >= 520 && t <= 780; // EBC spec for T5 Pyrolysis Temperature
-
+    // Apply EBC cert status + reason
     rows = rows.map(row => {
       const produced = row.Produced;
       const site = (row.site || '').toLowerCase();
 
       if (!produced || !['ara', 'jnr'].includes(site)) {
-        return { ...row, 'EBC Cert Status': 'Pending', 'EBC Status Reason': 'No Temp Data' };
+        return {
+          ...row,
+          'EBC Cert Status': 'Pending',
+          'EBC Cert Status Reason': 'Missing site or produced date'
+        };
       }
 
       const temps = tempBySiteAndDate[site]?.[produced];
       if (!temps || temps.length === 0) {
-        return { ...row, 'EBC Cert Status': 'Pending', 'EBC Status Reason': 'No Temp Data' };
+        return {
+          ...row,
+          'EBC Cert Status': 'Pending',
+          'EBC Cert Status Reason': 'No temperature data found for date'
+        };
       }
 
-      const allInSpec = temps.every(inSpec);
+      const allInSpec = temps.every(t => t >= 520 && t <= 780);
       return {
         ...row,
         'EBC Cert Status': allInSpec ? 'Approved' : 'Flagged',
-        'EBC Status Reason': allInSpec ? 'All Temps in Spec.' : 'Temps Out of Spec.',
+        'EBC Cert Status Reason': allInSpec
+          ? 'All temperatures in spec'
+          : 'One or more temperatures out of spec'
       };
     });
 
+    // Log EBC status for each row
+    for (const row of rows) {
+      if (!row.ID) continue;
 
-    // save as one document
-    const doc = new Charcodes({ filename, filetype: ext === '.csv' ? 'csv' : 'json', data: rows });
+      const timestamp = row.Produced || row.Date || new Date().toISOString();
+      const [datePart, timePart = '00:00'] = timestamp.split('T');
+
+      await axios.post('http://localhost:5000/api/ebcstatus/add', {
+        charcodeId: row.ID,
+        site: row.site,
+        status: row['EBC Cert Status'],
+        reason: row['EBC Cert Status Reason'],
+        date: datePart,
+        time: timePart.substring(0, 5)
+      }).catch(err => {
+        console.error('EBC log failed for', row.ID, err.message);
+      });
+    }
+
+    // Save to Charcodes collection
+    const doc = new Charcodes({
+      filename,
+      filetype: ext === '.csv' ? 'csv' : 'json',
+      data: rows
+    });
+
     await doc.save();
-    
+
     res.json({ message: 'Charcodes file saved', count: rows.length });
   } catch (err) {
     console.error('Upload error:', err);
@@ -187,8 +183,7 @@ router.post('/', upload.single('file'), async (req, res) => {
   }
 });
 
-// 2) GET /api/charcodes
-//    List all Charcodes uploads
+// GET /api/charcodes
 router.get('/', async (req, res) => {
   try {
     const docs = await Charcodes.find().sort({ uploadDate: -1 }).lean();
@@ -199,8 +194,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// 3) GET /api/charcodes/data/by-file/:filename
-//    Fetch the .data array for a single upload
+// GET /api/charcodes/data/by-file/:filename
 router.get('/data/by-file/:filename', async (req, res) => {
   try {
     const fn = decodeURIComponent(req.params.filename);
@@ -213,8 +207,7 @@ router.get('/data/by-file/:filename', async (req, res) => {
   }
 });
 
-// 4) DELETE /api/charcodes/data/by-file/:filename
-//    Delete one upload
+// DELETE /api/charcodes/data/by-file/:filename
 router.delete('/data/by-file/:filename', async (req, res) => {
   try {
     const fn = decodeURIComponent(req.params.filename);
@@ -231,13 +224,11 @@ router.patch('/update-status', async (req, res) => {
   const { charcodeId, status, reason } = req.body;
 
   if (!charcodeId || !status) {
-    console.warn('❗ Missing required fields:', { charcodeId, status });
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
   try {
     const docs = await Charcodes.find();
-    console.log(`🔍 Searching for charcode ID: ${charcodeId} in ${docs.length} uploads`);
 
     for (const doc of docs) {
       const index = doc.data.findIndex(row =>
@@ -245,12 +236,8 @@ router.patch('/update-status', async (req, res) => {
       );
 
       if (index !== -1) {
-        console.log(`✅ Found in file: ${doc.filename} at index ${index}`);
-        console.log('🔧 Old status:', doc.data[index]['EBC Cert Status']);
-        console.log('🔧 Updating to:', status, reason);
-
         doc.data[index]['EBC Cert Status'] = status;
-        doc.data[index]['EBC Status Reason'] = reason || '';
+        doc.data[index]['EBC Cert Status Reason'] = reason || '';
         
         doc.markModified('data');
         await doc.save();        
@@ -261,17 +248,11 @@ router.patch('/update-status', async (req, res) => {
         });
       }
     }
-
-    console.warn('❌ Charcode ID not found in any file');
     return res.status(404).json({ error: 'Charcode not found' });
 
   } catch (err) {
-    console.error('🔥 EBC status update error:', err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-
-
 
 module.exports = router;

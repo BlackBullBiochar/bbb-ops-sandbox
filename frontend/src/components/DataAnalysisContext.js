@@ -21,6 +21,13 @@ export const DataAnalysisProvider = ({ children }) => {
   const [faultMessagesARA, setfaultMessagesARA] = useState([]);
   const [ebcReasonsARA, setEbcReasonsARA] = useState([]);
   const [ebcStatusARA, setEbcStatusARA] = useState([]);
+  const [ebcDateARA, setEbcDateARA] = useState([]);
+  const [ebcTimeARA, setEbcTimeARA] = useState([]);
+  const [ebcLookupARA, setEbcLookupARA] = useState({});
+
+
+  
+  
 
 //jnrkinson
 
@@ -30,13 +37,17 @@ export const DataAnalysisProvider = ({ children }) => {
   const [chart2DataJNR, setChart2DataJNR] = useState([]);
   const [dataTempsJNR, setdataTempsJNR] = useState([]);
   const [dataTempsJNR2, setdataTempsJNR2] = useState([]);
-  const [charcodesJNR, setcharcodesJNR] = useState([]);
+  const [charcodesJNR, setCharcodesJNR] = useState([]);
   const [formTempsJNR, setformTempsJNR] = useState([]);
   const [dataBioMCJNR, setdataBioMCJNR] = useState([]);
   const [dailyHeatGenJNR, setdailyHeatGenJNR] = useState([]);
   const [faultMessagesJNR, setfaultMessagesJNR] = useState([]);
   const [ebcReasonsJNR, setEbcReasonsJNR] = useState([]);
   const [ebcStatusJNR, setEbcStatusJNR] = useState([]);
+  const [ebcDateJNR, setEbcDateJNR] = useState([]);
+  const [ebcTimeJNR, setEbcTimeJNR] = useState([]);
+  const [ebcLookupJNR, setEbcLookupJNR] = useState([]);
+
   
 
   const fetchAndProcessData = async ({ mode, singleDate, fromDate, toDate }) => {
@@ -45,16 +56,20 @@ export const DataAnalysisProvider = ({ children }) => {
       return d >= fromDate && d <= toDate;
     };
 
-    const [dataRes, charRes, formRes] = await Promise.all([
+    const [dataRes, charRes, formRes, EBCres] = await Promise.all([
       fetch('http://localhost:5000/api/upload'),
       fetch('http://localhost:5000/api/charcodes'),
       fetch('http://localhost:5000/api/forms'),
+      fetch('http://localhost:5000/api/ebcstatus'),
     ]);
-    const [dataDocs, charDocs, formDocs] = await Promise.all([
+    const [dataDocs, charDocs, formDocs, EBCdocs] = await Promise.all([
       dataRes.json(),
       charRes.json(),
       formRes.json(),
+      EBCres.json(),
     ]);
+    console.log('Fetched EBCdocs:', EBCdocs.map(doc => doc.site));
+
 
 //ARA Data Collection
 
@@ -148,19 +163,30 @@ export const DataAnalysisProvider = ({ children }) => {
       .map(row => JSON.stringify(row));
     setCharcodesARA(codesARA);
 
-    const reasonsARA = charDocs
+    const matchedARACodes = charDocs
       .flatMap(doc => doc.data || [])
-      .filter(row => inWindow(row.Produced) && row.site === 'ara')
-      .map(row => row['EBC Status Reason'])
-      .filter(Boolean);
-    setEbcReasonsARA(reasonsARA);
-
-    const statusARA = charDocs
-      .flatMap(doc => doc.data || [])
-      .filter(row => inWindow(row.Produced) && row.site === 'ara')
-      .map(row => row['EBC Cert Status'])
-      .filter(Boolean);
-    setEbcStatusARA(statusARA);
+      .filter(row => inWindow(row.Produced) && row.site === 'ara');
+    
+    const araEbcDoc = EBCdocs.find(doc => doc.site === 'ara') || { data: [] };
+    const araCharcodeIds = matchedARACodes.map(row => String(row.ID || '').trim());
+    
+    const ebcARAMap = {};
+    
+    araEbcDoc.data.forEach(row => {
+      const id = String(row.charcodeId || '').trim();
+      if (!id || !araCharcodeIds.includes(id)) return;
+    
+      if (!ebcARAMap[id]) ebcARAMap[id] = [];
+    
+      ebcARAMap[id].push({
+        date: row['EBC Date'] || '',
+        time: row['EBC Time'] || '',
+        status: row['EBC Cert Status'] || '',
+        reason: row['EBC Status Reason'] || '',
+      });
+    });
+    
+    setEbcLookupARA(ebcARAMap);
 
 //JNR data collection
 
@@ -261,24 +287,32 @@ export const DataAnalysisProvider = ({ children }) => {
       .flatMap(doc => doc.data || [])
       .filter(row => inWindow(row.Produced) && row.site === 'jnr')
       .map(row => JSON.stringify(row));
-    setcharcodesJNR(codesJNR);   
+    setCharcodesJNR(codesJNR);    
     
-    const reasonsJNR = charDocs
+    const matchedJNRCodes = charDocs
       .flatMap(doc => doc.data || [])
-      .filter(row => inWindow(row.Produced) && row.site === 'jnr')
-      .map(row => row['EBC Status Reason'])
-      .filter(Boolean);
-
-    setEbcReasonsJNR(reasonsJNR);
-
-    const statusJNR = charDocs
-      .flatMap(doc => doc.data || [])
-      .filter(row => inWindow(row.Produced) && row.site === 'jnr')
-      .map(row => row['EBC Cert Status'])
-      .filter(Boolean);
-
-    setEbcStatusJNR(statusJNR);
-
+      .filter(row => inWindow(row.Produced) && row.site === 'jnr');
+    
+    const jnrEbcDoc = EBCdocs.find(doc => doc.site === 'jnr') || { data: [] };
+    const jnrCharcodeIds = matchedJNRCodes.map(row => String(row.ID || '').trim());
+    
+    const ebcJNRMap = {};
+    
+    jnrEbcDoc.data.forEach(row => {
+      const id = String(row.charcodeId || '').trim();
+      if (!id || !jnrCharcodeIds.includes(id)) return;
+    
+      if (!ebcJNRMap[id]) ebcJNRMap[id] = [];
+    
+      ebcJNRMap[id].push({
+        date: row['EBC Date'] || '',
+        time: row['EBC Time'] || '',
+        status: row['EBC Cert Status'] || '',
+        reason: row['EBC Status Reason'] || '',
+      });
+    });
+    
+    setEbcLookupJNR(ebcJNRMap);
   };
 
   return (
@@ -296,6 +330,9 @@ export const DataAnalysisProvider = ({ children }) => {
       faultMessagesARA, setfaultMessagesARA,
       ebcReasonsARA, setEbcReasonsARA,
       ebcStatusARA, setEbcStatusARA,
+      ebcDateARA, setEbcDateARA,
+      ebcTimeARA, setEbcTimeARA,
+      ebcLookupARA,
 
       chart1LabelsJNR, setchart1LabelsJNR,
       chart2LabelsJNR, setchart2LabelsJNR,
@@ -303,13 +340,16 @@ export const DataAnalysisProvider = ({ children }) => {
       chart2DataJNR, setChart2DataJNR,
       dataTempsJNR, setdataTempsJNR,
       dataTempsJNR2, setdataTempsJNR2,
-      charcodesJNR, setcharcodesJNR,
+      charcodesJNR, setCharcodesJNR,
       formTempsJNR, setformTempsJNR,
       dataBioMCJNR, setdataBioMCJNR,
       dailyHeatGenJNR, setdailyHeatGenJNR,
       faultMessagesJNR, setfaultMessagesJNR,
       ebcReasonsJNR, setEbcReasonsJNR,
       ebcStatusJNR, setEbcStatusJNR,
+      ebcDateJNR, setEbcDateJNR,
+      ebcTimeJNR, setEbcTimeJNR,
+      ebcLookupJNR,
       fetchAndProcessData
     }}>
       {children}

@@ -5,7 +5,7 @@ import styles from './CharcodeOverlayCard.module.css';
 import ChartMod from './ChartMod';
 import Module from './Module';
 import FaultMessages from './FaultMessages';
-import EbcStatusEditor from './EbcStatusEditor';
+import EbcStatusEditor from './EbcStatusEditorARA';
 import EbcStatusList from './EBCStatusList';
 
 const CharcodeOverlayCard = ({ parsed, onClose }) => {
@@ -22,7 +22,7 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
     charcodesARA, formTempsARA,
     dataBioMCARA, dailyHeatGenARA,
     faultMessagesARA, ebcReasonsARA,
-    ebcStatusARA
+    ebcStatusARA,ebcLookupARA
     
   } = useContext(DataAnalysisContext);
 
@@ -35,6 +35,9 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
   const dataTemps2 = dataTempsARA2;
   const faultMessages = faultMessagesARA;
   const dataBioMC = dataBioMCARA;
+
+  const charcodeId = String(parsed.ID || '').trim();
+  const ebcEntries = ebcLookupARA[charcodeId] || [];
 
   return (
     <div className={styles.overlay}>
@@ -52,7 +55,7 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
                 <Figure title="Reactor 1 Avg. Temp" value={dataTemps}/>
             </Module>
             <Module name={"EBC Cert. Status"} spanColumn={16} spanRow={2}>
-                <EbcStatusList entry1 = {ebcStatusARA} entry2={ebcReasonsARA} />     
+                <EbcStatusList ebcEntries = {ebcEntries} />    
             </Module>
             <Module name={"Reactor 2 Avg. Temp"} spanColumn={4} spanRow={1}>
                 <Figure title="Reactor 1 Avg. Temp" value={dataTemps2}/>
