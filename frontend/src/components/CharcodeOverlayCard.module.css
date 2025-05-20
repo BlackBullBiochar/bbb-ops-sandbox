@@ -51,7 +51,6 @@
   position: relative;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
   background: linear-gradient(360deg, #FFFFFF 0%, #FFFFFF 0.01%, #F8F8F8 39.21%, #FFFFFF 83.5%, #FFFFFF 102.14%);
-  border: 0.5px solid #DADADA;
   box-shadow: 0.2rem 0.2rem 0.5rem rgba(0, 0, 0, 0.1), 0px 4px 0.6rem rgba(0, 0, 0, 0.12);
   border-radius: 1.3rem;
   flex-direction: column;
@@ -75,4 +74,32 @@
   margin-bottom: 1rem;
   overflow: visible;
   height: 100%;
+  }
+
+  .card {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  background: #f9f9f9;
+  border: 2px solid #cccccc00;
+  }
+
+   .approved {
+    border-color: var(--leaf);
+  }
+  
+  .flagged {
+    border: dashed 2px var(--error);
+  }
+  
+  .pending {
+    border-color: rgb(255, 219, 37);
+  }
+  
+  .postApproved {
+    border: dashed 2px var(--leaf);
+  }
+
+  .rejected {
+    border-color: var(--error);
   }

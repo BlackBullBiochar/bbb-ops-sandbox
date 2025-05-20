@@ -14,18 +14,25 @@
     background: #f9f9f9;
   }
   
-  .approved {
+   .approved {
     border-color: var(--leaf);
   }
   
   .flagged {
-    border-color: dashed 2px var(--error);
+    border: dashed 2px var(--error);
   }
   
   .pending {
     border-color: rgb(255, 219, 37);
   }
   
+  .postApproved {
+    border: dashed 2px var(--leaf);
+  }
+
+  .rejected {
+    border-color: var(--error);
+  }
   
   .row {
     margin-bottom: 0.25rem;
