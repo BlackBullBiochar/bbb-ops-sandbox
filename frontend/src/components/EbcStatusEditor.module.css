@@ -24,7 +24,6 @@
     margin-top: 0.3rem;
     border: 1px solid #ccc;
     border-radius: 0.5rem;
-    font-family: inherit;
     background: #fff;
     transition: border 0.2s ease;
   }
@@ -37,7 +36,7 @@
   
   textarea {
     resize: vertical;
-    min-height: 4rem;
+    min-height: 2.5rem;
   }
   
   button {

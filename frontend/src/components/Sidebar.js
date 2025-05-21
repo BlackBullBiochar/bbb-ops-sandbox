@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import styles from './Sidebar.module.css';
-import logo from '../assets/images/bbbLogoWhiteTransparentNoText.png';
+import logo from '../assets/images/bbbLogoWhite.png';
 
 const Sidebar = () => {
   return (
@@ -14,38 +14,6 @@ const Sidebar = () => {
       <img src={logo} className={styles.bbbLogo}/>
       <h3 style = {{color: 'white', paddingLeft: '1rem'}}>Menu</h3>
       <ul style={{ listStyle: 'none', padding: 0 }}>
-        <li>
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              isActive ? styles.menuItemSelected : styles.menuItem
-            }
-          >
-            Stock Database
-          </NavLink>
-        </li>
-        
-        <li>
-          <NavLink
-            to="/tasks"
-            className={({ isActive }) =>
-              isActive ? styles.menuItemSelected : styles.menuItem
-            }
-          >
-            Tasks & Checks
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/charcodes"
-            className={({ isActive }) =>
-              isActive ? styles.menuItemSelected : styles.menuItem
-            }
-          >
-            Charcodes
-          </NavLink>
-
-        </li>
         <li>
         <NavLink
           to="/upload"
