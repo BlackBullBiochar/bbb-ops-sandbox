@@ -308,7 +308,7 @@
 .BgContainer {
   width: 100vw;
   height: 100vh;
-  z-index: -101;
+  z-index: 0;
   position: relative;
   overflow: hidden;
   background: linear-gradient(336deg, rgba(3,3,3,1) 1%, rgba(32,32,32,1) 40%, rgb(31, 31, 31) 100%);
@@ -317,6 +317,7 @@
   justify-content: center;
 }
 .BgHexOverlay{
+  pointer-events: none;
   position: absolute;
   z-index: -100;
   top: -10vh;

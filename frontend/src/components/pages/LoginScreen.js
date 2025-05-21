@@ -32,69 +32,68 @@ const LoginScreen = ({ onLogin }) => {
   const goToForgotPassword = () => setScreenState("goToForgotPassword");
 
   return (
-    <>
     <div className={styles.BgContainer}>
       <div className={styles.BgHexOverlay}/>
-        <div className={styles.mainBlackContainerLogin}>
-          <div className={styles.blackContainerContentLogin}>
-            <div className={styles.bbbLogoWhiteContainer}>
-              <img src={bbbLogoWhite} className={styles.bbbLogoWhite} alt="White Logo"/>
-              <div className={styles.bbbLogoText}>BLACK BULL BIOCHAR</div>
-            </div>
-            <div className={styles.welcomeMessageContainer}>
-              <DottedLine color="grass" segmentNumber={5} segmentWidth="0.5rem" segmentHeight="1.7rem"/>
-              <div className={styles.welcomeMessageTextContainer}>
-                <div className={styles.welcomeHeader}>Hello!<span className={styles.headerGreen}>&nbsp;Welcome Back.</span></div>
-                <div className={styles.welcomeText}>
-                  Do you not have an account?&nbsp;
-                  <span className={styles.textLink} onClick={goToSignUp}>create a new account</span>.
-                  <br/><br/>
-                  Do you have a Problem with our Software?&nbsp;
-                  <a href="https://www.blackbullbiochar.com/contact-us" target="_blank" rel="noopener noreferrer" className={styles.textLink}>Get in touch</a> with our team and let them know it was Adrien's fault.
-                </div>
-              </div>
+   
+    <div className={styles.mainBlackContainerLogin}>
+      <div className={styles.blackContainerContentLogin}>
+        <div className={styles.bbbLogoWhiteContainer}>
+          <img src={bbbLogoWhite} className={styles.bbbLogoWhite} alt="White Logo"/>
+          <div className={styles.bbbLogoText}>BLACK BULL BIOCHAR</div>
+        </div>
+        <div className={styles.welcomeMessageContainer}>
+          <DottedLine color="grass" segmentNumber={5} segmentWidth="0.5rem" segmentHeight="1.7rem"/>
+          <div className={styles.welcomeMessageTextContainer}>
+            <div className={styles.welcomeHeader}>Hello!<span className={styles.headerGreen}>&nbsp;Welcome Back.</span></div>
+            <div className={styles.welcomeText}>
+              Do you not have an account?&nbsp;
+              <span className={styles.textLink} onClick={goToSignUp}>create a new account</span>.
+              <br/><br/>
+              Do you have a Problem with our Software?&nbsp;
+              <a href="https://www.blackbullbiochar.com/contact-us" target="_blank" rel="noopener noreferrer" className={styles.textLink}>Get in touch</a> with our team and let them know it was Adrien's fault.
             </div>
           </div>
+        </div>
+      </div>
 
-          <div className={styles.mainWhiteContainerLogin}>
-            <div className={styles.logoContainer}>
-              <img src={bbbLogo} className={styles.bbbLogo} alt="BBB Logo"/>
-            </div>
-            <div className={styles.greenCirclesWrapper}>
-              <img src={greenCircles} className={styles.greenCircle1} alt="Green Circle"/>
-              <img src={greenCircles} className={styles.greenCircle2} alt="Green Circle"/>
-            </div>
-            <div className={styles.loginContent}>
-              <h2 className={styles.loginHeader}>Account Logins</h2>
-              <TextInput
-                name="Email"
-                value={email}
-                onChange={setEmail}
-                highlighted={highlighedtInput === "email"}
-                iconName="envelope"
-                labelStyle="top"
-                placeholder="Enter Email"
-              />
-              <TextInput
-                name="Password"
-                value={password}
-                onChange={setPassword}
-                highlighted={highlighedtInput === "password"? true : false}
-                iconName="key"
-                labelStyle="top"
-                placeholder="Password"
-                isPassword={true}
-              />
-              <div className={styles.loginOptionsContainer}>
-                <Checkbox text="Keep Me Logged In" checked={keepMeLoggedIn} onPress={() => setkeepMeLoggedIn(!keepMeLoggedIn)} />
-                <div className={styles.forgotPassword} onClick={goToForgotPassword}>Forgot Password?</div>
-              </div>
-              <Button disabled={false} onPress={login} name="Login" color="Coal" />
-            </div>
+      <div className={styles.mainWhiteContainerLogin}>
+        <div className={styles.logoContainer}>
+          <img src={bbbLogo} className={styles.bbbLogo} alt="BBB Logo"/>
+        </div>
+        <div className={styles.greenCirclesWrapper}>
+          <img src={greenCircles} className={styles.greenCircle1} alt="Green Circle"/>
+          <img src={greenCircles} className={styles.greenCircle2} alt="Green Circle"/>
+        </div>
+        <div className={styles.loginContent}>
+          <h2 className={styles.loginHeader}>Account Logins</h2>
+          <TextInput
+            name="Email"
+            value={email}
+            onChange={setEmail}
+            highlighted={highlighedtInput === "email"}
+            iconName="envelope"
+            labelStyle="top"
+            placeholder="Enter Email"
+          />
+          <TextInput
+            name="Password"
+            value={password}
+            onChange={setPassword}
+            highlighted={highlighedtInput === "password"? true : false}
+            iconName="key"
+            labelStyle="top"
+            placeholder="Password"
+            isPassword={true}
+          />
+          <div className={styles.loginOptionsContainer}>
+            <Checkbox text="Keep Me Logged In" checked={keepMeLoggedIn} onPress={() => setkeepMeLoggedIn(!keepMeLoggedIn)} />
+            <div className={styles.forgotPassword} onClick={goToForgotPassword}>Forgot Password?</div>
+          </div>
+          <Button disabled={false} onPress={login} name="Login" color="Coal" />
         </div>
       </div>
     </div>
-    </>
+    </div>
   );
 };
 
