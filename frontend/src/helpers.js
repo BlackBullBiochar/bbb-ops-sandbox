@@ -23,16 +23,9 @@ helpers.errorPrompt = (errorPrompt, highlighedtInput, setErrorPrompt, setHighlig
 }
 
 helpers.isValidEmail = (email) => {
-  if (
-    email.length === 0 ||
-    email.split("@").length < 2 ||
-    email.split(".").length < 2
-  ){
-    return false;
-  }else{
-    return true;
-  }
-}
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+
 
 helpers.estimateBiocharStats = (pincharBags, pelletcharBags, billingPlan) => {
   let stats = {};

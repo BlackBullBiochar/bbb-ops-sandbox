@@ -9,6 +9,7 @@ const TextInput = (props) => {
   const [displayPassword, setDisplayPassword] = useState(false);
   const [displayEye, setDisplayEye] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
+  
 
   return (
     <div
@@ -54,7 +55,13 @@ const TextInput = (props) => {
         )}
         value={props.value}
         onChange={(e) => props.onChange(e.target.value)}
-        onKeyDown={(e) => props.onKeyDown(e)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            props.onEnter?.(); // call a custom handler if provided
+          } else {
+            props.onKeyDown?.(e); // pass other keydowns upstream if defined
+          }
+        }}
         onFocus={() => setPasswordFocused(true)}
         onBlur={() => setPasswordFocused(false)}
         style={props.height ? { height: props.height } : {}}

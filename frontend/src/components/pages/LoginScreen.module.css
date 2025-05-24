@@ -332,3 +332,9 @@
 
  /* animation: gradient 25s ease infinite;*/
 }
+
+.errorPromptContainer {
+  position: relative;
+  top: 0.1rem;
+  height: 0;
+}
