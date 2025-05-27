@@ -10,5 +10,6 @@ authRoutes.post("/password-reset/email", authController.passwordResetEmail);
 authRoutes.post("/password-reset/check", authController.passwordResetCheckValid);
 authRoutes.post("/password-reset", authController.passwordReset);
 authRoutes.post("/referral/validate", authController.validateReferral);
+authRoutes.post("/register", authController.registerUser); 
 
 module.exports = authRoutes;

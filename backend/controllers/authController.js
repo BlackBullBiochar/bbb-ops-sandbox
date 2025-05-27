@@ -209,4 +209,38 @@ authController.validateReferral = async (req, res) => {
   }
 };
 
+authController.registerUser = async (req, res) => {
+  try {
+    const { first_name, last_name, email, password } = req.body;
+
+    checkMissingField([first_name, last_name, email, password]);
+
+    const exists = await db.User.findOne({ email });
+    if (exists) {
+      throw new ValidationError(409, "Email already in use");
+    }
+
+    const newUser = await new db.User({
+      first_name,
+      last_name,
+      email,
+      password,
+    }).save();
+
+    const token = jwt.sign(
+      { id: newUser._id, isAdmin: false },
+      process.env.JWT_KEY,
+      { expiresIn: process.env.USER_TOKEN_EXPIRATION }
+    );
+
+    return successResponse(res, {
+      user: omit(newUser.toObject(), ["password", "is_deleted", "__v", "created_at"]),
+      token,
+    });
+  } catch (err) {
+    return errorResponseHandler(err, res);
+  }
+};
+
+
 module.exports = authController;

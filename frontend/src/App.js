@@ -1,4 +1,3 @@
-// App.js
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import styles from './App.module.css';
@@ -10,15 +9,16 @@ import DataAnalysisPage from './components/pages/DataAnalysisPage';
 import DataAnalysisPageJNR from './components/pages/DataAnalysisPageJNR';
 import AlertDashboard from './components/pages/AlertDashboard';
 import LoginScreen from './components/pages/LoginScreen';
+import SignUpPage from './components/pages/SignUpPage';
 import { DataAnalysisProvider } from './components/DataAnalysisContext';
 
-// ← Add API URL here
+// API base URL
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // 🔄 On mount, attempt to refresh session
+  // Try refreshing session on load
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) return;
@@ -44,7 +44,13 @@ const App = () => {
       });
   }, []);
 
+  // Called on successful login
   const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
+  // Called on successful signup
+  const handleSignUp = () => {
     setIsAuthenticated(true);
   };
 
@@ -52,6 +58,8 @@ const App = () => {
     <DataAnalysisProvider>
         {!isAuthenticated ? (
           <Routes>
+            <Route path="/login"  element={<LoginScreen  onLogin={handleLogin}  />} />
+            <Route path="/signup" element={<SignUpPage onSignUp={handleSignUp} />} />
             <Route path="*" element={<LoginScreen onLogin={handleLogin} />} />
           </Routes>
         ) : (

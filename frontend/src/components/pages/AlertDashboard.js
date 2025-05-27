@@ -14,8 +14,7 @@ import SiteSelector from '../SiteSelector';
 
 
 const AlertDashboard = () => {
-  // 1) date picker state
-  const [mode, setMode] = useState('single');    // 'single' or 'range'
+  const [mode, setMode] = useState('single');
   const [singleDate, setSingleDate] = useState('');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
@@ -50,7 +49,6 @@ const AlertDashboard = () => {
     faultMessagesARA,
   } = useContext(DataAnalysisContext);
   
-  //site selector state
   const [selectedSites, setSelectedSites] = useState(['ARA', 'JNR']);
 
   const handleToggleSite = (site) => {
@@ -60,7 +58,6 @@ const AlertDashboard = () => {
   };
   
 
-  // date-filter helper
   const inWindow = (d) => {
     if (mode === 'single') {
       return d === singleDate;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from './LoginScreen.module.css';
+import styles from './SignUpPage.module.css';
 import helpers from '../../helpers';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,26 +10,31 @@ import greenCircles from '../../assets/images/greenCircles.png';
 import DottedLine from '../DottedLine';
 import TextInput from '../TextInput';
 import Button from '../Button';
-import Checkbox from '../Checkbox';
 
-// ← Add this at the top
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-const LoginScreen = ({ onLogin }) => {
-  const [screenState, setScreenState]       = useState("login");
-  const [email, setEmail]                   = useState('');
-  const [password, setPassword]             = useState('');
-  const [keepMeLoggedIn, setKeepMeLoggedIn] = useState(false);
+const SignUpPage = ({ onSignUp }) => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName,  setLastName]  = useState('');
+  const [email,     setEmail]     = useState('');
+  const [password,  setPassword]  = useState('');
   const [highlightedInput, setHighlightedInput] = useState(null);
-  const [errorPrompt, setErrorPrompt]       = useState("");
+  const [errorPrompt,      setErrorPrompt]      = useState("");
 
-  const login = async () => {
-    if (!email) {
-      setHighlightedInput("email");
+  const navigate = useNavigate();
+  const goToLogin = () => navigate('/login');
+
+  const signUp = async () => {
+    if (!firstName) {
+      setHighlightedInput("firstName");
       return;
     }
-    if (!password) {
-      setHighlightedInput("password");
+    if (!lastName) {
+      setHighlightedInput("lastName");
+      return;
+    }
+    if (!email) {
+      setHighlightedInput("email");
       return;
     }
     if (!helpers.isValidEmail(email)) {
@@ -41,9 +46,9 @@ const LoginScreen = ({ onLogin }) => {
       );
       return;
     }
-    if (password.length < 6) {
+    if (!password || password.length < 6) {
       helpers.errorPrompt(
-        "Please Enter Valid Password",
+        "Password must be at least 6 characters",
         "password",
         setErrorPrompt,
         setHighlightedInput
@@ -51,27 +56,52 @@ const LoginScreen = ({ onLogin }) => {
       return;
     }
 
+    const res = await fetch(`${API}/api/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        first_name: firstName,
+        last_name:  lastName,
+        email,
+        password,
+    }),
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+    localStorage.setItem("token", data.token);
+    onSignUp();   // navigates into your app
+    } else {
+    helpers.errorPrompt(data.message, /* … */);
+    }
+
+
     try {
-      const res = await fetch(`${API}/api/auth/login`, {
+      const res = await fetch(`${API}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          first_name: firstName,
+          last_name: lastName,
+          email,
+          password
+        }),
       });
       const data = await res.json();
 
       if (res.ok) {
         localStorage.setItem("token", data.token);
-        onLogin();
+        onSignUp();
       } else {
         helpers.errorPrompt(
-          data.message || "Login failed",
+          data.message || "Signup failed",
           "email",
           setErrorPrompt,
           setHighlightedInput
         );
       }
     } catch (err) {
-      console.error("Login error:", err);
+      console.error("Signup error:", err);
       helpers.errorPrompt(
         "Server error. Try again later.",
         "email",
@@ -80,10 +110,6 @@ const LoginScreen = ({ onLogin }) => {
       );
     }
   };
-
-  const navigate = useNavigate();
-  const goToSignUp = () => navigate('/signup');
-  const goToForgotPassword = () => setScreenState("goToForgotPassword");
 
   return (
     <div className={styles.BgContainer}>
@@ -98,23 +124,13 @@ const LoginScreen = ({ onLogin }) => {
             <DottedLine color="grass" segmentNumber={5} segmentWidth="0.5rem" segmentHeight="1.7rem" />
             <div className={styles.welcomeMessageTextContainer}>
               <div className={styles.welcomeHeader}>
-                Hello!<span className={styles.headerGreen}>&nbsp;Welcome Back.</span>
+                Join Us!<span className={styles.headerGreen}>&nbsp;Create Account.</span>
               </div>
               <div className={styles.welcomeText}>
-                Do you not have an account?&nbsp;
-                <span className={styles.textLink} onClick={goToSignUp}>
-                  create a new account
+                Already have an account?&nbsp;
+                <span className={styles.textLink} onClick={goToLogin}>
+                  log in here
                 </span>.
-                <br /><br />
-                Do you have a problem with our software?&nbsp;
-                <a
-                  href="https://www.blackbullbiochar.com/contact-us"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.textLink}
-                >
-                  Get in touch
-                </a> with our team and let them know it was Adrien's fault.
               </div>
             </div>
           </div>
@@ -129,7 +145,27 @@ const LoginScreen = ({ onLogin }) => {
             <img src={greenCircles} className={styles.greenCircle2} alt="Green Circle" />
           </div>
           <div className={styles.loginContent}>
-            <h2 className={styles.loginHeader}>Account Login</h2>
+            <h2 className={styles.loginHeader}>Sign Up</h2>
+            <TextInput
+              name="First Name"
+              value={firstName}
+              onChange={setFirstName}
+              highlighted={highlightedInput === "firstName"}
+              iconName="user"
+              labelStyle="top"
+              placeholder="First Name"
+              onEnter={signUp}
+            />
+            <TextInput
+              name="Last Name"
+              value={lastName}
+              onChange={setLastName}
+              highlighted={highlightedInput === "lastName"}
+              iconName="user"
+              labelStyle="top"
+              placeholder="Last Name"
+              onEnter={signUp}
+            />
             <TextInput
               name="Email"
               value={email}
@@ -138,7 +174,7 @@ const LoginScreen = ({ onLogin }) => {
               iconName="envelope"
               labelStyle="top"
               placeholder="Enter Email"
-              onEnter={login}                    // ← trigger login on Enter
+              onEnter={signUp}
             />
             <TextInput
               name="Password"
@@ -148,23 +184,13 @@ const LoginScreen = ({ onLogin }) => {
               iconName="key"
               labelStyle="top"
               placeholder="Password"
-              isPassword={true}
-              onEnter={login}                    // ← trigger login on Enter
+              isPassword
+              onEnter={signUp}
             />
             <div className={helpers.clx("errorPrompt", styles.errorPromptContainer)}>
               {errorPrompt}
             </div>
-            <div className={styles.loginOptionsContainer}>
-              <Checkbox
-                text="Keep Me Logged In"
-                checked={keepMeLoggedIn}
-                onPress={() => setKeepMeLoggedIn(!keepMeLoggedIn)}
-              />
-              <div className={styles.forgotPassword} onClick={goToForgotPassword}>
-                Forgot Password?
-              </div>
-            </div>
-            <Button disabled={false} onPress={login} name="Login" color="Coal" />
+            <Button onPress={signUp} name="Sign Up" color="Coal" />
           </div>
         </div>
       </div>
@@ -172,4 +198,4 @@ const LoginScreen = ({ onLogin }) => {
   );
 };
 
-export default LoginScreen;
+export default SignUpPage;
