@@ -8,7 +8,7 @@ import Figure from '../Figure.js';
 import DateSelector from '../DateSelector.js'
 import CharcodesList from '../CharcodesList.js';
 import FaultMessages from '../FaultMessages';
-import { DataAnalysisContext } from '../DataAnalysisContext';
+import { DataAnalysisContext } from '../DataAnalysisContext.js';
 
 const DataAnalysisPage = () => {
   // 1) date picker state
@@ -33,8 +33,11 @@ const DataAnalysisPage = () => {
     chart2LabelsARA,
     chart1DataARA,
     chart2DataARA,
+    ebcStatusARA,
     dailyHeatGenARA,
     faultMessagesARA,
+    totalWeightARA,
+    avgMCARA,
   } = useContext(DataAnalysisContext);
 
   // date-filter helper
@@ -147,7 +150,7 @@ return (
         </Module>
         
         <Module name={"Com. Biochar Produced (kg)"} spanColumn={4} spanRow={2}>
-          <Figure value={dailyHeatGenARA} variant="2" unit="kW"/>
+          <Figure value={totalWeightARA} variant="2" unit="kg" decimals={0} />
         </Module>
 
         <Module name={"Avg. Heat Generated (per hour)"} spanColumn={4} spanRow={2}>
@@ -162,8 +165,8 @@ return (
           <FaultMessages messages={faultMessagesARA} />
         </Module>
 
-        <Module name={"Biomass MC"} spanColumn={4} spanRow={1}>
-          <Figure value={dataBioMCARA} unit = {""}/>
+        <Module name={"Avg. Biomass MC"} spanColumn={4} spanRow={1}>
+          <Figure value={avgMCARA} unit = {""} />
         </Module>
         <Module name={"Biochar (Overflow)"} spanColumn={4} spanRow={1}>
           <Figure value={dailyHeatGenARA} unit="kW"/>

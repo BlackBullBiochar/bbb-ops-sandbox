@@ -47,12 +47,6 @@ export const DataAnalysisProvider = ({ children }) => {
   const [ebcDateJNR, setEbcDateJNR] = useState([]);
   const [ebcTimeJNR, setEbcTimeJNR] = useState([]);
   const [ebcLookupJNR, setEbcLookupJNR] = useState([]);
-  const [totalWeightARA, setTotalWeightARA] = useState(null);
-  const [totalWeightJNR, setTotalWeightJNR] = useState(null);
-  const [avgMCARA, setAvgMCARA] = useState(null);
-  const [avgMCJNR, setAvgMCJNR] = useState(null);
-
-
 
   
 
@@ -163,102 +157,36 @@ export const DataAnalysisProvider = ({ children }) => {
     setformtempsARA(ftempsARA);
     setfaultMessagesARA(faultsARA);
 
-    const fetchBags = async (siteCode) => {
-      const query = mode === 'single' ? `?from=${singleDate}` : `?from=${fromDate}&to=${toDate}`;
-      const res = await fetch(`http://localhost:5000/api/sites/${siteCode}/bags${query}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+    const codesARA = charDocs
+      .flatMap(doc => doc.data || [])
+      .filter(row => inWindow(row.Produced) && row.site === 'ara')
+      .map(row => JSON.stringify(row));
+    setCharcodesARA(codesARA);
+
+    const matchedARACodes = charDocs
+      .flatMap(doc => doc.data || [])
+      .filter(row => inWindow(row.Produced) && row.site === 'ara');
+    
+    const araEbcDoc = EBCdocs.find(doc => doc.site === 'ara') || { data: [] };
+    const araCharcodeIds = matchedARACodes.map(row => String(row.ID || '').trim());
+    
+    const ebcARAMap = {};
+    
+    araEbcDoc.data.forEach(row => {
+      const id = String(row.charcodeId || '').trim();
+      if (!id || !araCharcodeIds.includes(id)) return;
+    
+      if (!ebcARAMap[id]) ebcARAMap[id] = [];
+    
+      ebcARAMap[id].push({
+        date: row['EBC Date'] || '',
+        time: row['EBC Time'] || '',
+        status: row['EBC Cert Status'] || '',
+        reason: row['EBC Status Reason'] || '',
       });
-
-      const json = await res.json();
-      return (json?.bags || []).map(bag => ({ ...bag, site: siteCode })); 
-    };
-
-
-    const [bagsARA, bagsJNR, ebcRes] = await Promise.all([
-      fetchBags('ARA'),
-      fetchBags('JNR'),
-      fetch('http://localhost:5000/api/ebcstatus')
-    ]);
-
-    const ebcDocs = await ebcRes.json();
-
-    const processEBC = (bags, site) => {
-      const siteEbcDoc = ebcDocs.find(doc => doc.site?.toLowerCase() === site.toLowerCase());
-      if (!siteEbcDoc) return {};
-
-      const bagIds = bags.map(b => String(b.charcode || '').trim());
-      const map = {};
-
-      siteEbcDoc.data.forEach(row => {
-        const id = String(row.charcodeId || '').trim();
-        if (!id || !bagIds.includes(id)) return;
-
-        if (!map[id]) map[id] = [];
-
-        map[id].push({
-          date: row['EBC Date'] || '',
-          time: row['EBC Time'] || '',
-          status: row['EBC Cert Status'] || '',
-          reason: row['EBC Status Reason'] || ''
-        });
-      });
-      return map;
-    };
-
-    setEbcLookupARA(processEBC(bagsARA, 'ARA'));
-    setEbcLookupJNR(processEBC(bagsJNR, 'JNR'));
-
-    const applyLatestEBCStatus = (bags, ebcLookup) => {
-      return bags.map(bag => {
-        const id = String(bag.charcode || '').trim();
-        const history = ebcLookup[id] || [];
-        const latest = history.length ? history[history.length - 1].status : null;
-        return { ...bag, ebcCertStatus: latest };
-      });
-    };
-
-    setCharcodesARA(applyLatestEBCStatus(bagsARA, processEBC(bagsARA, 'ARA')));
-    setCharcodesJNR(applyLatestEBCStatus(bagsJNR, processEBC(bagsJNR, 'JNR')));
-
-const sumWeightsInRange = (bags) => {
-  const matchingWeights = bags
-    .filter(bag => {
-      const bagDate = String(bag.bagging_date).split('T')[0];
-      return (mode === 'single' && bagDate === singleDate) ||
-             (mode === 'range' && bagDate >= fromDate && bagDate <= toDate);
-    })
-    .map(bag => Number(bag.weight))
-    .filter(v => !isNaN(v));
-
-  return matchingWeights.length
-    ? matchingWeights.reduce((sum, v) => sum + v, 0)
-    : '';
-};
-
-setTotalWeightARA(sumWeightsInRange(bagsARA));
-setTotalWeightJNR(sumWeightsInRange(bagsJNR));
-
-
-
-  // Compute average MC for ARA
-  const validMCsARA = (bagsARA || [])
-    .map(b => parseFloat(b.moisture_content))
-    .filter(v => !isNaN(v));
-  const avgMCARA = validMCsARA.length
-    ? validMCsARA.reduce((sum, v) => sum + v, 0) / validMCsARA.length
-    : null;
-  setAvgMCARA(avgMCARA);
-
-  // Compute average MC for JNR
-  const validMCsJNR = (bagsJNR || [])
-    .map(b => parseFloat(b.moisture_content))
-    .filter(v => !isNaN(v));
-  const avgMCJNR = validMCsJNR.length
-    ? validMCsJNR.reduce((sum, v) => sum + v, 0) / validMCsJNR.length
-    : null;
-  setAvgMCJNR(avgMCJNR);
+    });
+    
+    setEbcLookupARA(ebcARAMap);
 
 //JNR data collection
 
@@ -354,7 +282,39 @@ setTotalWeightJNR(sumWeightsInRange(bagsJNR));
     setdataBioMCJNR(BMCJNR.length ? BMCJNR.reduce((sum, t) => sum + t, 0) / BMCJNR.length : null);
     setformTempsJNR(ftempsJNR);
     setfaultMessagesJNR(faultsJNR);
+
+    const codesJNR = charDocs
+      .flatMap(doc => doc.data || [])
+      .filter(row => inWindow(row.Produced) && row.site === 'jnr')
+      .map(row => JSON.stringify(row));
+    setCharcodesJNR(codesJNR);    
+    
+    const matchedJNRCodes = charDocs
+      .flatMap(doc => doc.data || [])
+      .filter(row => inWindow(row.Produced) && row.site === 'jnr');
+    
+    const jnrEbcDoc = EBCdocs.find(doc => doc.site === 'jnr') || { data: [] };
+    const jnrCharcodeIds = matchedJNRCodes.map(row => String(row.ID || '').trim());
+    
+    const ebcJNRMap = {};
+    
+    jnrEbcDoc.data.forEach(row => {
+      const id = String(row.charcodeId || '').trim();
+      if (!id || !jnrCharcodeIds.includes(id)) return;
+    
+      if (!ebcJNRMap[id]) ebcJNRMap[id] = [];
+    
+      ebcJNRMap[id].push({
+        date: row['EBC Date'] || '',
+        time: row['EBC Time'] || '',
+        status: row['EBC Cert Status'] || '',
+        reason: row['EBC Status Reason'] || '',
+      });
+    });
+    
+    setEbcLookupJNR(ebcJNRMap);
   };
+
   return (
     <DataAnalysisContext.Provider value={{
       dataTempsARA, setdataTempsARA,
@@ -372,8 +332,7 @@ setTotalWeightJNR(sumWeightsInRange(bagsJNR));
       ebcStatusARA, setEbcStatusARA,
       ebcDateARA, setEbcDateARA,
       ebcTimeARA, setEbcTimeARA,
-      ebcLookupARA,  avgMCARA,
-      totalWeightARA,
+      ebcLookupARA,
 
       chart1LabelsJNR, setchart1LabelsJNR,
       chart2LabelsJNR, setchart2LabelsJNR,
@@ -390,8 +349,7 @@ setTotalWeightJNR(sumWeightsInRange(bagsJNR));
       ebcStatusJNR, setEbcStatusJNR,
       ebcDateJNR, setEbcDateJNR,
       ebcTimeJNR, setEbcTimeJNR,
-      ebcLookupJNR, avgMCJNR, 
-      totalWeightJNR,
+      ebcLookupJNR,
       fetchAndProcessData
     }}>
       {children}

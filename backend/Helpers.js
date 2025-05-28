@@ -31,6 +31,15 @@ const errorResponseHandler = (err, res) => {
   return res.status(500).json({ success: false, message: "Server Error" });
 };
 
+const successResponseCreated = (res, data) => {
+  return res.status(201).json({
+    success: true,
+    message: "Entity Successfully Created/Updated",
+    data,
+  });
+};
+
+
 module.exports = {
   ValidationError,
   checkMissingField,
@@ -38,4 +47,5 @@ module.exports = {
   omit,
   successResponse,
   errorResponseHandler,
+  successResponseCreated,
 };

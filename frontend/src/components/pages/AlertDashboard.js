@@ -8,7 +8,7 @@ import Figure from '../Figure.js';
 import DateSelector from '../DateSelector.js'
 import CharcodesList from '../CharcodesList.js';
 import FaultMessages from '../FaultMessages';
-import { DataAnalysisContext } from '../DataAnalysisContext';
+import { DataAnalysisContext } from '../DataAnalysisContext.js';
 import CharcodesAlertBoard from '../CharcodesAlertBoard';
 import SiteSelector from '../SiteSelector';
 

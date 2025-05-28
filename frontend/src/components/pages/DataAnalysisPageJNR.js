@@ -33,6 +33,8 @@ const DataAnalysisPageJNR = () => {
     chart2DataJNR,
     dailyHeatGenJNR,
     faultMessagesJNR,
+    totalWeightJNR,
+    avgMCJNR,
   } = useContext(DataAnalysisContext);
   
 
@@ -146,7 +148,7 @@ const DataAnalysisPageJNR = () => {
           </Module>
   
           <Module name={"Com. Biochar Produced (kg)"} spanColumn={4} spanRow={2}>
-            <Figure value={dataTempsJNR2} variant="2" />
+            <Figure value={totalWeightJNR} variant="2" unit="kg" decimals={0} />
           </Module>
   
           <Module name={"Avg. Heat Generated (per hour)"} spanColumn={4} spanRow={2}>
@@ -162,7 +164,7 @@ const DataAnalysisPageJNR = () => {
           </Module>
   
           <Module name={"Biomass MC"} spanColumn={4} spanRow={1}>
-            <Figure value={dataBioMCJNR} unit = "" />
+            <Figure value={avgMCJNR} unit = "" />
           </Module>
   
           <Module name={"Biochar (Overflow)"} spanColumn={4} spanRow={1}>

@@ -11,19 +11,13 @@ const CharcodesList = ({ charcodes = [], expanded, onToggle, spanColumn }) => {
       onClick={onToggle}
     >
       <div className={styles.grid}>
-        {charcodes.slice(0, 8).map((row, i) => {
-          const parsed = JSON.parse(row);
-          return (
-            <CharcodeCard key={`always-${i}`} parsed={parsed} />
-          );
-        })}
+        {charcodes.slice(0, 8).map((row, i) => (
+          <CharcodeCard key={`always-${i}`} parsed={row} />
+        ))}
 
-        {expanded && charcodes.slice(8).map((row, i) => {
-          const parsed = JSON.parse(row);
-          return (
-            <CharcodeCard key={`expanded-${i}`} parsed={parsed} />
-          );
-        })}
+        {expanded && charcodes.slice(8).map((row, i) => (
+          <CharcodeCard key={`expanded-${i}`} parsed={row} />
+        ))}
       </div>
 
       {!expanded && (
@@ -38,16 +32,32 @@ const CharcodesList = ({ charcodes = [], expanded, onToggle, spanColumn }) => {
 const CharcodeCard = ({ parsed }) => (
   <div
     className={`${styles.card} ${
-      parsed['EBC Cert Status'] === 'Approved' ? styles.approved :
-      parsed['EBC Cert Status'] === 'Flagged' ? styles.flagged :
-      parsed['EBC Cert Status'] === 'Pending' ? styles.pending :
-      ''
+      parsed.ebcCertStatus === 'Approved' ? styles.approved :
+      parsed.ebcCertStatus === 'Flagged' ? styles.flagged :
+      parsed.ebcCertStatus === 'Pending' ? styles.pending :
+      parsed.ebcCertStatus === 'Post-Approved' ? styles.postApproved :
+      parsed.ebcCertStatus === 'Rejected' ? styles.rejected : ''
     }`}
   >
-    {Object.entries(parsed).map(([key, val], j) => (
-      <div key={j} className={styles.row}>
-        <strong>{key}:</strong> {val}
-      </div>
+    {[
+        {label: 'Charcode', value: parsed.charcode},
+        {label: 'EBC Cert Status', value: parsed.ebcCertStatus},
+        {label: 'status', value: parsed.status},
+        {label: 'MC', value: parsed.moisture_content},
+        {label: 'Bagging Date', value: parsed.bagging_date
+            ? new Date(parsed.bagging_date).toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+            })
+            : '—',},
+        { label: 'Biochar Weight (kg)', value: parsed.weight },
+        { label: 'Batch ID', value: parsed.batch_id },
+    ].map(({ label, value }, i) => (
+        <div key={i} className={styles.row}>
+        <strong>{label}:</strong>{' '}
+        {typeof value === 'object' && value !== null ? JSON.stringify(value) : String(value || '—')}
+        </div>
     ))}
   </div>
 );

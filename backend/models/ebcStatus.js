@@ -13,4 +13,7 @@ const EbcStatusSchema = new mongoose.Schema({
   ]
 });
 
-module.exports = mongoose.model('EbcStatus', EbcStatusSchema);
+const EbcStatus = mongoose.model('EbcStatus', EbcStatusSchema);
+module.exports = EbcStatus;
+
+

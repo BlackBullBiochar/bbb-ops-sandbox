@@ -4,7 +4,7 @@ const router = express.Router();
 const multer = require('multer');
 const csv = require('csv-parser');
 const path = require('path');
-const UploadData = require('../models/uploadData');
+const UploadData = require('../models/tempData');
 const { Readable } = require('stream');
 
 const upload = multer({ storage: multer.memoryStorage() });

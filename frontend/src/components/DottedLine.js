@@ -1,16 +1,6 @@
 import React, { useMemo } from 'react';
 import styles from './DottedLine.module.css';
 
-/*
-  DottedLine Component
-
-  Props:
-    - segmentNumber: number of segments to render
-    - segmentHeight: height of each segment (e.g., "1rem")
-    - segmentWidth: width of each segment (e.g., "0.5rem")
-    - color: CSS var name (e.g., "grass" → var(--grass))
-    - customStyle: optional inline style override for container
-*/
 
 const DottedLine = ({
   segmentNumber,

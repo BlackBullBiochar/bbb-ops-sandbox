@@ -8,6 +8,8 @@ const charcodesRoute = require('./routes/charcodes');
 const formsRoute     = require('./routes/forms'); 
 const ebcStatusRoutes = require('./routes/EBCStatus');
 const authRoutes = require('./routes/authRoutes');
+const siteRoutes = require('./routes/sites');
+const bagRoutes = require('./routes/bags');
 
 const app = express();
 const PORT = 5000;
@@ -23,6 +25,8 @@ app.use('/api/charcodes', charcodesRoute);
 app.use('/api/forms', formsRoute);
 app.use('/api/ebcstatus', ebcStatusRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/sites', siteRoutes);
+app.use('/api/bags', bagRoutes);
 
 
 // MongoDB connection

@@ -20,11 +20,6 @@ const CharcodesAlertBoard = ({ charcodes = [] }) => {
     );
   };
 
-  const parsedCharcodes = charcodes.map((row) => {
-    const parsed = JSON.parse(row);
-    return parsed;
-  });
-
   const grouped = {
     approved: [],
     flagged: [],
@@ -33,8 +28,8 @@ const CharcodesAlertBoard = ({ charcodes = [] }) => {
     rejected: [],
   };
 
-  parsedCharcodes.forEach((c, idx) => {
-    const status = c['EBC Cert Status']?.toLowerCase();
+  charcodes.forEach((c, idx) => {
+    const status = c.ebcCertStatus?.toLowerCase();
     if (status === 'approved') grouped.approved.push({ ...c, _index: idx });
     else if (status === 'flagged') grouped.flagged.push({ ...c, _index: idx });
     else if (status === 'post-approved') grouped.postApproved.push({ ...c, _index: idx });
@@ -59,7 +54,7 @@ const CharcodesAlertBoard = ({ charcodes = [] }) => {
     )
   );
 
-  const expandedCharcode = parsedCharcodes[expanded];
+  const expandedCharcode = charcodes[expanded];
   const site = expandedCharcode?.site?.toLowerCase();
 
   return (
@@ -86,12 +81,14 @@ const CharcodesAlertBoard = ({ charcodes = [] }) => {
         <CharcodeOverlayCard
           parsed={expandedCharcode}
           onClose={() => setExpanded(null)}
+          site={site}
         />
       )}
       {expanded !== null && site === 'jnr' && (
         <CharcodeOverlayCardJNR
           parsed={expandedCharcode}
           onClose={() => setExpanded(null)}
+          site={site}
         />
       )}
     </div>
@@ -101,16 +98,16 @@ const CharcodesAlertBoard = ({ charcodes = [] }) => {
 const CharcodePreviewCard = ({ parsed, onClick }) => (
   <div
     className={`${styles.card} ${
-      parsed['EBC Cert Status'] === 'Approved' ? styles.approved :
-      parsed['EBC Cert Status'] === 'Flagged' ? styles.flagged :
-      parsed['EBC Cert Status'] === 'Pending' ? styles.pending :
-      parsed['EBC Cert Status'] === 'Post-Approved' ? styles.postApproved :
-      parsed['EBC Cert Status'] === 'Rejected' ? styles.rejected : ''
+      parsed.ebcCertStatus === 'Approved' ? styles.approved :
+      parsed.ebcCertStatus === 'Flagged' ? styles.flagged :
+      parsed.ebcCertStatus === 'Pending' ? styles.pending :
+      parsed.ebcCertStatus === 'Post-Approved' ? styles.postApproved :
+      parsed.ebcCertStatus === 'Rejected' ? styles.rejected : ''
     }`}
     onClick={onClick}
   >
     <div><strong>Produced:</strong> {parsed.Produced}</div>
-    <div><strong>ID:</strong> {parsed.ID || parsed['Charcode ID'] || 'N/A'}</div>
+    <div><strong>ID:</strong> {parsed.ID || parsed['Charcode ID'] || parsed.charcode || 'N/A'}</div>
   </div>
 );
 
