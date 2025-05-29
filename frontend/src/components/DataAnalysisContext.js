@@ -133,19 +133,30 @@ export const DataAnalysisProvider = ({ children }) => {
     );
 
     // Process ARA forms
-    const mcArrARA = [], heatArrARA = [], faultsArrARA = [];
+    const heatArrARA = [], faultsArrARA = [];
     formDocs.forEach(doc => doc.data?.forEach(row => {
       const [year, day, month] = String(row.Date || '').split('-');
       const isoDate = `${year}-${month.padStart(2,'0')}-${day.padStart(2,'0')}`;
       if (!inWindow(isoDate)) return;
-      const mc = parseFloat(row['Biomass Bin MC']); if (!isNaN(mc)) mcArrARA.push(mc);
       const heat = parseFloat(row['P500 Heat Meter Total'] || 0); heatArrARA.push(heat);
       const msg = row['P500 Fault Message(s)'];
       if (msg && !['','0','N/A','None'].includes(msg.trim())) faultsArrARA.push({ date: row.Date, message: msg });
     }));
-    setDataBioMCARA(mcArrARA.length ? mcArrARA.reduce((a,b)=>a+b,0)/mcArrARA.length : null);
     setDailyHeatGenARA(heatArrARA.length ? heatArrARA.reduce((a,b)=>a+b,0)/heatArrARA.length : 0);
     setFaultMessagesARA(faultsArrARA);
+
+        // Process JNR forms
+    const heatArrJNR = [], faultsArrJNR = [];
+    formDocs.forEach(doc => doc.data?.forEach(row => {
+      const [year, day, month] = String(row.Date || '').split('-');
+      const isoDate = `${year}-${month.padStart(2,'0')}-${day.padStart(2,'0')}`;
+      if (!inWindow(isoDate)) return;
+      const heat = parseFloat(row['C500-I Heat Meter Reading'] || 0); heatArrJNR.push(heat);
+      const msg = row['C500-I Fault Messages'];
+      if (msg && !['','0','N/A','None', 'clear', 'CLEAR', 'n/a', 'N?F', 'A/N', 'CLERAR', 'NONE', 'no', 'NO', 'No', 'na', 'cleae', 'none', 'NA'].includes(msg.trim())) faultsArrJNR.push({ date: row.Date, message: msg });
+    }));
+    setDailyHeatGenJNR(heatArrJNR.length ? heatArrJNR.reduce((a,b)=>a+b,0)/heatArrJNR.length : 0);
+    setFaultMessagesJNR(faultsArrJNR);
 
     // Fetch bag lists for both sites
     const fetchBags = async site => {

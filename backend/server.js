@@ -3,8 +3,6 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-//const uploadRoutes = require('./routes/upload');
-const charcodesRoute = require('./routes/charcodes');
 const formsRoute     = require('./routes/forms'); 
 const ebcStatusRoutes = require('./routes/EBCStatus');
 const authRoutes = require('./routes/authRoutes');
@@ -22,8 +20,6 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-//app.use('/api/upload', uploadRoutes);
-app.use('/api/charcodes', charcodesRoute);
 app.use('/api/forms', formsRoute);
 app.use('/api/ebcstatus', ebcStatusRoutes);
 app.use('/api/auth', authRoutes);

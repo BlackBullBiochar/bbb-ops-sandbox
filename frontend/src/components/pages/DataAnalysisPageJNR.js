@@ -152,7 +152,7 @@ const DataAnalysisPageJNR = () => {
           </Module>
   
           <Module name={"Avg. Heat Generated (per hour)"} spanColumn={4} spanRow={2}>
-            <Figure value={dataTempsJNR2} variant="2" />
+            <Figure value={dailyHeatGenJNR/24} variant="2" unit="kW"/>
           </Module>
   
           <Module name={"Avg. Heat Generated (daily)"} spanColumn={4} spanRow={2}>
