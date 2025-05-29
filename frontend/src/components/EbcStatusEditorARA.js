@@ -15,17 +15,6 @@ const EbcStatusEditor = ({ charcodeId, currentStatus, currentReason, onSaved }) 
     setError(null);
 
     try {
-      // Step 1: PATCH charcodes
-      const res = await fetch('http://localhost:5000/api/charcodes/update-status', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ charcodeId, status, reason }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Charcode update failed');
-
-      // Step 2: PATCH ebcstatus history
       const res2 = await fetch('http://localhost:5000/api/ebcstatus/append', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -48,7 +37,7 @@ const EbcStatusEditor = ({ charcodeId, currentStatus, currentReason, onSaved }) 
     <div className={styles.editor}>
       <label>
         Status:
-        <select value={status} onChange={(e) => setStatus(e.target.value)}>
+        <select value={status} placeholder="Select Status" onChange={(e) => setStatus(e.target.value)}>
           {statusOptions.map(opt => (
             <option key={opt} value={opt}>{opt}</option>
           ))}

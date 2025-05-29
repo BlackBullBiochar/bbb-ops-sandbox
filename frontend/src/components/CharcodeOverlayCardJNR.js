@@ -9,7 +9,8 @@ import EbcStatusEditor from './EbcStatusEditorJNR';
 import EbcStatusList from './EBCStatusList';
 
 const CharcodeOverlayCardJNR = ({ parsed, onClose }) => {
-  const producedDate = String(parsed.bagging_date || parsed.Produced || '');
+  const bagDate = String((parsed.bagging_date).split('T')[0]|| parsed.Produced || '');
+  const producedDate = bagDate
   const charcodeId = String(parsed.charcode || parsed.ID || '').trim();
 
   const {

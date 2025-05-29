@@ -154,7 +154,7 @@ return (
         </Module>
 
         <Module name={"Avg. Heat Generated (per hour)"} spanColumn={4} spanRow={2}>
-          <Figure value={dailyHeatGenARA} variant="2" unit="kW"/>
+          <Figure value={dailyHeatGenARA/24} variant="2" unit="kW"/>
         </Module>
 
         <Module name={"Avg. Heat Generated (daily)"} spanColumn={4} spanRow={2}>

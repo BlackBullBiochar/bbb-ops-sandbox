@@ -3,13 +3,15 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const uploadRoutes = require('./routes/upload');
+//const uploadRoutes = require('./routes/upload');
 const charcodesRoute = require('./routes/charcodes');
 const formsRoute     = require('./routes/forms'); 
 const ebcStatusRoutes = require('./routes/EBCStatus');
 const authRoutes = require('./routes/authRoutes');
 const siteRoutes = require('./routes/sites');
 const bagRoutes = require('./routes/bags');
+const ebcstatusRoutes = require('./routes/ebcstatusRoutes')
+const tempDataRoutes = require('./routes/tempData')
 
 const app = express();
 const PORT = 5000;
@@ -20,13 +22,15 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/api/upload', uploadRoutes);
+//app.use('/api/upload', uploadRoutes);
 app.use('/api/charcodes', charcodesRoute);
 app.use('/api/forms', formsRoute);
 app.use('/api/ebcstatus', ebcStatusRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/sites', siteRoutes);
 app.use('/api/bags', bagRoutes);
+app.use('/api/ebcstatus', ebcstatusRoutes)
+app.use('/api/tempData', tempDataRoutes)
 
 
 // MongoDB connection

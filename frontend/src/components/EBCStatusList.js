@@ -9,6 +9,12 @@ const EbcStatusList = ({ ebcEntries = [] }) => {
 
   return (
     <table className={styles.table}>
+      <colgroup>
+        <col style={{ width: '15%' }} />
+        <col style={{ width: '65%' }} />
+        <col style={{ width: '10%' }} />
+        <col style={{ width: '10%' }} />
+      </colgroup>
       <thead>
         <tr>
           <th>Status</th>
@@ -20,10 +26,10 @@ const EbcStatusList = ({ ebcEntries = [] }) => {
       <tbody>
         {ebcEntries.map((entry, i) => (
           <tr key={i}>
-            <td>{entry['date']}</td>
-            <td>{entry['time']}</td>
             <td>{entry['status']}</td>
             <td>{entry['reason']}</td>
+            <td>{entry['date']}</td>
+            <td>{entry['time']}</td>
           </tr>
         ))}
       </tbody>

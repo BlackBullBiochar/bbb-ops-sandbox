@@ -3,398 +3,216 @@ import React, { createContext, useState } from 'react';
 export const DataAnalysisContext = createContext();
 
 export const DataAnalysisProvider = ({ children }) => {
-
-  const [groupedCharcodes, setGroupedCharcodes] = useState({});
-
-//ARA
-
-  const [dataTempsARA, setdataTempsARA] = useState([]);
-  const [dataTempsARA2, setdataTempsARA2] = useState([]);  
+  // ARA states
+  const [dataTempsARA, setDataTempsARA] = useState([]);
+  const [dataTempsARA2, setDataTempsARA2] = useState([]);
   const [charcodesARA, setCharcodesARA] = useState([]);
-  const [formtempsARA, setformtempsARA] = useState([]);
-  const [dataBioMCARA, setdataBioMCARA] = useState([]);
-  const [chart1LabelsARA, setchart1LabelsARA] = useState([]);
-  const [chart2LabelsARA, setchart2LabelsARA] = useState([]);
-  const [chart1DataARA, setchart1DataARA] = useState([]);
-  const [chart2DataARA, setchart2DataARA] = useState([]);
-  const [dailyHeatGenARA, setdailyHeatGenARA] = useState([]);
-  const [faultMessagesARA, setfaultMessagesARA] = useState([]);
-  const [ebcReasonsARA, setEbcReasonsARA] = useState([]);
-  const [ebcStatusARA, setEbcStatusARA] = useState([]);
-  const [ebcDateARA, setEbcDateARA] = useState([]);
-  const [ebcTimeARA, setEbcTimeARA] = useState([]);
+  const [formTempsARA, setFormTempsARA] = useState([]);
+  const [dataBioMCARA, setDataBioMCARA] = useState(null);
+  const [chart1LabelsARA, setChart1LabelsARA] = useState([]);
+  const [chart2LabelsARA, setChart2LabelsARA] = useState([]);
+  const [chart1DataARA, setChart1DataARA] = useState([]);
+  const [chart2DataARA, setChart2DataARA] = useState([]);
+  const [dailyHeatGenARA, setDailyHeatGenARA] = useState(null);
+  const [faultMessagesARA, setFaultMessagesARA] = useState([]);
   const [ebcLookupARA, setEbcLookupARA] = useState({});
+  const [avgMCARA, setAvgMCARA] = useState(null);
+  const [totalWeightARA, setTotalWeightARA] = useState('');
 
-
-  
-  
-
-//jnrkinson
-
-  const [chart1LabelsJNR, setchart1LabelsJNR] = useState([]);
-  const [chart2LabelsJNR, setchart2LabelsJNR] = useState([]);
+  // JNR states
+  const [dataTempsJNR, setDataTempsJNR] = useState([]);
+  const [dataTempsJNR2, setDataTempsJNR2] = useState([]);
+  const [charcodesJNR, setCharcodesJNR] = useState([]);
+  const [formTempsJNR, setFormTempsJNR] = useState([]);
+  const [dataBioMCJNR, setDataBioMCJNR] = useState(null);
+  const [chart1LabelsJNR, setChart1LabelsJNR] = useState([]);
+  const [chart2LabelsJNR, setChart2LabelsJNR] = useState([]);
   const [chart1DataJNR, setChart1DataJNR] = useState([]);
   const [chart2DataJNR, setChart2DataJNR] = useState([]);
-  const [dataTempsJNR, setdataTempsJNR] = useState([]);
-  const [dataTempsJNR2, setdataTempsJNR2] = useState([]);
-  const [charcodesJNR, setCharcodesJNR] = useState([]);
-  const [formTempsJNR, setformTempsJNR] = useState([]);
-  const [dataBioMCJNR, setdataBioMCJNR] = useState([]);
-  const [dailyHeatGenJNR, setdailyHeatGenJNR] = useState([]);
-  const [faultMessagesJNR, setfaultMessagesJNR] = useState([]);
-  const [ebcReasonsJNR, setEbcReasonsJNR] = useState([]);
-  const [ebcStatusJNR, setEbcStatusJNR] = useState([]);
-  const [ebcDateJNR, setEbcDateJNR] = useState([]);
-  const [ebcTimeJNR, setEbcTimeJNR] = useState([]);
-  const [ebcLookupJNR, setEbcLookupJNR] = useState([]);
-  const [totalWeightARA, setTotalWeightARA] = useState(null);
-  const [totalWeightJNR, setTotalWeightJNR] = useState(null);
-  const [avgMCARA, setAvgMCARA] = useState(null);
+  const [dailyHeatGenJNR, setDailyHeatGenJNR] = useState(null);
+  const [faultMessagesJNR, setFaultMessagesJNR] = useState([]);
+  const [ebcLookupJNR, setEbcLookupJNR] = useState({});
   const [avgMCJNR, setAvgMCJNR] = useState(null);
-
-
-
-  
+  const [totalWeightJNR, setTotalWeightJNR] = useState('');
 
   const fetchAndProcessData = async ({ mode, singleDate, fromDate, toDate }) => {
-    const inWindow = (d) => {
-      if (mode === 'single') return d === singleDate;
-      return d >= fromDate && d <= toDate;
-    };
+    const inWindow = d => (mode === 'single' ? d === singleDate : d >= fromDate && d <= toDate);
 
-    const [dataRes, charRes, formRes, EBCres] = await Promise.all([
-      fetch('http://localhost:5000/api/upload'),
-      fetch('http://localhost:5000/api/charcodes'),
+    // fetch raw temperature data uploads, form data, and EBC status docs
+    const [dataRes, formRes, ebcRes] = await Promise.all([
+      fetch('http://localhost:5000/api/tempData'),
       fetch('http://localhost:5000/api/forms'),
-      fetch('http://localhost:5000/api/ebcstatus'),
-    ]);
-    const [dataDocs, charDocs, formDocs, EBCdocs] = await Promise.all([
-      dataRes.json(),
-      charRes.json(),
-      formRes.json(),
-      EBCres.json(),
-    ]);
-    console.log('Fetched EBCdocs:', EBCdocs.map(doc => doc.site));
-
-
-//ARA Data Collection
-
-    const rawtempsARA = [], rawtempsARA2 = [], tempsARA = [], tempsARA2 = [];
-    const BMCARA = [], DHGARA = [], ftempsARA = [], faultsARA = [];
-
-    dataDocs.forEach(doc => {
-      (doc.data || []).forEach(row => {
-        const [datePart, timePart] = String(row.timestamp || '').split(' ');
-        if (!inWindow(datePart)) return;
-
-        const t1 = parseFloat(row['Reactor 1 Temperature (°C)']);
-        const t2 = parseFloat(row['Reactor 2 Temperature (°C)']);
-
-        if (!isNaN(t1)) {
-          rawtempsARA.push({ date: datePart, time: timePart, temp: t1 });
-          tempsARA.push(t1);
-        }
-        if (!isNaN(t2)) {
-          rawtempsARA2.push({ date: datePart, time: timePart, temp: t2 });
-          tempsARA2.push(t2);
-        }
-      });
-    });
-
-    if (mode === 'single') {
-      setchart1LabelsARA(rawtempsARA.map(d => d.time));
-      setchart1DataARA(rawtempsARA.map(d => d.temp));
-      setchart2LabelsARA(rawtempsARA2.map(d => d.time));
-      setchart2DataARA(rawtempsARA2.map(d => d.temp));
-    } else {
-      const dailyMap1 = {}, dailyMap2 = {};
-      rawtempsARA.forEach(({ date, temp }) => {
-        if (!dailyMap1[date]) dailyMap1[date] = [];
-        dailyMap1[date].push(temp);
-      });
-      rawtempsARA2.forEach(({ date, temp }) => {
-        if (!dailyMap2[date]) dailyMap2[date] = [];
-        dailyMap2[date].push(temp);
-      });
-
-      const dateKeys = Object.keys({ ...dailyMap1, ...dailyMap2 }).sort();
-
-      setchart1LabelsARA(dateKeys);
-      setchart1DataARA(dateKeys.map(d => {
-        const daytempsARA = dailyMap1[d] || [];
-        return daytempsARA.length ? daytempsARA.reduce((sum, t) => sum + t, 0) / daytempsARA.length : null;
-      }));
-
-      setchart2LabelsARA(dateKeys);
-      setchart2DataARA(dateKeys.map(d => {
-        const daytempsARA = dailyMap2[d] || [];
-        return daytempsARA.length ? daytempsARA.reduce((sum, t) => sum + t, 0) / daytempsARA.length : null;
-      }));
-    }
-
-    setdataTempsARA(tempsARA.length ? tempsARA.reduce((sum, t) => sum + t, 0) / tempsARA.length : null);
-    setdataTempsARA2(tempsARA2.length ? tempsARA2.reduce((sum, t) => sum + t, 0) / tempsARA2.length : null);
-
-    formDocs.forEach(doc => {
-      (doc.data || []).forEach(row => {
-        if (!inWindow(row.Date)) return;
-
-        const mc = parseFloat(row['Biomass Bin MC']);
-        if (!isNaN(mc)) BMCARA.push(mc);
-
-        const heat = parseFloat(row['P500 Heat Meter Total']);
-        if (!isNaN(heat)) DHGARA.push(heat);
-
-        const formTemp = row['Reactor 1 Temperature'];
-        if (formTemp) ftempsARA.push(formTemp);
-
-        const message = row['P500 Fault Message(s)'];
-        if (
-          message &&
-          !['', '0', 'N/A', 'None', 'n/a'].includes(message.trim())
-        ) {
-          faultsARA.push({ date: row.Date, message });
-        }
-      });
-    });
-
-    setdataBioMCARA(BMCARA.length ? BMCARA.reduce((sum, t) => sum + t, 0) / BMCARA.length : null);
-    setdailyHeatGenARA(DHGARA.length ? DHGARA.reduce((sum, t) => sum + t, 0) / DHGARA.length : null);
-    setformtempsARA(ftempsARA);
-    setfaultMessagesARA(faultsARA);
-
-    const fetchBags = async (siteCode) => {
-      const query = mode === 'single' ? `?from=${singleDate}` : `?from=${fromDate}&to=${toDate}`;
-      const res = await fetch(`http://localhost:5000/api/sites/${siteCode}/bags${query}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-
-      const json = await res.json();
-      return (json?.bags || []).map(bag => ({ ...bag, site: siteCode })); 
-    };
-
-
-    const [bagsARA, bagsJNR, ebcRes] = await Promise.all([
-      fetchBags('ARA'),
-      fetchBags('JNR'),
       fetch('http://localhost:5000/api/ebcstatus')
     ]);
+    const [{ uploads: dataDocs }, formDocs, ebcDocs] = await Promise.all([
+      dataRes.json(),
+      formRes.json(),
+      ebcRes.json()
+    ]);
 
-    const ebcDocs = await ebcRes.json();
+    // aggregate all temp rows across uploads
+    const allTempRows = dataDocs.flatMap(doc => doc.data || []);
 
-    const processEBC = (bags, site) => {
-      const siteEbcDoc = ebcDocs.find(doc => doc.site?.toLowerCase() === site.toLowerCase());
-      if (!siteEbcDoc) return {};
-
-      const bagIds = bags.map(b => String(b.charcode || '').trim());
-      const map = {};
-
-      siteEbcDoc.data.forEach(row => {
-        const id = String(row.charcodeId || '').trim();
-        if (!id || !bagIds.includes(id)) return;
-
-        if (!map[id]) map[id] = [];
-
-        map[id].push({
-          date: row['EBC Date'] || '',
-          time: row['EBC Time'] || '',
-          status: row['EBC Cert Status'] || '',
-          reason: row['EBC Status Reason'] || ''
-        });
-      });
-      return map;
-    };
-
-    setEbcLookupARA(processEBC(bagsARA, 'ARA'));
-    setEbcLookupJNR(processEBC(bagsJNR, 'JNR'));
-
-    const applyLatestEBCStatus = (bags, ebcLookup) => {
-      return bags.map(bag => {
-        const id = String(bag.charcode || '').trim();
-        const history = ebcLookup[id] || [];
-        const latest = history.length ? history[history.length - 1].status : null;
-        return { ...bag, ebcCertStatus: latest };
-      });
-    };
-
-    setCharcodesARA(applyLatestEBCStatus(bagsARA, processEBC(bagsARA, 'ARA')));
-    setCharcodesJNR(applyLatestEBCStatus(bagsJNR, processEBC(bagsJNR, 'JNR')));
-
-const sumWeightsInRange = (bags) => {
-  const matchingWeights = bags
-    .filter(bag => {
-      const bagDate = String(bag.bagging_date).split('T')[0];
-      return (mode === 'single' && bagDate === singleDate) ||
-             (mode === 'range' && bagDate >= fromDate && bagDate <= toDate);
-    })
-    .map(bag => Number(bag.weight))
-    .filter(v => !isNaN(v));
-
-  return matchingWeights.length
-    ? matchingWeights.reduce((sum, v) => sum + v, 0)
-    : '';
-};
-
-setTotalWeightARA(sumWeightsInRange(bagsARA));
-setTotalWeightJNR(sumWeightsInRange(bagsJNR));
-
-
-
-  // Compute average MC for ARA
-  const validMCsARA = (bagsARA || [])
-    .map(b => parseFloat(b.moisture_content))
-    .filter(v => !isNaN(v));
-  const avgMCARA = validMCsARA.length
-    ? validMCsARA.reduce((sum, v) => sum + v, 0) / validMCsARA.length
-    : null;
-  setAvgMCARA(avgMCARA);
-
-  // Compute average MC for JNR
-  const validMCsJNR = (bagsJNR || [])
-    .map(b => parseFloat(b.moisture_content))
-    .filter(v => !isNaN(v));
-  const avgMCJNR = validMCsJNR.length
-    ? validMCsJNR.reduce((sum, v) => sum + v, 0) / validMCsJNR.length
-    : null;
-  setAvgMCJNR(avgMCJNR);
-
-//JNR data collection
-
-    const rawTempsJNR = [], rawTempsJNR2 = [], tempsJNR = [], temps2JNR = [];
-    const BMCJNR = [], ftempsJNR = [], faultsJNR = [];
-  
-    dataDocs.forEach(doc => {
-      (doc.data || []).forEach(row => {
-        const [datePart, timePart] = String(row.timestamp || '').split(' ');
-        if (!inWindow(datePart)) return;
-  
-        const temp = parseFloat(row['T5 Pyrolysis Temperature (°C)']);
-        if (!isNaN(temp)) {
-          rawTempsJNR.push({ date: datePart, time: timePart, temp });
-          rawTempsJNR2.push({ date: datePart, time: timePart, temp });
-          tempsJNR.push(temp);
-          temps2JNR.push(temp);
-        }
-      });
+    // Process ARA temperatures
+    const rawTemps1ARA = [], rawTemps2ARA = [], tempsArr1 = [], tempsArr2 = [];
+    const rawTemps1JNR = [], rawTemps2JNR = [], tempsJrr1 = [], tempsJrr2 = [];
+    allTempRows.forEach(row => {
+      const [datePart, timePart] = String(row.timestamp || '').split(' ');
+      if (!inWindow(datePart)) return;
+      const t1 = parseFloat(row['Reactor 1 Temperature (°C)']);
+      const t2 = parseFloat(row['Reactor 2 Temperature (°C)']);
+      const t3 = parseFloat(row['T5 Pyrolysis Temperature (°C)']);
+      if (!isNaN(t1)) { rawTemps1ARA.push({ date: datePart, time: timePart, temp: t1 }); tempsArr1.push(t1); }
+      if (!isNaN(t2)) { rawTemps2ARA.push({ date: datePart, time: timePart, temp: t2 }); tempsArr2.push(t2); }
+      if (!isNaN(t3)) { rawTemps1JNR.push({ date: datePart, time: timePart, temp: t3 }); tempsJrr1.push(t3); }
+      if (!isNaN(t3)) { rawTemps2JNR.push({ date: datePart, time: timePart, temp: t3 }); tempsJrr2.push(t3); }
     });
-  
     if (mode === 'single') {
-      setchart1LabelsJNR(rawTempsJNR.map(d => d.time));
-      setChart1DataJNR(rawTempsJNR.map(d => d.temp));
-      setchart2LabelsJNR(rawTempsJNR2.map(d => d.time));
-      setChart2DataJNR(rawTempsJNR2.map(d => d.temp));
+      setChart1LabelsARA(rawTemps1ARA.map(d => d.time));
+      setChart1DataARA(rawTemps1ARA.map(d => d.temp));
+      setChart2LabelsARA(rawTemps2ARA.map(d => d.time));
+      setChart2DataARA(rawTemps2ARA.map(d => d.temp));
+      setChart1LabelsJNR(rawTemps1JNR.map(d => d.time));
+      setChart1DataJNR(rawTemps1JNR.map(d => d.temp));
+      setChart2LabelsJNR(rawTemps2JNR.map(d => d.time));
+      setChart2DataJNR(rawTemps2JNR.map(d => d.temp));
+
     } else {
-      const dailyMap1 = {}, dailyMap2 = {};
-      rawTempsJNR.forEach(({ date, temp }) => {
-        if (!dailyMap1[date]) dailyMap1[date] = [];
-        dailyMap1[date].push(temp);
-      });
-      rawTempsJNR2.forEach(({ date, temp }) => {
-        if (!dailyMap2[date]) dailyMap2[date] = [];
-        dailyMap2[date].push(temp);
-      });
-  
-      const dateKeys = Object.keys({ ...dailyMap1, ...dailyMap2 }).sort();
-  
-      setchart1LabelsJNR(dateKeys);
-      setChart1DataJNR(dateKeys.map(d => {
-        const dayTemps = dailyMap1[d] || [];
-        return dayTemps.length ? dayTemps.reduce((sum, t) => sum + t, 0) / dayTemps.length : null;
-      }));
-  
-      setchart2LabelsJNR(dateKeys);
-      setChart2DataJNR(dateKeys.map(d => {
-        const dayTemps = dailyMap2[d] || [];
-        return dayTemps.length ? dayTemps.reduce((sum, t) => sum + t, 0) / dayTemps.length : null;
-      }));
+      // ARA range…
+      const map1 = {}, map2 = {};
+      rawTemps1ARA.forEach(({ date, temp }) => (map1[date] ||= []).push(temp));
+      rawTemps2ARA.forEach(({ date, temp }) => (map2[date] ||= []).push(temp));
+      const datesA = Array.from(new Set([...Object.keys(map1), ...Object.keys(map2)])).sort();
+
+      setChart1LabelsARA(datesA);
+      setChart1DataARA(datesA.map(d => map1[d]?.length
+        ? map1[d].reduce((a,b)=>a+b,0)/map1[d].length
+        : null
+      ));
+      setChart2LabelsARA(datesA);
+      setChart2DataARA(datesA.map(d => map2[d]?.length
+        ? map2[d].reduce((a,b)=>a+b,0)/map2[d].length
+        : null
+      ));
+
+      // JNR range…
+      const mapJ1 = {}, mapJ2 = {};
+      rawTemps1JNR.forEach(({ date, temp }) => (mapJ1[date] ||= []).push(temp));
+      rawTemps2JNR.forEach(({ date, temp }) => (mapJ2[date] ||= []).push(temp));
+      const datesJ = Array.from(new Set([...Object.keys(mapJ1), ...Object.keys(mapJ2)])).sort();
+
+      setChart1LabelsJNR(datesJ);
+      setChart1DataJNR(datesJ.map(d => mapJ1[d]?.length
+        ? mapJ1[d].reduce((a,b)=>a+b,0)/mapJ1[d].length
+        : null
+      ));
+      setChart2LabelsJNR(datesJ);
+      setChart2DataJNR(datesJ.map(d => mapJ2[d]?.length
+        ? mapJ2[d].reduce((a,b)=>a+b,0)/mapJ2[d].length
+        : null
+      ));
     }
-  
-    setdataTempsJNR(tempsJNR.length ? tempsJNR.reduce((sum, t) => sum + t, 0) / tempsJNR.length : null);
-    setdataTempsJNR2(temps2JNR.length ? temps2JNR.reduce((sum, t) => sum + t, 0) / temps2JNR.length : null);
-  
-    const DHGrows = formDocs
-      .flatMap(doc => doc.data || [])
-      .filter(row => inWindow(row.Date))
-      .sort((a, b) => new Date(a.Date) - new Date(b.Date));
-  
-    if (DHGrows.length < 1) {
-      setdailyHeatGenJNR();
-    } else {
-      const parseMeterTotal = row => parseFloat(String(row['EOW | Biomass Dryer Heat Meter'] ?? '').replace(/,/g, '').trim());
-      const first = parseMeterTotal(DHGrows[0]);
-      const last = parseMeterTotal(DHGrows[DHGrows.length - 1]);
-      const days = (new Date(DHGrows[DHGrows.length - 1].Date) - new Date(DHGrows[0].Date)) / (1000 * 60 * 60 * 24);
-  
-      setdailyHeatGenJNR(!isNaN(first) && !isNaN(last) && days > 0 ? (last - first) / days : null);
-    }
-  
-    formDocs.forEach(doc => {
-      (doc.data || []).forEach(row => {
-        if (!inWindow(row.Date)) return;
-  
-        const mc = parseFloat(row['Biomass Bin MC']);
-        if (!isNaN(mc)) BMCJNR.push(mc);
-  
-        const temp = row['Reactor 1 Temperature'];
-        if (temp) ftempsJNR.push(temp);
-  
-        const message = row['C500-I Fault Messages'];
-        if (
-          message &&
-          ![ '', '0', 'N/A', 'None', 'No', 'no', 'NONE', 'clear', 'CLEAR', 'cleae', 'A/N', 'na', 'N?F', 'n/a' ]
-            .includes(message.trim())
-        ) {
-          faultsJNR.push({ date: row.Date, message });
-        }
-      });
+
+    // overall averages
+    setDataTempsARA(tempsArr1.length
+      ? tempsArr1.reduce((a,b)=>a+b,0)/tempsArr1.length
+      : null
+    );
+    setDataTempsARA2(tempsArr2.length
+      ? tempsArr2.reduce((a,b)=>a+b,0)/tempsArr2.length
+      : null
+    );
+
+    setDataTempsJNR(tempsJrr1.length
+      ? tempsJrr1.reduce((a,b)=>a+b,0)/tempsJrr1.length
+      : null
+    );
+    setDataTempsJNR2(tempsJrr2.length
+      ? tempsJrr2.reduce((a,b)=>a+b,0)/tempsJrr2.length
+      : null
+    );
+
+    // Process ARA forms
+    const mcArrARA = [], heatArrARA = [], faultsArrARA = [];
+    formDocs.forEach(doc => doc.data?.forEach(row => {
+      const [year, day, month] = String(row.Date || '').split('-');
+      const isoDate = `${year}-${month.padStart(2,'0')}-${day.padStart(2,'0')}`;
+      if (!inWindow(isoDate)) return;
+      const mc = parseFloat(row['Biomass Bin MC']); if (!isNaN(mc)) mcArrARA.push(mc);
+      const heat = parseFloat(row['P500 Heat Meter Total'] || 0); heatArrARA.push(heat);
+      const msg = row['P500 Fault Message(s)'];
+      if (msg && !['','0','N/A','None'].includes(msg.trim())) faultsArrARA.push({ date: row.Date, message: msg });
+    }));
+    setDataBioMCARA(mcArrARA.length ? mcArrARA.reduce((a,b)=>a+b,0)/mcArrARA.length : null);
+    setDailyHeatGenARA(heatArrARA.length ? heatArrARA.reduce((a,b)=>a+b,0)/heatArrARA.length : 0);
+    setFaultMessagesARA(faultsArrARA);
+
+    // Fetch bag lists for both sites
+    const fetchBags = async site => {
+      const query = mode==='single' ? `?from=${singleDate}` : `?from=${fromDate}&to=${toDate}`;
+      const res = await fetch(`http://localhost:5000/api/sites/${site}/bags${query}`, { headers:{ Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      const { bags=[] } = await res.json();
+      return bags.map(b=>({ ...b, site }));
+    };
+    const [bagsARA, bagsJNR] = await Promise.all([fetchBags('ARA'), fetchBags('JNR')]);
+
+    // Build EBC lookup
+    const buildLookup = (bags, siteKey) => {
+      const doc = ebcDocs.find(d => d.site.toLowerCase() === siteKey.toLowerCase());
+      if (!doc) return {};
+      const ids = bags.map(b => String(b.charcode||'').trim());
+      return doc.data.reduce((m,row) => {
+        const id = String(row.charcodeId||'').trim();
+        if (id && ids.includes(id)) m[id] = [...(m[id]||[]), { date: row['EBC Date'], time: row['EBC Time'], status: row['EBC Cert Status'], reason: row['EBC Status Reason'] }];
+        return m;
+      }, {});
+    };
+    const lookupARA = buildLookup(bagsARA, 'ARA');
+    const lookupJNR = buildLookup(bagsJNR, 'JNR');
+    setEbcLookupARA(lookupARA);
+    setEbcLookupJNR(lookupJNR);
+
+    // Attach latest status
+    const attachLatest = (bags, lookup) => bags.map(b => {
+      const hist = lookup[String(b.charcode||'').trim()]||[];
+      return { ...b, ebcCertStatus: hist.length ? hist[hist.length-1].status : null };
     });
-  
-    setdataBioMCJNR(BMCJNR.length ? BMCJNR.reduce((sum, t) => sum + t, 0) / BMCJNR.length : null);
-    setformTempsJNR(ftempsJNR);
-    setfaultMessagesJNR(faultsJNR);
+    setCharcodesARA(attachLatest(bagsARA, lookupARA));
+    setCharcodesJNR(attachLatest(bagsJNR, lookupJNR));
+
+    // Compute weights
+    const sumWeight = bags => {
+      const vals = bags.filter(b => {
+        const d = String(b.bagging_date||'').split('T')[0];
+        return mode==='single' ? d===singleDate : d>=fromDate && d<=toDate;
+      }).map(b=>Number(b.weight)).filter(v=>!isNaN(v));
+      return vals.length ? vals.reduce((a,b)=>a+b,0) : '';
+    };
+    setTotalWeightARA(sumWeight(bagsARA));
+    setTotalWeightJNR(sumWeight(bagsJNR));
+
+    // Compute average moisture content
+    const avgMC = bags => {
+      const arr = bags.map(b=>parseFloat(b.moisture_content)).filter(v=>!isNaN(v));
+      return arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : null;
+    };
+    setAvgMCARA(avgMC(bagsARA));
+    setAvgMCJNR(avgMC(bagsJNR));
   };
+
   return (
     <DataAnalysisContext.Provider value={{
-      dataTempsARA, setdataTempsARA,
-      dataTempsARA2, setdataTempsARA2,
-      charcodesARA, setCharcodesARA,
-      formtempsARA, setformtempsARA,
-      dataBioMCARA, setdataBioMCARA,
-      chart1LabelsARA, setchart1LabelsARA,
-      chart2LabelsARA, setchart2LabelsARA,
-      chart1DataARA, setchart1DataARA,
-      chart2DataARA, setchart2DataARA,
-      dailyHeatGenARA, setdailyHeatGenARA,
-      faultMessagesARA, setfaultMessagesARA,
-      ebcReasonsARA, setEbcReasonsARA,
-      ebcStatusARA, setEbcStatusARA,
-      ebcDateARA, setEbcDateARA,
-      ebcTimeARA, setEbcTimeARA,
-      ebcLookupARA,  avgMCARA,
-      totalWeightARA,
-
-      chart1LabelsJNR, setchart1LabelsJNR,
-      chart2LabelsJNR, setchart2LabelsJNR,
-      chart1DataJNR, setChart1DataJNR,
-      chart2DataJNR, setChart2DataJNR,
-      dataTempsJNR, setdataTempsJNR,
-      dataTempsJNR2, setdataTempsJNR2,
-      charcodesJNR, setCharcodesJNR,
-      formTempsJNR, setformTempsJNR,
-      dataBioMCJNR, setdataBioMCJNR,
-      dailyHeatGenJNR, setdailyHeatGenJNR,
-      faultMessagesJNR, setfaultMessagesJNR,
-      ebcReasonsJNR, setEbcReasonsJNR,
-      ebcStatusJNR, setEbcStatusJNR,
-      ebcDateJNR, setEbcDateJNR,
-      ebcTimeJNR, setEbcTimeJNR,
-      ebcLookupJNR, avgMCJNR, 
-      totalWeightJNR,
+      dataTempsARA, dataTempsARA2, charcodesARA, formTempsARA, dataBioMCARA,
+      chart1LabelsARA, chart1DataARA, chart2LabelsARA, chart2DataARA,
+      dailyHeatGenARA, faultMessagesARA, ebcLookupARA, avgMCARA, totalWeightARA,
+      dataTempsJNR, dataTempsJNR2, charcodesJNR, formTempsJNR, dataBioMCJNR,
+      chart1LabelsJNR, chart1DataJNR, chart2LabelsJNR, chart2DataJNR,
+      dailyHeatGenJNR, faultMessagesJNR, ebcLookupJNR, avgMCJNR, totalWeightJNR,
       fetchAndProcessData
     }}>
       {children}
     </DataAnalysisContext.Provider>
   );
 };
+
+export default DataAnalysisContext;

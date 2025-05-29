@@ -9,7 +9,8 @@ import EbcStatusEditor from './EbcStatusEditorARA';
 import EbcStatusList from './EBCStatusList';
 
 const CharcodeOverlayCard = ({ parsed, onClose }) => {
-  const producedDate = String(parsed.bagging_date || parsed.Produced || '');
+  const bagDate = String((parsed.bagging_date).split('T')[0]|| parsed.Produced || '');
+  const producedDate = bagDate
   const site = (parsed.site || '').toLowerCase(); // Note: `_site` handled outside
   const isARA = site === 'ARA';
 

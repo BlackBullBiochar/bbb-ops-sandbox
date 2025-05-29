@@ -24,7 +24,7 @@ const UploadForm = () => {
     // Point at the correct endpoint based on uploadType
     let uploadEndpoint = '';
     if (uploadType === 'dat') {
-      uploadEndpoint = 'http://localhost:5000/api/upload';
+      uploadEndpoint = 'http://localhost:5000/api/tempData';
     } else if (uploadType === 'char') {
       uploadEndpoint = 'http://localhost:5000/api/charcodes';
     } else if (uploadType === 'for') {
