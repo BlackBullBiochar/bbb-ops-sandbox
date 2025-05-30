@@ -42,13 +42,21 @@ export const DataAnalysisProvider = ({ children }) => {
     const [dataRes, formRes, ebcRes] = await Promise.all([
       fetch('http://localhost:5000/api/tempData'),
       fetch('http://localhost:5000/api/forms'),
-      fetch('http://localhost:5000/api/ebcstatus')
+      fetch('http://localhost:5000/api/ebcstatus'),
     ]);
-    const [{ uploads: dataDocs }, formDocs, ebcDocs] = await Promise.all([
+
+    const [dataJson, formJson, ebcJson] = await Promise.all([
       dataRes.json(),
       formRes.json(),
       ebcRes.json()
     ]);
+
+    // tempData is wrapped under "uploads"
+    const dataDocs = dataJson.uploads || dataJson.data || dataJson;
+    // forms under "data"
+    const formDocs = formJson.data    || formJson.forms || formJson;
+    // ebcstatus comes back as a raw array; if your controller returns { data: [...] }, pull that instead
+    const  ebcDocs = ebcJson.sites;
 
     // aggregate all temp rows across uploads
     const allTempRows = dataDocs.flatMap(doc => doc.data || []);
@@ -167,21 +175,29 @@ export const DataAnalysisProvider = ({ children }) => {
     };
     const [bagsARA, bagsJNR] = await Promise.all([fetchBags('ARA'), fetchBags('JNR')]);
 
-    // Build EBC lookup
-    const buildLookup = (bags, siteKey) => {
-      const doc = ebcDocs.find(d => d.site.toLowerCase() === siteKey.toLowerCase());
+    function buildLookup(bags, siteCode) {
+      const doc = ebcDocs.find(d => d.site.toLowerCase() === siteCode.toLowerCase());
       if (!doc) return {};
       const ids = bags.map(b => String(b.charcode||'').trim());
-      return doc.data.reduce((m,row) => {
+      return doc.data.reduce((map,row) => {
         const id = String(row.charcodeId||'').trim();
-        if (id && ids.includes(id)) m[id] = [...(m[id]||[]), { date: row['EBC Date'], time: row['EBC Time'], status: row['EBC Cert Status'], reason: row['EBC Status Reason'] }];
-        return m;
+        if (!id || !ids.includes(id)) return map;
+        map[id] = [...(map[id]||[]), {
+          date:   row['EBC Date'],
+          time:   row['EBC Time'],
+          status: row['EBC Cert Status'],
+          reason: row['EBC Status Reason']
+        }];
+        return map;
       }, {});
-    };
+    }
+
     const lookupARA = buildLookup(bagsARA, 'ARA');
     const lookupJNR = buildLookup(bagsJNR, 'JNR');
+
     setEbcLookupARA(lookupARA);
     setEbcLookupJNR(lookupJNR);
+
 
     // Attach latest status
     const attachLatest = (bags, lookup) => bags.map(b => {

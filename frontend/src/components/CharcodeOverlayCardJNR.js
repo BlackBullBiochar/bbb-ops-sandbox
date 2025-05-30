@@ -38,7 +38,7 @@ const CharcodeOverlayCardJNR = ({ parsed, onClose }) => {
           <button className={styles.closeBtn} onClick={onClose}>×</button>
 
 
-           <Module name="Charcode Info" spanColumn={4} spanRow={2}>
+           <Module name="Charcode Info" spanColumn={4} spanRow={3}>
             {[
                 { label: 'Charcode', value: parsed.charcode},
                 {label: 'status', value: parsed.status},
@@ -67,7 +67,7 @@ const CharcodeOverlayCardJNR = ({ parsed, onClose }) => {
             <Figure title="T5 Avg. Temp 1" value={dataTemps} />
           </Module>
 
-          <Module name="EBC Cert. Reason" spanColumn={16} spanRow={1}>
+          <Module name="EBC Cert. Reason" spanColumn={16} spanRow={2}>
             <EbcStatusList ebcEntries={ebcEntries} />
           </Module>
 
@@ -79,7 +79,7 @@ const CharcodeOverlayCardJNR = ({ parsed, onClose }) => {
             <Figure value={dataBioMC} />
           </Module>
 
-          <Module name="Fault Messages" spanColumn={12} spanRow={1}>
+          <Module name="Fault Messages" spanColumn={16} spanRow={1}>
             <FaultMessages messages={faultMessages} />
           </Module>
 
@@ -117,7 +117,7 @@ const CharcodeOverlayCardJNR = ({ parsed, onClose }) => {
             />
           </Module>
 
-          <Module name="EBC Status" spanColumn={24} spanRow={2} marginBottom="1rem">
+          <Module name="EBC Status" spanColumn={24} spanRow={3} marginBottom="1rem">
             <EbcStatusEditor
               charcodeId={charcodeId}
               currentStatus={parsed['EBC Cert Status']}

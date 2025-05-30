@@ -40,7 +40,7 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
         <div className={styles.contentGrid}>
           <button className={styles.closeBtn} onClick={onClose}>×</button>
 
-           <Module name="Charcode Info" spanColumn={4} spanRow={2}>
+           <Module name="Charcode Info" spanColumn={4} spanRow={3}>
             {[
                 { label: 'Charcode', value: parsed.charcode},
                 {label: 'status', value: parsed.status},
@@ -119,7 +119,7 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
             />
           </Module>
 
-          <Module name="EBC Status" spanColumn={24} spanRow={2} marginBottom="1rem">
+          <Module name="EBC Status" spanColumn={24} spanRow={3} marginBottom="1rem">
             <EbcStatusEditor
               charcodeId={charcodeId}
               currentStatus={parsed['EBC Cert Status']}

@@ -294,4 +294,14 @@ ebcStatusController.appendStatus = async (req, res) => {
   }
 };
 
+ebcStatusController.listStatuses = async (req, res) => {
+  try {
+    const docs = await db.EbcStatus.find().lean();
+    return successResponse(res, docs);
+  } catch (err) {
+    console.error('❌ Failed to fetch EBC statuses:', err);
+    return errorResponseHandler(err, res);
+  }
+};
+
 module.exports = ebcStatusController;
