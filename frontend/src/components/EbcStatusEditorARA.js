@@ -8,13 +8,14 @@ const EbcStatusEditor = ({ charcodeId, currentStatus, currentReason, onSaved }) 
   const [reason, setReason] = useState(currentReason || '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
-  const site = ('ara');
+    const site = ('ara');
 
   const handleSave = async () => {
     setSaving(true);
     setError(null);
 
     try {
+      // Step 2: PATCH ebcstatus history
       const res2 = await fetch('http://localhost:5000/api/ebcstatus/append', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -24,7 +25,7 @@ const EbcStatusEditor = ({ charcodeId, currentStatus, currentReason, onSaved }) 
       const data2 = await res2.json();
       if (!res2.ok) throw new Error(data2.error || 'EBC history append failed');
 
-      if (onSaved) onSaved(data.updatedRow);
+      if (onSaved) onSaved(data2.updatedRow);
     } catch (err) {
       console.error('❌ Save error:', err.message);
       setError(err.message);
@@ -37,7 +38,7 @@ const EbcStatusEditor = ({ charcodeId, currentStatus, currentReason, onSaved }) 
     <div className={styles.editor}>
       <label>
         Status:
-        <select value={status} placeholder="Select Status" onChange={(e) => setStatus(e.target.value)}>
+        <select value={status} onChange={(e) => setStatus(e.target.value)}>
           {statusOptions.map(opt => (
             <option key={opt} value={opt}>{opt}</option>
           ))}
