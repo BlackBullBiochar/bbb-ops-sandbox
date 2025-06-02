@@ -5,6 +5,7 @@ const FaultMessages = ({ messages = [] }) => {
   return (
     <div>
       {messages.length > 0 ? (
+      <div className={styles.tableWrapper}>
         <table className={styles.table}>
           <thead>
             <tr>
@@ -21,6 +22,7 @@ const FaultMessages = ({ messages = [] }) => {
             ))}
           </tbody>
         </table>
+        </div>
       ) : (
         <div className={styles.empty}>No Fault Messages</div>
       )}

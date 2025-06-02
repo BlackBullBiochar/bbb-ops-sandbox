@@ -11,15 +11,23 @@ const CharcodesAlertBoard = ({ charcodes = [] }) => {
     'flagged',
     'pending',
     'postApproved',
-    'rejected'
+    'rejected',
   ]);
 
   const handleToggleGroup = (group) => {
     setVisibleGroups((prev) =>
-      prev.includes(group) ? prev.filter(g => g !== group) : [...prev, group]
+      prev.includes(group) ? prev.filter((g) => g !== group) : [...prev, group]
     );
   };
 
+  // 1) Compute expandedCharcode, mode & date at the top
+  const expandedCharcode = expanded !== null ? charcodes[expanded] : null;
+  const mode = expanded !== null ? 'single' : null;
+  const date = expandedCharcode
+    ? String(expandedCharcode.bagging_date).split('T')[0]
+    : null;
+
+  // 2) Group the charcodes by status
   const grouped = {
     approved: [],
     flagged: [],
@@ -32,12 +40,14 @@ const CharcodesAlertBoard = ({ charcodes = [] }) => {
     const status = c.ebcCertStatus?.toLowerCase();
     if (status === 'approved') grouped.approved.push({ ...c, _index: idx });
     else if (status === 'flagged') grouped.flagged.push({ ...c, _index: idx });
-    else if (status === 'post-approved') grouped.postApproved.push({ ...c, _index: idx });
+    else if (status === 'post-approved')
+      grouped.postApproved.push({ ...c, _index: idx });
     else if (status === 'rejected') grouped.rejected.push({ ...c, _index: idx });
     else grouped.pending.push({ ...c, _index: idx });
   });
 
-  const renderSection = (key, label, cards) => (
+  // 3) Render each section—preview cards simply call setExpanded(...)
+  const renderSection = (key, label, cards) =>
     visibleGroups.includes(key) && (
       <div className={styles.section} key={key}>
         <h3>{label}</h3>
@@ -51,10 +61,8 @@ const CharcodesAlertBoard = ({ charcodes = [] }) => {
           ))}
         </div>
       </div>
-    )
-  );
+    );
 
-  const expandedCharcode = charcodes[expanded];
   const site = expandedCharcode?.site?.toLowerCase();
 
   return (
@@ -79,6 +87,8 @@ const CharcodesAlertBoard = ({ charcodes = [] }) => {
 
       {expanded !== null && site === 'ara' && (
         <CharcodeOverlayCard
+          mode={mode}
+          date={date}
           parsed={expandedCharcode}
           onClose={() => setExpanded(null)}
           site={site}
@@ -86,6 +96,8 @@ const CharcodesAlertBoard = ({ charcodes = [] }) => {
       )}
       {expanded !== null && site === 'jnr' && (
         <CharcodeOverlayCardJNR
+          mode={mode}
+          date={date}
           parsed={expandedCharcode}
           onClose={() => setExpanded(null)}
           site={site}
@@ -98,16 +110,35 @@ const CharcodesAlertBoard = ({ charcodes = [] }) => {
 const CharcodePreviewCard = ({ parsed, onClick }) => (
   <div
     className={`${styles.card} ${
-      parsed.ebcCertStatus === 'Approved' ? styles.approved :
-      parsed.ebcCertStatus === 'Flagged' ? styles.flagged :
-      parsed.ebcCertStatus === 'Pending' ? styles.pending :
-      parsed.ebcCertStatus === 'Post-Approved' ? styles.postApproved :
-      parsed.ebcCertStatus === 'Rejected' ? styles.rejected : ''
+      parsed.ebcCertStatus === 'Approved'
+        ? styles.approved
+        : parsed.ebcCertStatus === 'Flagged'
+        ? styles.flagged
+        : parsed.ebcCertStatus === 'Pending'
+        ? styles.pending
+        : parsed.ebcCertStatus === 'Post-Approved'
+        ? styles.postApproved
+        : parsed.ebcCertStatus === 'Rejected'
+        ? styles.rejected
+        : ''
     }`}
     onClick={onClick}
   >
-    <div><strong>Produced:</strong> {parsed.Produced}</div>
-    <div><strong>ID:</strong> {parsed.ID || parsed['Charcode ID'] || parsed.charcode || 'N/A'}</div>
+    <div>
+      <strong>Produced: </strong>
+      {parsed.bagging_date ? (
+        new Date(parsed.bagging_date).toLocaleDateString('en-GB', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        })
+      ) : (
+        '—'
+      )}
+    </div>
+    <div>
+      <strong>ID:</strong> {parsed.ID || parsed['Charcode ID'] || parsed.charcode || 'N/A'}
+    </div>
   </div>
 );
 

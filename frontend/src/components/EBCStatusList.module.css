@@ -1,12 +1,8 @@
-/* wrap the table in a scrollable viewport */
 .tableWrapper {
-  max-height: 150px;    /* adjust as needed */
+  max-height: 150px;
   overflow-y: auto;
-  /* if you want horizontal scroll too: */
-  /* overflow-x: auto; */
 }
 
-/* existing styles */
 .table {
   width: 100%;
   table-layout: fixed;
