@@ -1,0 +1,105 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 10, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #444;
+  background-color: #7777774f;
+  border: 1px solid black;
+}
+
+.closeBtn:hover {
+  color: black;
+}
+
+.row {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.graphWrap {
+  margin-top: 2rem;
+}
+
+.noData {
+  margin-top: 2rem;
+  font-style: italic;
+  color: #777777;
+  text-align: center;
+}
+
+.overlayCard {
+  width: 130vh;
+  height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(360deg, #FFFFFF 0%, #FFFFFF 0.01%, #F8F8F8 39.21%, #FFFFFF 83.5%, #FFFFFF 102.14%);
+  box-shadow: 0.2rem 0.2rem 0.5rem rgba(0, 0, 0, 0.1), 0px 4px 0.6rem rgba(0, 0, 0, 0.12);
+  border-radius: 1.3rem;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 1rem;
+  font-family: "Roboto";
+  font-size: 1.4rem;
+  color: var(--coalVeryLight);
+  scroll-padding: 0.5rem;
+  padding-right: 0rem;
+  scrollbar-color: rgba(255, 255, 255, 0);
+}
+
+.contentGrid {
+  padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+  width: calc(100% - 1rem);
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  grid-auto-rows: minmax(90px, auto);
+  grid-gap: 1.2rem !important;
+  margin-bottom: 1rem;
+  overflow: visible;
+  height: 100%;
+  }
+
+  .card {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  background: #f9f9f9;
+  border: 2px solid #cccccc00;
+  }
+
+   .approved {
+    border-color: var(--leaf);
+  }
+  
+  .flagged {
+    border: dashed 2px var(--error);
+  }
+  
+  .pending {
+    border-color: rgb(255, 219, 37);
+  }
+  
+  .postApproved {
+    border: dashed 2px var(--leaf);
+  }
+
+  .rejected {
+    border-color: var(--error);
+  }

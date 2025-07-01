@@ -1,0 +1,39 @@
+.Figure{
+    margin: 0;
+    padding-top: 0.5vw;
+    font-family: "TruenoRg";
+    font-size: 1.5vw;
+    font-weight: normal;
+    color: var(--coalLight);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .Figure2{
+    margin: 0;
+    padding-top: 1.5vw;
+    font-family: "TruenoRg";
+    font-size: 1.5vw;
+    font-weight: normal;
+    color: var(--coalLight);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .value {
+  color: var(--leafDark);   /* e.g. red for the number */
+  font-weight: bold;
+  padding-left: 0.3rem
+}
+
+.unit {
+  color: var(--coalLight);   /* e.g. blue for the unit */
+  font-size: 0.8em; /* make the unit slightly smaller if you like */
+  padding-left: 0.8rem;
+}

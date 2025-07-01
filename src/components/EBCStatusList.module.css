@@ -1,0 +1,37 @@
+.tableWrapper {
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-family: "RobotoCondensed";
+  font-size: 1.1rem;
+}
+
+.table th {
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 1px solid #ccc;
+}
+
+.table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+.empty {
+  opacity: 0.7;
+  font-size: 1.2rem;
+  font-family: "RobotoCondensed";
+}
+
+.ContainerSmall {
+  height: 1.4rem;
+  padding: 0.1rem;
+  font-size: 0.1rem !important;
+  line-height: 1.5rem;
+}

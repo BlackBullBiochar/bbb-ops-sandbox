@@ -1,0 +1,158 @@
+.ButtonContainer{
+    margin: 10px 0px 10px 0px;
+    height: 2rem;
+    width: 100%;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box
+}
+
+.Container {
+    width: 100%;
+    height: 3.6rem;
+    border-radius: 0.7rem;
+    color: white;
+    font-family: "RobotoCondensedBold";
+    font-size: 1.7rem;
+    letter-spacing: -0.02rem;
+    user-select: none;
+    transition: all ease 0.1s;
+      display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box
+}
+
+.Container:hover{
+    width: 102%;
+    height: 3.7rem;
+    cursor: pointer;
+    font-size: 1.72rem;
+}
+
+.Container:active{
+    width: 98%;
+    height: 3.7rem;
+    cursor: pointer;
+    font-size: 1.7rem;
+    opacity: 0.6;
+    margin-bottom: -0.2rem;
+}
+
+.ContainerSmall {
+  height: 2rem;
+  padding: 0.1rem;
+  font-size: 1rem; 
+  line-height: 1.5rem;
+  width: 100%;  
+  border-radius: 0.5rem; 
+  color: white; 
+  font-family: "RobotoCondensedBold"; 
+  letter-spacing: -0.02rem; 
+  user-select: none; 
+  transition: all ease 0.1s; 
+   display: flex; 
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box 
+}
+
+.ContainerDisabled {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+}
+
+.ContainerLeaf {
+    background: var(--leafLight);
+    box-shadow: 0px 3px 2px rgba(0, 0, 0, 0.06), 0px 2px 5px rgba(0, 0, 0, 0.16), inset 0px 0px 18px #149100;
+      display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box
+}
+
+.ContainerLeaf:hover {
+    background: var(--leafLight);
+    box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.05), 0px 3px 12px rgba(0, 0, 0, 0.12), inset 0px 0px 18px #149100;
+}
+
+.ContainerLeaf:active {
+    background: var(--leafLight);
+    box-shadow: inset 0px 0px 18px #149100;
+}
+
+.ContainerGrass {
+    background: var(--grass);
+    box-shadow: 0px 3px 2px rgba(0, 0, 0, 0.06), 0px 2px 5px rgba(0, 0, 0, 0.16), inset 0px 0px 18px rgba(52, 182, 31, 0.51);
+      display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box
+}
+
+.ContainerGrass:hover{
+    box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.05), 0px 3px 12px rgba(0, 0, 0, 0.12), inset 0px 0px 18px rgba(52, 182, 31, 0.61);
+}
+
+.ContainerGrass:active{
+    box-shadow: inset 0px 0px 18px rgba(52, 182, 31, 0.61);
+}
+
+
+
+
+.ContainerCoal {
+    background: var(--coalLight);
+    box-shadow: 0px 3px 2px rgba(0, 0, 0, 0.06), 0px 2px 5px rgba(0, 0, 0, 0.16), inset 0px 0px 18px rgba(0, 0, 0, 0.51);;
+      display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box
+}
+
+.ContainerCoal:hover {
+    background: var(--coalLight);
+    box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.05), 0px 3px 12px rgba(0, 0, 0, 0.12), inset 0px 0px 18px rgba(0, 0, 0, 0.51);;
+}
+
+.ContainerCoal:active {
+    background: var(--coalLight);
+    box-shadow: inset 0px 0px 18px rgba(0, 0, 0, 0.51);;
+}
+
+
+.ContainerError {
+    background: var(--errorLight);
+    box-shadow: 0px 3px 2px rgba(0, 0, 0, 0.06), 0px 2px 5px rgba(0, 0, 0, 0.16), inset 0px 0px 18px #CC2543;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box
+}
+
+.ContainerError:hover {
+    box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.05), 0px 3px 12px rgba(0, 0, 0, 0.12), inset 0px 0px 18px #CC2543;
+}
+
+.ContainerError:active {
+    box-shadow: inset 0px 0px 18px #CC2543;
+}
+
+.buttonSelected {
+    background: white;
+    box-shadow: none;
+    color: var(--leaf);
+    border: 2px solid var(--leaf);
+      display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box
+}
+
+.buttonSelected:hover {
+    background: white;
+    box-shadow: none;
+    color: var(--leaf);
+    border: 2px solid var(--leaf);
+}

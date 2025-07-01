@@ -1,0 +1,19 @@
+.pieChartContainer {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+.pieChartContainerCanvas {
+  display: block;
+  width: 100%;
+  max-width: 200px;
+}
+
+.bbbLogo {
+    margin-top: 8%;
+    max-width: 100%;
+}

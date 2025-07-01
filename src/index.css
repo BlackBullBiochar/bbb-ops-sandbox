@@ -1,0 +1,201 @@
+body {
+  margin: 0;
+  font-family: "Roboto";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root { /*color variables*/
+  font-size: 80%;
+  --leafDark: #278817;
+  --leaf: #34B61f;
+  --leafLight: #67C857;
+  --leafVeryLight: #99D88F;
+
+  --grassDark: #9BC500;
+  --grass: #B0E000;
+  --grassLight: #C5E842;
+  --grassVeryLight: #DBF18C;
+
+  --coalDark: #0D0D0D;
+  --coal: #323232;
+  --coalLight: #575757;
+  --coalVeryLight: #7a7a7a;
+
+  --greyDark: #989898;
+  --grey: #c1c1c1;
+  --greyLight: #dedede;
+  --greyVeryLight: #ececec;
+
+  --errorDark: #B33D23;
+  --error: #F06F53;
+  --errorLight: #F27D63;
+  --errorVeryLight: #F27D63;
+}
+
+a {
+  font-weight: 500;
+  color: #ffffff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #ffffff;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6rem 1.2rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+  font-family: "RobotoCondensedBold" !important;
+  background-color: #1eff00;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #15ff00;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #ffffff;
+  }
+  button {
+    background-color: var(--leaf);
+  }
+}
+
+
+@font-face {
+  font-family: 'FontAwesomeSolid';
+  src: /*local('FontAwesomeSolid'), */url(./components/fonts/FontAwesome/fontAwesome5ProSolid900.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'FontAwesome';
+  src: /*local('FontAwesome'), */url(./components/fonts/FontAwesome/fontAwesome5ProRegular400.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'FontAwesomeLight';
+  src: /*local('FontAwesomeLight'), */url(./components/fonts/FontAwesome/fontAwesome5ProLight300.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'FontAwesome6';
+  src: /*local('FontAwesome6'), */url(./components/fonts/FontAwesome/fontAwesome6FreeRegular400.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'FontAwesome6Solid';
+  src: /*local('FontAwesome6Solid'), */url(./components/fonts/FontAwesome/fontAwesome6FreeSolid900.otf) format('opentype');
+}
+
+
+@font-face {
+  font-family: 'TruenoBd';
+  src: /*local('Trueno'), */url(./components/fonts/Trueno/TruenoBd.woff) format('woff');
+}
+/* 
+@font-face {
+  font-family: 'TruenoBd';
+  src: /*local('Trueno'), url(./fonts/Trueno/TruenoBd.ttf) format('woff');
+} 
+*/
+
+@font-face {
+  font-family: 'TruenoSBd';
+  src: /*local('Trueno'), */url(./components/fonts/Trueno/TruenoSBd.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'TruenoBlk';
+  src: /*local('Trueno'), */url(./components/fonts/Trueno/TruenoBlk.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'TruenoRg';
+  src: /*local('Trueno'), */url(./components/fonts/Trueno/TruenoRg.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: /*local('RobotoRegular'),*/ url(./components/fonts/Roboto/Roboto-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'RobotoMed';
+  src: /*local('RobotoMedium'), */url(./components/fonts/Roboto/Roboto-Medium.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'RobotoCondensed';
+  src: /*local('RobotoCondensed'), */url(./components/fonts/RobotoCondensed/RobotoCondensed-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'RobotoCondensedMed';
+  src: /*local('RobotoCondensedMed'), */url(./components/components/fonts/RobotoCondensed/RobotoCondensed-Medium.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'RobotoCondensedBold';
+  src: /*local('RobotoCondensed'), */url(./components/fonts/RobotoCondensed/RobotoCondensed-Bold.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'FontAwesomeSolid';
+  src: /*local('FontAwesomeSolid'), */url(./components/fonts/FontAwesome/fontAwesome5ProSolid900.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'FontAwesome';
+  src: /*local('FontAwesome'), */url(./components/fonts/FontAwesome/fontAwesome5ProRegular400.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'FontAwesomeLight';
+  src: /*local('FontAwesomeLight'), */url(./components/fonts/FontAwesome/fontAwesome5ProLight300.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'FontAwesome6';
+  src: /*local('FontAwesome6'), */url(./components/fonts/FontAwesome/fontAwesome6FreeRegular400.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'FontAwesome6Solid';
+  src: /*local('FontAwesome6Solid'), */url(./components/fonts/FontAwesome/fontAwesome6FreeSolid900.otf) format('opentype');
+}
+
+.contentGrid {
+  padding: 0.5rem 2rem 2rem 2rem;
+  width: 100%;
+  height: fit-content;
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  grid-auto-rows: minmax(100px, auto);
+  grid-gap: 1.2rem;
+}
