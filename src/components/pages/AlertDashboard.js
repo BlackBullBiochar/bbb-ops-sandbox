@@ -77,7 +77,7 @@ const AlertDashboard = () => {
 
   return (
     <div className={styles.mainWhiteContainer}>
-      <ScreenHeader name={"Charcode Invtentory"} />
+      <ScreenHeader name={"Charcode Inventory"} />
         <ModuleMain>
           <div>
           <div className={styles.topRow}>
