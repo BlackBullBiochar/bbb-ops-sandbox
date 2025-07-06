@@ -7,10 +7,10 @@ const getAPI = () => {
   const isStaging = window.location.href.includes("staging");
 
   if (isLocalhost) return "http://localhost:4000";
-  if (isNgrok) return "https://98bb-2a01-4b00-ab31-d800-9144-c3df-b05f-a996.ngrok-free.app";
-  if (isStaging) return "https://98bb-2a01-4b00-ab31-d800-9144-c3df-b05f-a996.ngrok-free.app";
+  if (isNgrok) return "https://5293-2a01-4b00-ab31-d800-9144-c3df-b05f-a996.ngrok-free.app";
+  if (isStaging) return "https://5293-2a01-4b00-ab31-d800-9144-c3df-b05f-a996.ngrok-free.app";
 
-  return "https://98bb-2a01-4b00-ab31-d800-9144-c3df-b05f-a996.ngrok-free.app";
+  return "https://5293-2a01-4b00-ab31-d800-9144-c3df-b05f-a996.ngrok-free.app";
 };
 
 export const API = getAPI();
