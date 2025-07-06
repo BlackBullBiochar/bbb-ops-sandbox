@@ -10,7 +10,7 @@ const getAPI = () => {
   if (isNgrok) return "https://98bb-2a01-4b00-ab31-d800-9144-c3df-b05f-a996.ngrok-free.app";
   if (isStaging) return "https://98bb-2a01-4b00-ab31-d800-9144-c3df-b05f-a996.ngrok-free.app";
 
-  return import.meta.env.VITE_API_URL || "https://98bb-2a01-4b00-ab31-d800-9144-c3df-b05f-a996.ngrok-free.app"; //test as no production server yet
+  return "https://98bb-2a01-4b00-ab31-d800-9144-c3df-b05f-a996.ngrok-free.app";
 };
 
 export const API = getAPI();
