@@ -1,6 +1,7 @@
 // LoginScreen.js
 import {Navigate, useNavigate } from "react-router-dom";
 import { useState, useCallback, useContext, useEffect } from "react";
+import { API } from '../../config/api';
 
 import { UserContext } from "../../UserContext.js";
 import helpers from "../../helpers.js";
@@ -49,18 +50,11 @@ function LoginScreen(props) {
       return;
     }
 
-    // 2) Figure out backEndURL before making request
-    const backEndURL =
-      window.location.href.includes("ngrok")
-        ? "https://bbb-staging-ae2bb81703e0.herokuapp.com"
-        : process.env.NODE_ENV === "development"
-        ? "http://localhost:4000"
-        : process.env.REACT_APP_API_BASE_URL;
-
+    // 2) Figure out API before making request
     // 3) Send login request
     let response;
     try {
-      response = await fetch(`${backEndURL}/login`, {
+      response = await fetch(`${API}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -90,7 +84,7 @@ function LoginScreen(props) {
 
     // 4) Build a fresh userObj (overwrite any existing fields)
     const userObj = {
-      backEndURL,       // needed for subsequent fetches
+      API,       // needed for subsequent fetches
       token: jsonResponse.data.token,
       details: {},
       authed: true,

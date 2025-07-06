@@ -14,24 +14,16 @@ import SignUpPage from './components/pages/SignUpPage';
 import CharcodeSummary from './components/pages/CharcodeSummary'
 import { DataAnalysisProvider } from './components/DataAnalysisContext';
 import { UserContext } from "./UserContext";
-
-// If you have a .env entry for VITE_API_URL, use it; otherwise fallback to localhost
-const API = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+import { API } from './config/api';
 
 const App = () => {
    const [isAuthenticated, setIsAuthenticated] = useState(false);
    const navigate = useNavigate();
-  // Our “user” object in context. We’ll populate `backEndURL` + `token` here.
+  // Our “user” object in context. We’ll populate `API` + `token` here.
   const [user, setUser] = useState({
-    backEndURL: window.location.href.includes("ngrok")
-      ? 'https://bbb-staging-ae2bb81703e0.herokuapp.com'
-      : process.env.NODE_ENV === 'development'
-      ? 'http://localhost:4000'
-      : process.env.REACT_APP_API_BASE_URL,
     token: null,
     authed: false,
   });
-
   
   const setUserDetails = (user, responseData, stayLoggedIn ) => {
       user.token = responseData.token;

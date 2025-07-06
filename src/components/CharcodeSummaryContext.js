@@ -1,5 +1,6 @@
 // 1) Context
 import React, { createContext, useState } from "react";
+import { API } from '../config/api';
 
 export const BagContext = createContext();
 
@@ -64,7 +65,7 @@ export const BagProvider = ({ children, user }) => {
   };
 
   const handleFetch = async () => {
-    if (!user?.token || !user?.backEndURL) {
+    if (!user?.token || !API) {
       setError("Missing auth or backend URL");
       return;
     }
@@ -86,7 +87,7 @@ export const BagProvider = ({ children, user }) => {
     try {
       // Fetch bag performance
       const bagRes = await fetch(
-        `${user.backEndURL}/bags/performance?from=${from}&to=${to}`,
+        `${API}/bags/performance?from=${from}&to=${to}`,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
       if (!bagRes.ok) throw new Error(await bagRes.text());
@@ -166,7 +167,7 @@ export const BagProvider = ({ children, user }) => {
 
       // Fetch order performance
       const orderRes = await fetch(
-        `${user.backEndURL}/order/performance?from=${from}&to=${to}`,
+        `${API}/order/performance?from=${from}&to=${to}`,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
       if (!orderRes.ok) throw new Error(await orderRes.text());

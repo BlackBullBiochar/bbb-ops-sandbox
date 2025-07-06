@@ -1,6 +1,7 @@
 // DataAnalysisContext.js
 import React, { createContext, useState, useContext } from 'react';
 import { UserContext } from '../UserContext.js';
+import { API } from '../config/api.js';
 
 export const DataAnalysisContext = createContext();
 
@@ -42,8 +43,8 @@ export const DataAnalysisProvider = ({ children }) => {
   const [sensorData, setSensorData]     = useState([]) // P values
 
   const fetchAndProcessData = async ({ mode, singleDate, fromDate, toDate }) => {
-    if (!user.token || !user.backEndURL) {
-      console.error("Cannot fetch: missing user.token or user.backEndURL");
+    if (!user.token || !API) {
+      console.error("Cannot fetch: missing user.token or API");
       return;
     }
 
@@ -65,7 +66,7 @@ export const DataAnalysisProvider = ({ children }) => {
     };
 
     // 1) Fetch raw temperature‐data uploads
-    const dataRes = await fetch(`${user.backEndURL}/tempData`, {
+    const dataRes = await fetch(`${API}/tempData`, {
       ...commonOpts,
       method: 'GET',
     });
@@ -78,7 +79,7 @@ export const DataAnalysisProvider = ({ children }) => {
     const dataDocs = dataJson.data?.uploads || [];
 
     // 2) Fetch form‐uploads
-    const formRes = await fetch(`${user.backEndURL}/forms`, {
+    const formRes = await fetch(`${API}/forms`, {
       ...commonOpts,
       method: 'GET',
     });
@@ -97,7 +98,7 @@ export const DataAnalysisProvider = ({ children }) => {
     // 3) Fetch EBC‐status documents
     const fetchStatuses = async (siteCode) => {
       const res = await fetch(
-        `${user.backEndURL}/ebc/statuses/${siteCode.toLowerCase()}`,
+        `${API}/ebc/statuses/${siteCode.toLowerCase()}`,
         { ...commonOpts, method: 'GET' }
       );
       if (!res.ok) {
@@ -128,7 +129,7 @@ if (mode === 'single') {
 }
 
 const sensRes = await fetch(
-  `${user.backEndURL}/sensor/readings?${params}`,
+  `${API}/sensor/readings?${params}`,
   { ...commonOpts, method: 'GET' }
 );
 
@@ -307,7 +308,7 @@ if (mode === 'single') {
         : `?from=${fromDate}&to=${toDate}`;
 
       const resp = await fetch(
-        `${user.backEndURL}/sites/${siteCode}/bags${queryString}`,
+        `${API}/sites/${siteCode}/bags${queryString}`,
         {
           method: 'GET',
           headers: {

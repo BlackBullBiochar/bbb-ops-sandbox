@@ -3,7 +3,7 @@
  * Helpers to fetch overlay data for ARA and JNR.
  *
  * You must pass in a `user` object that has:
- *   - user.backEndURL  (e.g. "http://localhost:4000")
+ *   - API  (e.g. "http://localhost:4000")
  *   - user.token       (JWT string, e.g. "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
  *
  * Then, inside your component, do:
@@ -15,6 +15,7 @@
  *
  * and similarly for `fetchJnrOverlayData`.
  */
+import { API } from '../config/api';
 
 export async function fetchAraOverlayData(user, bagDate, charcodeId) {
   const result = {
@@ -24,13 +25,13 @@ export async function fetchAraOverlayData(user, bagDate, charcodeId) {
     ebcHistory: [],
   };
 
-  if (!user || !user.backEndURL || !user.token || !bagDate) {
+  if (!user || !API || !user.token || !bagDate) {
     return result;
   }
 
   try {
     // --- (a) Fetch temperature uploads from /tempData ---
-    const dataRes = await fetch(`${user.backEndURL}/tempData`, {
+    const dataRes = await fetch(`${API}/tempData`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -70,7 +71,7 @@ export async function fetchAraOverlayData(user, bagDate, charcodeId) {
     result.temps2 = rawTemps2;
 
     // --- (b) Fetch form‐upload faults from /forms endpoint ---
-    const formRes = await fetch(`${user.backEndURL}/forms`, {
+    const formRes = await fetch(`${API}/forms`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -101,7 +102,7 @@ export async function fetchAraOverlayData(user, bagDate, charcodeId) {
 
     // --- (c) Fetch EBC status history from the new per-site endpoint ---
     const ebcRes = await fetch(
-      `${user.backEndURL}/ebc/statuses/ara`,
+      `${API}/ebc/statuses/ara`,
       {
         method: 'GET',
         headers: {
@@ -149,13 +150,13 @@ export async function fetchJnrOverlayData(user, bagDate, charcodeId) {
     ebcHistory: [],
   };
 
-  if (!user || !user.backEndURL || !user.token || !bagDate) {
+  if (!user || !API || !user.token || !bagDate) {
     return result;
   }
 
   try {
     // --- (a) Fetch temperature uploads (JNR) from /tempData ---
-    const dataRes = await fetch(`${user.backEndURL}/tempData`, {
+    const dataRes = await fetch(`${API}/tempData`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -192,7 +193,7 @@ export async function fetchJnrOverlayData(user, bagDate, charcodeId) {
     result.temps2 = rawTemps2;
 
     // --- (b) Fetch form‐upload faults for JNR from /forms ---
-    const formRes = await fetch(`${user.backEndURL}/forms`, {
+    const formRes = await fetch(`${API}/forms`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -224,7 +225,7 @@ export async function fetchJnrOverlayData(user, bagDate, charcodeId) {
     result.faults = thisDayFaults;
 
     const ebcRes = await fetch(
-      `${user.backEndURL}/ebc/statuses/jnr`,
+      `${API}/ebc/statuses/jnr`,
       {
         method: 'GET',
         headers: {

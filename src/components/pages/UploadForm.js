@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { UserContext } from "../../UserContext";
+import { API } from '../../config/api';
 
 const UploadForm = () => {
   const { user } = useContext(UserContext);
@@ -25,9 +26,9 @@ const UploadForm = () => {
     // Decide which endpoint to call: (no “/api” prefix)
     let uploadEndpoint;
     if (uploadType === "dat") {
-      uploadEndpoint = `${user.backEndURL}/tempData/upload`;
+      uploadEndpoint = `${API}/tempData/upload`;
     } else if (uploadType === "for") {
-      uploadEndpoint = `${user.backEndURL}/forms/upload`;
+      uploadEndpoint = `${API}/forms/upload`;
     } else {
       alert("Unknown upload type");
       return;

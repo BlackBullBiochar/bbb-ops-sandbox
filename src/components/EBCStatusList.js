@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import styles from './EBCStatusList.module.css';
 import { UserContext } from '../UserContext.js';
 import Button from './Button.js';
+import { API } from '../config/api';
 
 const EbcStatusList = ({ charcodeId, ebcEntries = [], onDeleted }) => {
   const { user } = useContext(UserContext);
@@ -45,7 +46,7 @@ const EbcStatusList = ({ charcodeId, ebcEntries = [], onDeleted }) => {
                     if (!window.confirm("Delete this status entry?")) return;
                     try {
                       const res = await fetch(
-                        `${user.backEndURL}/ebc/status/${charcodeId}/${encodeURIComponent(entry.date)}/${encodeURIComponent(entry.time)}`,
+                        `${API}/ebc/status/${charcodeId}/${encodeURIComponent(entry.date)}/${encodeURIComponent(entry.time)}`,
                         {
                           method: 'DELETE',
                           headers: {

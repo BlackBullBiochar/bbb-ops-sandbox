@@ -4,6 +4,7 @@ import styles from "./UploadDataPage.module.css";
 import ScreenHeader from "../ScreenHeader.js";
 import ModuleMain from "../ModuleMain.js";
 import { UserContext } from "../../UserContext.js";
+import { API } from '../../config/api';
 
 const UploadedDataPage = () => {
   const { user } = useContext(UserContext);
@@ -19,10 +20,10 @@ const UploadedDataPage = () => {
   const [rowsCache, setRowsCache] = useState({});
 
   useEffect(() => {
-    if (!user.token || !user.backEndURL) return;
+    if (!user.token || !API) return;
 
     // 1) Fetch tempData buckets
-    fetch(`${user.backEndURL}/tempData`, {
+    fetch(`${API}/tempData`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${user.token}`,
@@ -47,7 +48,7 @@ const UploadedDataPage = () => {
       });
 
     // 2) Fetch form-data buckets (now grouped by site/year/month)
-    fetch(`${user.backEndURL}/forms`, {
+    fetch(`${API}/forms`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${user.token}`,
@@ -72,20 +73,20 @@ const UploadedDataPage = () => {
       .catch((err) => {
         console.error("Forms fetch error:", err);
       });
-  }, [user.token, user.backEndURL]);
+  }, [user.token, API]);
 
   // Toggle expansion for a bucket; fetch detailed rows on first expand
   const toggle = async (source, type) => {
-    if (!user.token || !user.backEndURL) return;
+    if (!user.token || !API) return;
 
     if (!expanded.includes(source)) {
       // First time expanding: fetch rows
       const [site, year, month] = source.split("-");
       let url;
       if (type === "data") {
-        url = `${user.backEndURL}/tempData/data?site=${site}&year=${year}&month=${month}`;
+        url = `${API}/tempData/data?site=${site}&year=${year}&month=${month}`;
       } else {
-        url = `${user.backEndURL}/forms/data?site=${site}&year=${year}&month=${month}`;
+        url = `${API}/forms/data?site=${site}&year=${year}&month=${month}`;
       }
 
       try {
@@ -117,14 +118,14 @@ const UploadedDataPage = () => {
   // Delete a bucket (tempData or forms)
   const handleDelete = async (source, type) => {
     if (!window.confirm(`Delete all ${type} for "${source}"?`)) return;
-    if (!user.token || !user.backEndURL) return;
+    if (!user.token || !API) return;
 
     const [site, year, month] = source.split("-");
     let url;
     if (type === "data") {
-      url = `${user.backEndURL}/tempData?site=${site}&year=${year}&month=${month}`;
+      url = `${API}/tempData?site=${site}&year=${year}&month=${month}`;
     } else {
-      url = `${user.backEndURL}/forms?site=${site}&year=${year}&month=${month}`;
+      url = `${API}/forms?site=${site}&year=${year}&month=${month}`;
     }
 
     try {

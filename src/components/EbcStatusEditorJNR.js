@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import styles from './EbcStatusEditor.module.css';
 import { UserContext } from '../UserContext.js';
+import { API } from '../config/api';
 
 const statusOptions = ['Flagged', 'Rejected', 'Post-Approved'];
 
@@ -17,7 +18,7 @@ const EbcStatusEditor = ({ charcodeId, currentStatus, currentReason, onSaved }) 
     setError(null);
 
     try {
-      const res2 = await fetch(`${user.backEndURL}/ebc/status/append`, {
+      const res2 = await fetch(`${API}/ebc/status/append`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
