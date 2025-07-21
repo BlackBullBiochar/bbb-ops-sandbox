@@ -12,9 +12,11 @@ import AlertDashboard from './components/pages/AlertDashboard';
 import LoginScreen from './components/pages/LoginScreen';
 import SignUpPage from './components/pages/SignUpPage';
 import CharcodeSummary from './components/pages/CharcodeSummary'
+import PlantSummary from './components/pages/PlantSummary';
 import { DataAnalysisProvider } from './components/DataAnalysisContext';
 import { UserContext } from "./UserContext";
 import { API } from './config/api';
+import { FilterProvider } from './contexts/FilterContext';
 
 const App = () => {
    const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -125,30 +127,33 @@ const App = () => {
 
   return (
       <UserContext.Provider value={{ user, setUser }}>
-        <DataAnalysisProvider>
-          {!user.authed ? (
-            <Routes>
-              <Route path="/login" element={<LoginScreen onLogin={handleLogin} setUserDetails={setUserDetails} setAdminDetails={setAdminDetails} />} setPath = "/login"/>
-              <Route path="/signup" element={<SignUpPage onSignUp={handleSignUp} />}/>
-              <Route path="*" element={<Navigate to="/login" replace />}/>
-            </Routes>
-          ) : (
-            <div className={styles.appContainer}>
-              <Sidebar />
-              <div className={styles.mainWhiteContainer}>
+        <FilterProvider> 
+            <DataAnalysisProvider>
+              {!user.authed ? (
                 <Routes>
-                  <Route path="/upload" element={<UploadForm />} setPath = "/login"/>
-                  <Route path="/view-uploads" element={<UploadDataPage />} />
-                  <Route path="/data-analysis" element={<DataAnalysisPage />} />
-                  <Route path="/data-analysis-jnr" element={<DataAnalysisPageJNR />} />
-                  <Route  path="/AlertDashboard" element={<AlertDashboard />} />
-                  <Route path="*" element={<Navigate to="/upload" replace />} />
-                  <Route path="/Charcode-Summary" element={<CharcodeSummary/>} />
+                  <Route path="/login" element={<LoginScreen onLogin={handleLogin} setUserDetails={setUserDetails} setAdminDetails={setAdminDetails} />} setPath = "/login"/>
+                  <Route path="/signup" element={<SignUpPage onSignUp={handleSignUp} />}/>
+                  <Route path="*" element={<Navigate to="/login" replace />}/>
                 </Routes>
-              </div>
-            </div>
-          )}
-        </DataAnalysisProvider>
+              ) : (
+                <div className={styles.appContainer}>
+                  <Sidebar />
+                  <div className={styles.mainWhiteContainer}>
+                    <Routes>
+                      <Route path="/upload" element={<UploadForm />} setPath = "/login"/>
+                      <Route path="/view-uploads" element={<UploadDataPage />} />
+                      <Route path="/data-analysis" element={<DataAnalysisPage />} />
+                      <Route path="/data-analysis-jnr" element={<DataAnalysisPageJNR />} />
+                      <Route  path="/AlertDashboard" element={<AlertDashboard />} />
+                      <Route path="*" element={<Navigate to="/upload" replace />} />
+                      <Route path="/Charcode-Summary" element={<CharcodeSummary/>} />
+                      <Route path="/Plant-Summary" element={<PlantSummary />} />
+                    </Routes>
+                  </div>
+                </div>
+              )}
+            </DataAnalysisProvider>
+        </FilterProvider>
       </UserContext.Provider>
   );
 };

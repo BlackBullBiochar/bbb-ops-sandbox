@@ -29,37 +29,58 @@ const CharcodesList = ({ charcodes = [], expanded, onToggle, spanColumn }) => {
   );
 };
 
-const CharcodeCard = ({ parsed }) => (
-  <div
-    className={`${styles.card} ${
-      parsed.ebcCertStatus === 'Approved' ? styles.approved :
-      parsed.ebcCertStatus === 'Flagged' ? styles.flagged :
-      parsed.ebcCertStatus === 'Pending' ? styles.pending :
-      parsed.ebcCertStatus === 'Post-Approved' ? styles.postApproved :
-      parsed.ebcCertStatus === 'Rejected' ? styles.rejected : ''
-    }`}
-  >
-    {[
-        {label: 'Charcode', value: parsed.charcode},
-        {label: 'EBC Cert Status', value: parsed.ebcCertStatus},
-        {label: 'status', value: parsed.status},
-        {label: 'MC', value: parsed.moisture_content},
-        {label: 'Bagging Date', value: parsed.bagging_date
+const CharcodeCard = ({ parsed }) => {
+  // 1) pull out and filter your statuses
+  const activeStatuses = (parsed.ebcStatuses || [])
+    .filter(s => !s.is_deleted);
+
+  // 2) sort descending by created_date so the first is the latest
+  activeStatuses.sort(
+    (a,b) => new Date(b.created_date) - new Date(a.created_date)
+  );
+
+  // 3) pick the status string (or fallback)
+  const ebcCertStatus = activeStatuses.length > 0
+    ? activeStatuses[0].status
+    : '—';
+
+  return (
+    <div
+      className={`${styles.card} ${
+        ebcCertStatus === 'Approved'      ? styles.approved :
+        ebcCertStatus === 'Flagged'       ? styles.flagged  :
+        ebcCertStatus === 'Pending'       ? styles.pending  :
+        ebcCertStatus === 'Post-Approved' ? styles.postApproved :
+        ebcCertStatus === 'Rejected'      ? styles.rejected : ''
+      }`}
+    >
+      {[
+        { label: 'Charcode',            value: parsed.charcode },
+        { label: 'EBC Cert Status',     value: ebcCertStatus  },
+        { label: 'status',              value: parsed.status  },
+        { label: 'MC',                  value: parsed.moisture_content },
+        {
+          label: 'Bagging Date',
+          value: parsed.bagging_date
             ? new Date(parsed.bagging_date).toLocaleDateString('en-GB', {
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric',
-            })
-            : '—',},
+              })
+            : '—',
+        },
         { label: 'Biochar Weight (kg)', value: parsed.weight },
-        { label: 'Batch ID', value: parsed.batch_id },
-    ].map(({ label, value }, i) => (
+        { label: 'Batch ID',            value: parsed.batch_id },
+      ].map(({ label, value }, i) => (
         <div key={i} className={styles.row}>
-        <strong>{label}:</strong>{' '}
-        {typeof value === 'object' && value !== null ? JSON.stringify(value) : String(value || '—')}
+          <strong>{label}:</strong>{' '}
+          {typeof value === 'object' && value !== null
+            ? JSON.stringify(value)
+            : String(value || '—')}
         </div>
-    ))}
-  </div>
-);
+      ))}
+    </div>
+  );
+};
 
 export default CharcodesList;

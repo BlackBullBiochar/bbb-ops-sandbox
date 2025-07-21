@@ -5,36 +5,59 @@ import { API } from '../config/api';
 
 const statusOptions = ['Flagged', 'Rejected', 'Post-Approved'];
 
-const EbcStatusEditor = ({ charcodeId, currentStatus, currentReason, onSaved }) => {
+/**
+ * EbcStatusEditor
+ * Props:
+ * - charcodeId: string
+ * - bagId: string (ObjectId)
+ * - siteId: string (ObjectId)
+ * - baggingDate: string (YYYY-MM-DD)
+ * - currentStatus: string
+ * - currentReason: string
+ * - onSaved: function(newStatus)
+ */
+const EbcStatusEditor = ({
+  charcodeId,
+  bagId,
+  siteId,
+  baggingDate,
+  currentStatus,
+  currentReason,
+  onSaved
+}) => {
   const { user } = useContext(UserContext);
-  const [status, setStatus] = useState('Flagged');
+  const [status, setStatus] = useState(currentStatus || statusOptions[0]);
   const [reason, setReason] = useState(currentReason || '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
-    const site = ('ara');
 
   const handleSave = async () => {
     setSaving(true);
     setError(null);
 
     try {
-      // Step 2: PATCH ebcstatus history
-      const res2 = await fetch(`${API}/ebc/status/append`, {
+      const res = await fetch(`${API}/ebc/ebcstatus`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${user.token}`,
         },
-        body: JSON.stringify({ site, charcodeId, status, reason }),
+        body: JSON.stringify({
+          bagId,
+          siteId,
+          charcode: charcodeId,
+          baggingDate,
+          status,
+          reason
+        }),
       });
 
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to save EBC status');
 
-      const data2 = await res2.json();
-      if (!res2.ok) throw new Error(data2.error || 'EBC history append failed');
-
-      if (onSaved) onSaved(data2.updatedRow);
+      if (onSaved) onSaved(data);
     } catch (err) {
-      console.error('❌ Save error:', err.message);
+      console.error('❌ Save error:', err);
       setError(err.message);
     } finally {
       setSaving(false);
@@ -46,8 +69,10 @@ const EbcStatusEditor = ({ charcodeId, currentStatus, currentReason, onSaved }) 
       <label>
         Status:
         <select value={status} onChange={(e) => setStatus(e.target.value)}>
-          {statusOptions.map(opt => (
-            <option key={opt} value={opt}>{opt}</option>
+          {statusOptions.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
           ))}
         </select>
       </label>

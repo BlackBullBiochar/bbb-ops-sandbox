@@ -3,51 +3,24 @@ import styles from './AlertDashboard.module.css';
 import Module from '../Module.js';
 import ScreenHeader from "../ScreenHeader.js";
 import ModuleMain from '../ModuleMain.js'
-import ChartMod from '../ChartMod.js';
-import Figure from '../Figure.js';
 import DateSelector from '../DateSelector.js'
-import CharcodesList from '../CharcodesList.js';
-import FaultMessages from '../FaultMessages';
-import { DataAnalysisContext } from '../DataAnalysisContext.js';
 import CharcodesAlertBoard from '../CharcodesAlertBoard';
 import SiteSelector from '../SiteSelector';
-
+import { useFilterDispatch, ACTIONS } from '../../contexts/FilterContext';
+import { useSiteNames } from '../../hooks/useSiteNames';
+import { useBagDataRows } from '../../hooks/useBagDataRows';
 
 const AlertDashboard = () => {
-  const [mode, setMode] = useState('single');
+  const dispatch = useFilterDispatch();
+  const siteNames = useSiteNames();
+
+  const [expanded, setExpanded] = useState(false);
+  const [isRange, setIsRange] = useState(false);
   const [singleDate, setSingleDate] = useState('');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
-  const [isToggleOn, setIsToggleOn] = useState(false);
-  const [expanded, setExpanded] = useState(false);
-  const[specHigh, setSpecHigh] = useState(780); 
-  const[specLow, setSpecLow] = useState(520); 
+  const [fetchToggle, setFetchToggle] = useState(false)
 
-  const { fetchAndProcessData,
-    dataTempsJNR, 
-    dataTempsJNR2, 
-    charcodesJNR, 
-    formTempsJNR,
-    dataBioMCJNR,
-    chart1LabelsJNR,
-    chart2LabelsJNR,
-    chart1DataJNR,
-    chart2DataJNR,
-    dailyHeatGenJNR,
-    faultMessagesJNR,
-    ebcReasonsJNR,
-    dataTempsARA, 
-    dataTempsARA2, 
-    charcodesARA, 
-    formTempsARA,
-    dataBioMCARA,
-    chart1LabelsARA,
-    chart2LabelsARA,
-    chart1DataARA,
-    chart2DataARA,
-    dailyHeatGenARA,
-    faultMessagesARA,
-  } = useContext(DataAnalysisContext);
   
   const [selectedSites, setSelectedSites] = useState(['ARA', 'JNR']);
 
@@ -57,22 +30,30 @@ const AlertDashboard = () => {
     );
   };
   
+  const ARAbagRows = useBagDataRows(
+    'ARA',
+    fetchToggle && selectedSites.includes('ARA')
+  );
+  const JNRbagRows = useBagDataRows(
+    'JNR',
+    fetchToggle && selectedSites.includes('JNR')
+  );
 
-  const inWindow = (d) => {
-    if (mode === 'single') {
-      return d === singleDate;
-    }
-    return d >= fromDate && d <= toDate;
-  };
-
-  useEffect(() => {
-    setMode(isToggleOn ? 'range' : 'single');
-  }, [isToggleOn]);
-
+  const mode = isRange ? 'range' : 'single';
+  
   const handleFetch = () => {
     if (mode === 'single' && !singleDate) return alert('Pick a date');
     if (mode === 'range' && (!fromDate || !toDate)) return alert('Pick both start and end dates');
-    fetchAndProcessData({ mode, singleDate, fromDate, toDate });
+
+    dispatch({ type: ACTIONS.SET_MODE, payload: mode });
+    dispatch({ type: ACTIONS.SET_SINGLE_DATE, payload: singleDate });
+    dispatch({ type: ACTIONS.SET_FROM_DATE, payload: fromDate });
+    dispatch({ type: ACTIONS.SET_TO_DATE, payload: toDate });
+    setTimeout(() => { dispatch({ type: ACTIONS.RESET_FILTERS }); }, 10);
+
+    // toggle to re-trigger data hooks
+    setFetchToggle(true);
+    setTimeout(() => setFetchToggle(false), 10); 
   };
 
   return (
@@ -82,16 +63,16 @@ const AlertDashboard = () => {
           <div>
           <div className={styles.topRow}>
             <DateSelector
-            isRange={isToggleOn}
+            isRange={isRange}
             singleDate={singleDate}
             fromDate={fromDate}
             toDate={toDate}
-            onToggle={() => setIsToggleOn(prev => !prev)}
+            onToggle={() => setIsRange(prev => !prev)}
             onChange={(type, value) => {
-                if (type === 'single') setSingleDate(value);
-                if (type === 'from') setFromDate(value);
-                if (type === 'to') setToDate(value);
-            }}
+            if (type === 'single') setSingleDate(value);
+            if (type === 'from') setFromDate(value);
+            if (type === 'to') setToDate(value);
+          }}
             onFetch={handleFetch}
             />
             <SiteSelector
@@ -106,13 +87,13 @@ const AlertDashboard = () => {
           <div className={styles.contentGrid}>
             {selectedSites.includes('ARA') && (
               <Module name="Charcodes ARA" spanColumn={24}>
-                <CharcodesAlertBoard charcodes={charcodesARA} />
+                <CharcodesAlertBoard charcodes={ARAbagRows} />
               </Module>
             )}
 
             {selectedSites.includes('JNR') && (
               <Module name="Charcodes JNR" spanColumn={24}>
-                <CharcodesAlertBoard charcodes={charcodesJNR} />
+                <CharcodesAlertBoard charcodes={JNRbagRows} />
               </Module>
             )}
           </div>

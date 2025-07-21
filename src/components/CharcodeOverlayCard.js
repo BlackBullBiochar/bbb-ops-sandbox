@@ -1,171 +1,180 @@
-// CharcodeOverlayCard.jsx
 import React, { useEffect, useState, useContext } from 'react';
-import Figure from './Figure';
 import styles from './CharcodeOverlayCard.module.css';
-import ChartMod from './ChartMod';
 import Module from './Module';
-import FaultMessages from './FaultMessages';
+import Figure from './Figure';
+import ChartMod from './ChartMod';
+import FaultMessages2 from './FaultMessages2';
 import EbcStatusList from './EBCStatusList';
 import EbcStatusEditor from './EbcStatusEditorARA';
-import { UserContext } from '../UserContext.js';
-
-// Import the ARA helper
-import { fetchAraOverlayData } from './DataAnalysisLocal';
+import { UserContext } from '../UserContext';
+import { useFilters, useFilterDispatch, ACTIONS } from '../contexts/FilterContext';
+import { useTempDataRows } from '../hooks/useTempDataRows';
+import { useSingleTempChart } from '../hooks/useSingleTempChart';
+import { useSiteNames } from '../hooks/useSiteNames';
 
 const CharcodeOverlayCard = ({ parsed, onClose }) => {
-  const { user } = useContext(UserContext);
-  // 1) Normalize bagDate (YYYY-MM-DD) and charcodeId
-  const rawBagDate = parsed.bagging_date || parsed.Produced || '';
-  const bagDate = String(rawBagDate.split('T')[0] || '');
-  const producedDate = bagDate;
-  const charcodeId = String(parsed.charcode || '').trim();
+  const dispatch = useFilterDispatch();
+  const [ shouldFetch, setShouldFetch ] = useState(false);
 
-  // 2) Local state: only for this overlay’s data
-  const [temps1, setTemps1] = useState([]);
-  const [temps2, setTemps2] = useState([]);
-  const [faults, setFaults] = useState([]);
-  const [ebcHistory, setEbcHistory] = useState([]);
+  // Derive bagDate and site ID from parsed object
+  const bagDate = parsed.bagging_date
+    ? parsed.bagging_date.slice(0, 10)
+    : '';
+    console.log('Parsed bagging date:', bagDate);
+  const siteId = parsed._site;
+  const siteName =
+    siteId === '6661c6cc2e943e2babeca581' ? 'ARA' :
+    siteId === '6661c6bd2e943e2babec9b4d' ? 'JNR' :
+    'Unknown Site';
 
-   useEffect(() => {
-    // don’t run until we have bagDate, charcodeId, and user
-    if (!bagDate || !charcodeId || !user) return;
+  console.log('Resolved site name:', siteName);
 
-    // pass `user` as first argument
-    fetchAraOverlayData(user, bagDate, charcodeId)
-      .then(({ temps1, temps2, faults, ebcHistory }) => {
-        setTemps1(temps1);
-        setTemps2(temps2);
-        setFaults(faults);
-        setEbcHistory(ebcHistory);
-      })
-      .catch((err) => {
-        console.error('CharcodeOverlayCard (ARA) fetch error:', err);
-      });
-  }, [bagDate, charcodeId, user]);
 
-  const handleEntryDeleted = (deletedDate, deletedTime) => {
-  setEbcHistory(entries =>
-    entries.filter(e => !(e.date === deletedDate && e.time === deletedTime))
-  );
-};
+  // Initialize EBC history from parsed data
+  const [ebcHistory, setEbcHistory] = useState(parsed.ebcStatuses || []);
+  useEffect(() => {
+    setEbcHistory(parsed.ebcStatuses || []);
+  }, [parsed.ebcStatuses]);
+
+  // Configure FilterContext to fetch single-date data on mount
+  useEffect(() => {
+    if (!bagDate || !siteName) return;
+    dispatch({ type: ACTIONS.SET_SITE, payload: siteName });
+    dispatch({ type: ACTIONS.SET_MODE, payload: 'single' });
+    dispatch({ type: ACTIONS.SET_SINGLE_DATE, payload: bagDate });
+    dispatch({ type: ACTIONS.FETCH_DATA });
+    setShouldFetch(true);
+    setTimeout(() => {setShouldFetch(false);}, 10);
+  }, [bagDate, siteId, dispatch]);
+
+  // Fetch temperature rows and chart data
+// inside your component…
+const tempRows = useTempDataRows(siteName, shouldFetch);
+
+// always call these hooks
+const araR1 = useSingleTempChart(tempRows, 'r1_temp');
+const araR2 = useSingleTempChart(tempRows, 'r2_temp');
+const jnrT5 = useSingleTempChart(tempRows, 't5_temp');
+
+// then pick your labels/data based on siteName
+let r1Labels, r1Data, r2Labels, r2Data;
+
+if (siteName === 'ARA') {
+  ({ labels: r1Labels, data: r1Data } = araR1);
+  ({ labels: r2Labels, data: r2Data } = araR2);
+} else if (siteName === 'JNR') {
+  ({ labels: r1Labels, data: r1Data } = jnrT5);
+  ({ labels: r2Labels, data: r2Data } = jnrT5);
+} else {
+  console.warn('Unknown site for temperature data:', siteName);
+  r1Labels = r1Data = r2Labels = r2Data = [];
+}
+
+
+  // Compute average temperatures
+  const average = arr => arr.length ? arr.reduce((sum, x) => sum + x, 0) / arr.length : null;
+  const avgR1 = average(r1Data.filter(v => v != null));
+  const avgR2 = average(r2Data.filter(v => v != null));
+
+  // Fault messages from parsed or empty
+  const faults = parsed.faultMessages || [];
+
+  // Handler for deleting an EBC status entry
+  const handleEntryDeleted = (delDate, delTime) => {
+    setEbcHistory(current =>
+      current.filter(e =>
+        !(e.created_date.startsWith(delDate) && e.time === delTime)
+      )
+    );
+  };
 
   return (
     <div className={styles.overlay}>
       <div className={styles.overlayCard}>
+        <button className={styles.closeBtn} onClick={onClose}>×</button>
         <div className={styles.contentGrid}>
-          <button className={styles.closeBtn} onClick={onClose}>
-            ×
-          </button>
 
-          <Module name="Charcode Info" spanColumn={4} spanRow={3}>
+          {/* Charcode Info */}
+          <Module name="Charcode Info" spanColumn={4} spanRow={2}>
             {[
               { label: 'Charcode', value: parsed.charcode },
               { label: 'Status', value: parsed.status },
-              { label: 'Site', value: parsed.site },
-              {
-                label: 'Bagging Date',
-                value: bagDate
-                  ? new Date(bagDate).toLocaleDateString('en-GB', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric',
-                    })
-                  : '—',
-              },
-              { label: 'Operator', value: parsed.operator },
-              { label: 'Feedstock Source', value: parsed.feedstock_source },
-              { label: 'Biomass Type', value: parsed.biomass_type },
-              { label: 'Biochar Weight (kg)', value: parsed.weight },
-              { label: 'Batch ID', value: parsed.batch_id },
-            ].map(({ label, value }, i) => (
-              <div key={i} className={styles.row}>
-                <strong>{label}:</strong>{' '}
-                {typeof value === 'object' && value !== null
-                  ? JSON.stringify(value)
-                  : String(value || '—')}
+              { label: 'Site ID', value: siteName },
+              { label: 'Bagging Date', value: bagDate },
+              { label: 'Feedstock', value: 'will code this in' },
+              { label: 'Weight (kg)', value: parsed.weight },
+              { label: 'Batch ID', value: parsed.batch_id }
+            ].map((field, idx) => (
+              <div key={idx} className={styles.row}>
+                <strong>{field.label}:</strong> {field.value || '—'}
               </div>
             ))}
           </Module>
 
-          <Module name="Reactor 1 Avg. Temp" spanColumn={4} spanRow={1}>
-            <Figure
-              title="Reactor 1 Avg. Temp"
-              value={
-                temps1.length
-                  ? temps1.reduce((sum, r) => sum + r.temp, 0) / temps1.length
-                  : null
-              }
-            />
+          {/* Average Temperatures */}
+          <Module name="Reactor 1 Avg Temp" spanColumn={4} spanRow={1}>
+            <Figure title="R1 Avg Temp" value={avgR1} unit="°C" />
           </Module>
 
-          <Module name="EBC Cert. Status" spanColumn={16} spanRow={2}>
-            <EbcStatusList 
-              charcodeId={charcodeId}
+          {/* Fault Messages */}
+          <Module name="Fault Messages" spanColumn={4} spanRow={2}>
+            <FaultMessages2 messages={['example messages', 'plant was not producing biochar between 12:00 and 4:00']} />
+          </Module>
+
+          {/* EBC Status History */}
+          <Module name="EBC Cert History" spanColumn={12} spanRow={2}>
+            <EbcStatusList
+              charcodeId={parsed.charcode}
               ebcEntries={ebcHistory}
-              onDeleted={handleEntryDeleted} 
+              onDeleted={handleEntryDeleted}
             />
           </Module>
 
-          <Module name="Reactor 2 Avg. Temp" spanColumn={4} spanRow={1}>
-            <Figure
-              title="Reactor 2 Avg. Temp"
-              value={
-                temps2.length
-                  ? temps2.reduce((sum, r) => sum + r.temp, 0) / temps2.length
-                  : null
-              }
-            />
+          <Module name="Reactor 2 Avg Temp" spanColumn={4} spanRow={1}>
+            <Figure title="R2 Avg Temp" value={avgR2} unit="°C" />
           </Module>
 
-          <Module name="Fault Messages" spanColumn={20} spanRow={1}>
-            <FaultMessages messages={faults} />
-          </Module>
-
-          <Module name="Pyrolysis Temp" spanColumn={12} spanRow={3}>
+          {/* Time-series Charts */}
+          <Module name="Reactor 1 Temp" spanColumn={12} spanRow={4}>
             <ChartMod
-              isTimeAxis
-              title={`Reactor 1 Temp. on ${producedDate}`}
-              labels={temps1.map((r) => r.time).reverse()}
-              dataPoints={temps1
-                .map((r) => ({
-                  x: new Date(`1970-01-01T${r.time}`),
-                  y: r.temp,
-                }))
-                .reverse()}
+              isTimeAxis={true}
+              title="R1 Temps Over Time"
+              labels={r1Labels}
+              dataPoints={r1Labels.map((t, i) => ({
+                x: new Date(`${bagDate}T${t}`),
+                y: r1Data[i]
+              }))}
               unit="°C"
-              extraLines={[
-                { label: 'Upper Bound', value: 780 },
-                { label: 'Lower Bound', value: 520 },
-              ]}
+              extraLines={[{ label: 'High', value: 780 }, { label: 'Low', value: 520 }]}
             />
           </Module>
-
-          <Module name="Pyrolysis Temp" spanColumn={12} spanRow={3}>
+          <Module name="Reactor 2 Temp" spanColumn={12} spanRow={4}>
             <ChartMod
-              isTimeAxis
-              title={`Reactor 2 Temp. on ${producedDate}`}
-              labels={temps2.map((r) => r.time).reverse()}
-              dataPoints={temps2
-                .map((r) => ({
-                  x: new Date(`1970-01-01T${r.time}`),
-                  y: r.temp,
-                }))
-                .reverse()}
+              isTimeAxis={true}
+              title="R2 Temps Over Time"
+              labels={r2Labels}
+              dataPoints={r2Labels.map((t, i) => ({
+                x: new Date(`${bagDate}T${t}`),
+                y: r2Data[i]
+              }))}
               unit="°C"
-              extraLines={[
-                { label: 'Upper Bound', value: 780 },
-                { label: 'Lower Bound', value: 520 },
-              ]}
+              extraLines={[{ label: 'High', value: 780 }, { label: 'Low', value: 520 }]}
             />
           </Module>
 
-          <Module name="EBC Status" spanColumn={24} spanRow={3} marginBottom="1rem">
+          {/* EBC Status Editor */}
+          <Module name="Update EBC Status" spanColumn={24} spanRow={3}>
             <EbcStatusEditor
-              charcodeId={charcodeId}
-              currentStatus={parsed['EBC Cert Status']}
-              currentReason={parsed['EBC Status Reason']}
+              bagId={parsed._id}                    // Mongoose _id of the Bag
+              siteId={parsed._site}                 // Mongoose _site ObjectId
+              charcode={parsed.charcode}
+              baggingDate={parsed.bagging_date.slice(0,10)}
+              currentStatus={parsed.ebcCertStatus}
+              currentReason={parsed.ebcStatusReason}
+              onSaved={(newStatus) => setEbcHistory(h => [newStatus, ...h])}
             />
           </Module>
+
         </div>
       </div>
     </div>

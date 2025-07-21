@@ -1,214 +1,183 @@
-import React, { useState, useContext, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import styles from './DataAnalysisPage.module.css';
-import Module from '../Module.js';
 import ScreenHeader from "../ScreenHeader.js";
-import ModuleMain from '../ModuleMain.js'
+import ModuleMain from '../ModuleMain.js';
+import Module from '../Module.js';
 import ChartMod from '../ChartMod.js';
 import Figure from '../Figure.js';
-import DateSelector from '../DateSelector.js'
+import DateSelector from '../DateSelector.js';
 import CharcodesList from '../CharcodesList.js';
 import FaultMessages from '../FaultMessages';
-import { DataAnalysisContext } from '../DataAnalysisContext.js';
+import { useFilterDispatch, useFilters, ACTIONS } from '../../contexts/FilterContext';
+import { useSiteNames } from '../../hooks/useSiteNames';
+import { useTempDataRows } from '../../hooks/useTempDataRows';
+import { useBagDataRows } from '../../hooks/useBagDataRows';
+import { useAvgTemps } from '../../hooks/useAvg.js';
+import { useSingleTempChart } from '../../hooks/useSingleTempChart'
+import { useRangeTempChart } from '../../hooks/useRangeTempChart';
+import { useSensorReadings } from '../../hooks/useSensorReadings';
 
 const DataAnalysisPage = () => {
-  // 1) date picker state
-  const [mode, setMode] = useState('single');    // 'single' or 'range'
+  const dispatch = useFilterDispatch();
+  const [specHigh, setSpecHigh] = useState(780); 
+  const [specLow, setSpecLow] = useState(520);
+  const siteNames = useSiteNames();
+
+  const [expanded, setExpanded] = useState(false);
+  const [isRange, setIsRange] = useState(false);
   const [singleDate, setSingleDate] = useState('');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
-  const [isToggleOn, setIsToggleOn] = useState(false);
-  const [expanded, setExpanded] = useState(false);
-  const [specHigh, setSpecHigh] = useState(780); 
-  const [specLow, setSpecLow] = useState(520);
+  const [fetchToggle, setFetchToggle] = useState(false);
+
+  // pull tempRows whenever fetchToggle flips
+  const bagRows = useBagDataRows('ARA', fetchToggle);
+  const tempRows = useTempDataRows('ARA', fetchToggle);
+  const rawSensoreReadings = useSensorReadings(fetchToggle);
   
+  const sensorRows    = Object.values(rawSensoreReadings).flat();
+  const [avg1, avg2, avg5, bagAvgWeight, bagAvgMC, bagTotalWeight] = useAvgTemps(tempRows, bagRows);
+  const { labels: r1SingleLabels, data: r1SingleData } = useSingleTempChart(tempRows, 'r1_temp');
+  const { labels: r1RangeLabels, data: r1RangeData } = useRangeTempChart(tempRows, 'r1_temp');
+  const { labels: r2SingleLabels, data: r2SingleData } = useSingleTempChart(tempRows, 'r2_temp');
+  const { labels: r2RangeLabels, data: r2RangeData } = useRangeTempChart(tempRows, 'r2_temp');
+  const {labels: sensorSingleLabels, data: sensorSingleData} = useSingleTempChart(sensorRows,'energy');
+  const {labels: sensorRangeLabels, data: sensorRangeData} = useRangeTempChart(sensorRows,'energy');
 
-  // 2) stored context
-  const { fetchAndProcessData,
-    dataTempsARA, 
-    dataTempsARA2, 
-    charcodesARA, 
-    formTempsARA,
-    dataBioMCARA,
-    chart1LabelsARA,
-    chart2LabelsARA,
-    chart1DataARA,
-    chart2DataARA,
-    ebcStatusARA,
-    dailyHeatGenARA,
-    faultMessagesARA,
-    totalWeightARA,
-    avgMCARA,
-    sensorData,
-    sensorLabels,
-  } = useContext(DataAnalysisContext);
+  // placeholders—replace or move into context as needed
+  const dailyHeatGenARA = 23;
+  const faultMessagesARA = [];
 
-  // date-filter helper
-  const inWindow = (d) => {
-    if (mode === 'single') {
-      return d === singleDate;
-    }
-    return d >= fromDate && d <= toDate;
-  };
-
-  useEffect(() => {
-    setMode(isToggleOn ? 'range' : 'single');
-  }, [isToggleOn]);
+  const mode = isRange ? 'range' : 'single';
 
   const handleFetch = () => {
     if (mode === 'single' && !singleDate) return alert('Pick a date');
     if (mode === 'range' && (!fromDate || !toDate)) return alert('Pick both start and end dates');
-  
-    fetchAndProcessData({ mode, singleDate, fromDate, toDate });
+
+    dispatch({ type: ACTIONS.SET_MODE, payload: mode });
+    dispatch({ type: ACTIONS.SET_SINGLE_DATE, payload: singleDate });
+    dispatch({ type: ACTIONS.SET_FROM_DATE, payload: fromDate });
+    dispatch({ type: ACTIONS.SET_TO_DATE, payload: toDate });
+    setTimeout(() => { dispatch({ type: ACTIONS.RESET_FILTERS }); }, 10);
+
+    // toggle to re-trigger data hooks
+    setFetchToggle(true);
+    setTimeout(() => setFetchToggle(false), 10); 
   };
 
-return (
-  <div className={styles.mainWhiteContainer}>
-    <ScreenHeader name={"Data Analysis Dashboard ARA"}/>
-    <ModuleMain>
-      <DateSelector
-        isRange={isToggleOn}
-        singleDate={singleDate}
-        fromDate={fromDate}
-        toDate={toDate}
-        onToggle={() => setIsToggleOn(prev => !prev)}
-        onChange={(type, value) => {
-          if (type === 'single') setSingleDate(value);
-          if (type === 'from') setFromDate(value);
-          if (type === 'to') setToDate(value);
-        }}
-        onFetch={handleFetch}
-      />
-
-      <div className = {styles.contentGrid}>
-        <Module name={"Reactor 1 Avg. Temp"} spanColumn={3} spanRow={1}>
-          <Figure title="Reactor 1 Avg. Temp" value={dataTempsARA} />
-        </Module>
-
-        <CharcodesList
-          charcodes={charcodesARA}
-          expanded={expanded}
-          onToggle={() => setExpanded(prev => !prev)}
+  return (
+    <div className={styles.mainWhiteContainer}>
+      <ScreenHeader name="Data Analysis Dashboard ARA" />
+      <ModuleMain>
+        <DateSelector
+          isRange={isRange}
+          singleDate={singleDate}
+          fromDate={fromDate}
+          toDate={toDate}
+          onToggle={() => setIsRange(prev => !prev)}
+          onChange={(type, value) => {
+            if (type === 'single') setSingleDate(value);
+            if (type === 'from') setFromDate(value);
+            if (type === 'to') setToDate(value);
+          }}
+          onFetch={handleFetch}
         />
 
+        <div className={styles.contentGrid}>
+          <Module name="Reactor 1 Avg. Temp" spanColumn={3} spanRow={1}>
+            <Figure title="Reactor 1 Avg. Temp" value={avg1} unit="°C" />
+          </Module>
 
-        <Module name={"Reactor 2 Avg. Temp"} spanColumn={3} spanRow={1}>
-          <Figure title="Reactor 2 Avg. Temp" value={dataTempsARA2} />
-        </Module>
-      
-        <Module name={"Reactor 1 Temp"} spanColumn={12} spanRow={4}>
-          <ChartMod
-            isTimeAxis={mode === 'single' ? 'true' : false}
-            title={mode === 'single' ? 'Reactor 1 Temps by Time' : 'Avg Reactor 1 Temp by Day'}
-            labels={
-              mode === 'single'
-                ? chart1LabelsARA.map(time => time.split(':').slice(0, 2).join(':')).reverse()
-                : chart1LabelsARA
-            }
-            dataPoints={
-              mode === 'single'
-                ? chart2LabelsARA.map((time, i) => ({
-                    x: new Date(`1970-01-01T${time}`),
-                    y: Number(chart1DataARA[i])
-                  })).reverse()
-                : chart1LabelsARA.map((date, i) => ({
-                    x: date,
-                    y: Number(chart1DataARA[i])
-                  }))
-            }
-            unit="°C"
-            extraLines={[
-              { label: 'Upper Bound', value: specHigh},
-              { label: 'Lower Bound', value: specLow}
-            ]}
+          <CharcodesList
+            charcodes={bagRows}
+            expanded={expanded}
+            onToggle={() => setExpanded(prev => !prev)}
           />
-        </Module>
 
-        <Module name={"Reactor 2 Temp"} spanColumn={12} spanRow={4}>
-          <ChartMod
-            isTimeAxis={mode === 'single' ? 'true' : false}
-            title={mode === 'single' ? 'Reactor 2 Temps by Time' : 'Avg Reactor 2 Temp by Day'}
-            labels={
-              mode === 'single'
-                ? chart2LabelsARA.map(time => time.split(':').slice(0, 2).join(':')).reverse()
-                : chart2LabelsARA
-            }
-            dataPoints={
-              mode === 'single'
-                ? chart2LabelsARA.map((time, i) => ({
-                    x: new Date(`1970-01-01T${time}`),
-                    y: Number(chart2DataARA[i])
-                  })).reverse()
-                : chart2LabelsARA.map((date, i) => ({
-                    x: date,
-                    y: Number(chart2DataARA[i])
-                  }))
-            }
-            unit="°C"
-            extraLines={[
-              { label: 'Upper Bound', value: specHigh},
-              { label: 'Lower Bound', value: specLow}
-            ]}
-          />
-        </Module>
-        
-        <Module name={"Com. Biochar Produced (kg)"} spanColumn={4} spanRow={2}>
-          <Figure value={totalWeightARA} variant="2" unit="kg" decimals={0} />
-        </Module>
+          <Module name="Reactor 2 Avg. Temp" spanColumn={3} spanRow={1}>
+            <Figure title="Reactor 2 Avg. Temp" value={avg2} unit="°C" />
+          </Module>
 
-        <Module name={"Avg. Heat Generated (per hour)"} spanColumn={4} spanRow={2}>
-          <Figure value={dailyHeatGenARA/24} variant="2" unit="kW"/>
-        </Module>
+          <Module name="Reactor 1 Temp" spanColumn={12} spanRow={4}>
+            <ChartMod
+              isTimeAxis={mode === 'single'}
+              title={mode === 'single'
+                ? 'Reactor 1 Temps by Time'
+                : 'Avg Reactor 1 Temp by Day'}
+              labels={mode === 'single' ? r1SingleLabels : r1RangeLabels}
+              dataPoints={mode === 'single'
+                ? r1SingleLabels.map((t, i) => ({ x:`${singleDate}T${t}`, y: r1SingleData[i] }))
+                : r1RangeLabels.map((d, i) => ({ x: d, y: r1RangeData[i] }))}
+              unit="°C"
+              extraLines={[
+                { label: 'Upper Bound', value: specHigh },
+                { label: 'Lower Bound', value: specLow }
+              ]}
+            />
+          </Module>
 
-        <Module name={"Avg. Heat Generated (daily)"} spanColumn={4} spanRow={2}>
-          <Figure value={dailyHeatGenARA} variant="2" unit="kW"/>
-        </Module>
+          <Module name="Reactor 2 Temp" spanColumn={12} spanRow={4}>
+            <ChartMod
+              isTimeAxis={mode === 'single'}
+              title={mode === 'single'
+                ? 'Reactor 2 Temps by Time'
+                : 'Avg Reactor 2 Temp by Day'}
+              labels={mode === 'single' ? r2SingleLabels : r2RangeLabels}
+              dataPoints={mode === 'single'
+                ? r2SingleLabels.map((t, i) => ({ x:`${singleDate}T${t}`, y: r2SingleData[i] }))
+                : r2RangeLabels.map((d, i) => ({ x: d, y: r2RangeData[i] }))}
+              unit="°C"
+              extraLines={[
+                { label: 'Upper Bound', value: specHigh },
+                { label: 'Lower Bound', value: specLow }
+              ]}
+            />
+          </Module>
 
-        <Module name={"Fault Messages"} spanColumn={12} spanRow={3}>
-          <FaultMessages messages={faultMessagesARA} wrapperSize="full"/>
-        </Module>
+          <Module name="Com. Biochar Produced (kg)" spanColumn={4} spanRow={2}>
+            <Figure value={bagTotalWeight} variant="2" unit="kg" decimals={0} />
+          </Module>
 
-        <Module name={"Avg. Biomass MC"} spanColumn={4} spanRow={1}>
-          <Figure value={avgMCARA} unit = {""} />
-        </Module>
-        <Module name={"Biochar (Overflow)"} spanColumn={4} spanRow={1}>
-          <Figure value={dailyHeatGenARA} unit="kW"/>
-        </Module>
-        <Module name={"Biochar (Total Weight)"} spanColumn={4} spanRow={1}>
-          <Figure value={dailyHeatGenARA} unit="kW"/>
-        </Module>
+          <Module name="Avg. Heat Generated (per hour)" spanColumn={4} spanRow={2}>
+            <Figure value={dailyHeatGenARA / 24} variant="2" unit="kW" />
+          </Module>
 
-        <Module name={"Heat Monitor"} spanColumn={12} spanRow={4}>
-          <ChartMod
-            isTimeAxis={mode === 'single'}
-            title={
-              mode === 'single'
+          <Module name="Avg. Heat Generated (daily)" spanColumn={4} spanRow={2}>
+            <Figure value={dailyHeatGenARA} variant="2" unit="kW" />
+          </Module>
+
+          <Module name="Fault Messages" spanColumn={12} spanRow={3}>
+            <FaultMessages messages={faultMessagesARA} wrapperSize="full" />
+          </Module>
+
+          <Module name="Avg. Biomass MC" spanColumn={4} spanRow={1}>
+            <Figure value={bagAvgMC} unit="" />
+          </Module>
+          <Module name="Biochar (Overflow)" spanColumn={4} spanRow={1}>
+            <Figure value={dailyHeatGenARA} unit="kW" />
+          </Module>
+          <Module name="Biochar (Total Weight)" spanColumn={4} spanRow={1}>
+            <Figure value={dailyHeatGenARA} unit="kW" />
+          </Module>
+
+          <Module name="Heat Monitor" spanColumn={12} spanRow={4}>
+            <ChartMod
+              isTimeAxis={mode === 'single'}
+              title={mode === 'single'
                 ? 'Heat Meter readings by Time'
-                : 'Max Meter reading by Day'
-            }
-            labels={
-              mode === 'single'
-                // labels are ISO‐times "HH:MM:SS" → trim to "HH:MM"
-                ? sensorLabels.map(t => t.slice(0,5)).reverse()
-                : sensorLabels
-            }
-            dataPoints={
-              mode === 'single'
-                // turn "HH:MM:SS" → Date on arbitrary day for time axis
-                ? sensorLabels.map((t, i) => ({
-                    x: new Date(`1970-01-01T${t}`),
-                    y: sensorData[i]
-                  })).reverse()
-                : sensorLabels.map((date, i) => ({
-                    x: date,      // "YYYY-MM-DD"
-                    y: sensorData[i]
-                  }))
-            }
-            unit="Kwh"  // or "kWh", "W", etc.
-          />
-        </Module>
-      </div>
-    </ModuleMain>
-  </div>
+                : 'Max Meter reading by Day'}
+              labels={mode === 'single'
+                ? sensorSingleLabels.map(t => t.slice(0,5)).reverse()
+                : sensorRangeLabels}
+              dataPoints={mode === 'single'
+                ? sensorSingleLabels.map((t, i) => ({ x: new Date(`1970-01-01T${t}`), y: sensorSingleData[i] })).reverse()
+                : sensorRangeLabels.map((d, i) => ({ x: d, y: sensorRangeData[i] }))}
+              unit="kWh"
+            />
+          </Module>
+        </div>
+      </ModuleMain>
+    </div>
   );
 };
 

@@ -1,72 +1,77 @@
-import React, { useState, useEffect, useRef, useContext} from 'react';
+import React, { useState } from 'react';
 import styles from './DataAnalysisPage.module.css';
-import Module from '../Module.js';
 import ScreenHeader from "../ScreenHeader.js";
-import ModuleMain from '../ModuleMain.js'
+import ModuleMain from '../ModuleMain.js';
+import Module from '../Module.js';
 import ChartMod from '../ChartMod.js';
 import Figure from '../Figure.js';
-import DateSelector from '../DateSelector.js'
+import DateSelector from '../DateSelector.js';
 import CharcodesList from '../CharcodesList.js';
-import FaultMessages from '../FaultMessages.js';
-import { DataAnalysisContext } from '../DataAnalysisContext.js';
+import FaultMessages from '../FaultMessages';
+import { useFilterDispatch, useFilters, ACTIONS } from '../../contexts/FilterContext';
+import { useSiteNames } from '../../hooks/useSiteNames';
+import { useTempDataRows } from '../../hooks/useTempDataRows'
+import { useBagDataRows } from '../../hooks/useBagDataRows';
+import { useAvgTemps } from '../../hooks/useAvg.js';
+import { useSingleTempChart } from '../../hooks/useSingleTempChart';
+import { useRangeTempChart } from '../../hooks/useRangeTempChart';
 
 const DataAnalysisPageJNR = () => {
-  // 1) date picker state
-  const [mode, setMode] = useState('single');    // 'single' or 'range'
+  const dispatch = useFilterDispatch();
+  const [specHigh, setSpecHigh] = useState(780); 
+  const [specLow, setSpecLow] = useState(520);
+
+  const [expanded, setExpanded] = useState(false);
+  const [isRange, setIsRange] = useState(false);
   const [singleDate, setSingleDate] = useState('');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
-  const [isToggleOn, setIsToggleOn] = useState(false);
-  const [expanded, setExpanded] = useState(false);
-  const[specHigh, setSpecHigh] = useState(780); 
-  const[specLow, setSpecLow] = useState(520); 
+  const [fetchToggle, setFetchToggle] = useState(false);
 
-  const { fetchAndProcessData,
-    dataTempsJNR, 
-    dataTempsJNR2, 
-    charcodesJNR, 
-    formTempsJNR,
-    dataBioMCJNR,
-    chart1LabelsJNR,
-    chart2LabelsJNR,
-    chart1DataJNR,
-    chart2DataJNR,
-    dailyHeatGenJNR,
-    faultMessagesJNR,
-    totalWeightJNR,
-    avgMCJNR,
-  } = useContext(DataAnalysisContext);
-  
+  // pull rows whenever fetchToggle flips
+  const bagRows = useBagDataRows('JNR', fetchToggle);
+  const tempRows = useTempDataRows('JNR', fetchToggle);
+  const [avg1, avg2, avg5, bagAvgWeight, bagAvgMC, bagTotalWeight] = useAvgTemps(tempRows, bagRows);
+  const { labels: r1SingleLabels, data: r1SingleData } = useSingleTempChart(tempRows, 't5_temp');
+  const { labels: r1RangeLabels, data: r1RangeData } = useRangeTempChart(tempRows, 't5_temp');
+  const { labels: r2SingleLabels, data: r2SingleData } = useSingleTempChart(tempRows, 't5_temp');
+  const { labels: r2RangeLabels, data: r2RangeData } = useRangeTempChart(tempRows, 't5_temp');
 
-  // date-filter helper
-  const inWindow = (d) => {
-    if (mode === 'single') {
-      return d === singleDate;
-    }
-    return d >= fromDate && d <= toDate;
-  };
+  // placeholders—replace or move into context as needed
+  const charcodesARA = [];
+  const dailyHeatGenARA = 23;
+  const faultMessagesARA = [];
+  const totalWeightARA = 23;
+  const avgMCARA = 23;
 
-  useEffect(() => {
-    setMode(isToggleOn ? 'range' : 'single');
-  }, [isToggleOn]);
+  const mode = isRange ? 'range' : 'single';
 
   const handleFetch = () => {
     if (mode === 'single' && !singleDate) return alert('Pick a date');
     if (mode === 'range' && (!fromDate || !toDate)) return alert('Pick both start and end dates');
-  
-    fetchAndProcessData({ mode, singleDate, fromDate, toDate });
+
+    dispatch({ type: ACTIONS.SET_MODE, payload: mode });
+    dispatch({ type: ACTIONS.SET_SINGLE_DATE, payload: singleDate });
+    dispatch({ type: ACTIONS.SET_FROM_DATE, payload: fromDate });
+    dispatch({ type: ACTIONS.SET_TO_DATE, payload: toDate });
+    setTimeout(() => { dispatch({ type: ACTIONS.RESET_FILTERS }); }, 10);
+
+    // toggle to re-trigger data hooks
+    setFetchToggle(true);
+    setTimeout(() => setFetchToggle(false), 10); 
   };
+
 
   return (
     <div className={styles.mainWhiteContainer}>
       <ScreenHeader name={"Data Analysis Dashboard JNR"} />
       <ModuleMain>
         <DateSelector
-          isRange={isToggleOn}
+          isRange={isRange}
           singleDate={singleDate}
           fromDate={fromDate}
           toDate={toDate}
-          onToggle={() => setIsToggleOn(prev => !prev)}
+          onToggle={() => setIsRange(prev => !prev)}
           onChange={(type, value) => {
             if (type === 'single') setSingleDate(value);
             if (type === 'from') setFromDate(value);
@@ -74,43 +79,32 @@ const DataAnalysisPageJNR = () => {
           }}
           onFetch={handleFetch}
         />
-  
+
         <div className={styles.contentGrid}>
-          <Module name={"Reactor 1 Avg. Temp"} spanColumn={3} spanRow={1}>
-            <Figure value={dataTempsJNR} />
+          <Module name="T5 Avg. Temp" spanColumn={3} spanRow={1}>
+            <Figure title="T5 Avg. Temp" value={avg5} unit="°C" />
           </Module>
-  
+
           <CharcodesList
-            spanColumn={21}
-            charcodes={charcodesJNR}
+            charcodes={bagRows}
             expanded={expanded}
             onToggle={() => setExpanded(prev => !prev)}
           />
-  
-          <Module name={"Reactor 2 Avg. Temp"} spanColumn={3} spanRow={1}>
-            <Figure value={dataTempsJNR2} />
+
+          <Module name="T5 Avg. Temp" spanColumn={3} spanRow={1}>
+            <Figure title="T5 Avg. Temp" value={avg5} unit="°C" />
           </Module>
-  
-          <Module name={"T5 Pyrolysis Temperature"} spanColumn={12} spanRow={4}>
+
+          <Module name="T5 Temp" spanColumn={12} spanRow={4}>
             <ChartMod
-              isTimeAxis={mode === 'single' ? 'true' : false}
-              title={mode === 'single' ? 'Reactor 1 Temps by Time' : 'Avg Reactor 1 Temp by Day'}
-              labels={
-                mode === 'single'
-                  ? chart1LabelsJNR.map(time => time.split(':').slice(0, 2).join(':')).reverse()
-                  : chart1LabelsJNR
-              }
-              dataPoints={
-                mode === 'single'
-                  ? chart2LabelsJNR.map((time, i) => ({
-                      x: new Date(`1970-01-01T${time}`),
-                      y: Number(chart1DataJNR[i])
-                    })).reverse()
-                  : chart1LabelsJNR.map((date, i) => ({
-                      x: date,
-                      y: Number(chart1DataJNR[i])
-                    }))
-              }
+              isTimeAxis={mode === 'single'}
+              title={mode === 'single'
+                ? 'T5 Temps by Time'
+                : 'Avg T5 Temp by Day'}
+              labels={mode === 'single' ? r1SingleLabels : r1RangeLabels}
+              dataPoints={mode === 'single'
+                ? r1SingleLabels.map((t, i) => ({ x: `${singleDate}T${t}`, y: r1SingleData[i] }))
+                : r1RangeLabels.map((d, i) => ({ x: d, y: r1RangeData[i] }))}
               unit="°C"
               extraLines={[
                 { label: 'Upper Bound', value: specHigh },
@@ -118,27 +112,17 @@ const DataAnalysisPageJNR = () => {
               ]}
             />
           </Module>
-  
-          <Module name={"T5 Pyrolysis Temperature"} spanColumn={12} spanRow={4}>
+
+          <Module name="T5 Temp" spanColumn={12} spanRow={4}>
             <ChartMod
-              isTimeAxis={mode === 'single' ? 'true' : false}
-              title={mode === 'single' ? 'Reactor 1 Temps by Time' : 'Avg Reactor 1 Temp by Day'}
-              labels={
-                mode === 'single'
-                  ? chart1LabelsJNR.map(time => time.split(':').slice(0, 2).join(':')).reverse()
-                  : chart1LabelsJNR
-              }
-              dataPoints={
-                mode === 'single'
-                  ? chart2LabelsJNR.map((time, i) => ({
-                      x: new Date(`1970-01-01T${time}`),
-                      y: Number(chart1DataJNR[i])
-                    })).reverse()
-                  : chart1LabelsJNR.map((date, i) => ({
-                      x: date,
-                      y: Number(chart1DataJNR[i])
-                    }))
-              }
+              isTimeAxis={mode === 'single'}
+              title={mode === 'single'
+                ? 'T5 Temps by Time'
+                : 'Avg T5 Temp by Day'}
+              labels={mode === 'single' ? r2SingleLabels : r2RangeLabels}
+              dataPoints={mode === 'single'
+                ? r2SingleLabels.map((t, i) => ({ x: `${singleDate}T${t}`, y: r2SingleData[i] }))
+                : r2RangeLabels.map((d, i) => ({ x: d, y: r2RangeData[i] }))}
               unit="°C"
               extraLines={[
                 { label: 'Upper Bound', value: specHigh },
@@ -146,33 +130,31 @@ const DataAnalysisPageJNR = () => {
               ]}
             />
           </Module>
-  
-          <Module name={"Com. Biochar Produced (kg)"} spanColumn={4} spanRow={2}>
-            <Figure value={totalWeightJNR} variant="2" unit="kg" decimals={0} />
+
+          <Module name="Com. Biochar Produced (kg)" spanColumn={4} spanRow={2}>
+            <Figure value={bagTotalWeight} variant="2" unit="kg" decimals={0} />
           </Module>
-  
-          <Module name={"Avg. Heat Generated (per hour)"} spanColumn={4} spanRow={2}>
-            <Figure value={dailyHeatGenJNR/24} variant="2" unit="kW"/>
+
+          <Module name="Avg. Heat Generated (per hour)" spanColumn={4} spanRow={2}>
+            <Figure value={dailyHeatGenARA / 24} variant="2" unit="kW" />
           </Module>
-  
-          <Module name={"Avg. Heat Generated (daily)"} spanColumn={4} spanRow={2}>
-            <Figure value={dailyHeatGenJNR} variant="2" unit="kW" />
+
+          <Module name="Avg. Heat Generated (daily)" spanColumn={4} spanRow={2}>
+            <Figure value={dailyHeatGenARA} variant="2" unit="kW" />
           </Module>
-  
-          <Module name={"Fault Messages"} spanColumn={12} spanRow={3}>
-            <FaultMessages messages={faultMessagesJNR} wrapperSize = "full" />
+
+          <Module name="Fault Messages" spanColumn={12} spanRow={3}>
+            <FaultMessages messages={faultMessagesARA} wrapperSize="full" />
           </Module>
-  
-          <Module name={"Biomass MC"} spanColumn={4} spanRow={1}>
-            <Figure value={avgMCJNR} unit = "" />
+
+          <Module name="Avg. Biomass MC" spanColumn={4} spanRow={1}>
+            <Figure value={bagAvgMC} unit="" />
           </Module>
-  
-          <Module name={"Biochar (Overflow)"} spanColumn={4} spanRow={1}>
-            <Figure value={dataTempsJNR2} />
+          <Module name="Biochar (Overflow)" spanColumn={4} spanRow={1}>
+            <Figure value={dailyHeatGenARA} unit="kW" />
           </Module>
-  
-          <Module name={"Biochar (Total Weight)"} spanColumn={4} spanRow={1}>
-            <Figure value={dataTempsJNR2} />
+          <Module name="Biochar (Total Weight)" spanColumn={4} spanRow={1}>
+            <Figure value={dailyHeatGenARA} unit="kW" />
           </Module>
         </div>
       </ModuleMain>

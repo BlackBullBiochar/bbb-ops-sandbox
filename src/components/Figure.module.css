@@ -25,3 +25,17 @@
     align-items: center;
     text-align: center;
   }
+
+    .Figure3{
+    margin: 0;
+    font-family: "TruenoRg";
+    font-size: 2vw;
+    font-weight: normal;
+    color: var(--leafDark);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-top: 0rem;
+  }

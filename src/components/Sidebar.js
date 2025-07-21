@@ -75,6 +75,16 @@ const Sidebar = () => {
           Charcode Summary  
         </NavLink>
         </li>
+        <li>
+        <NavLink
+          to="/Plant-Summary"
+          className={({ isActive }) =>
+            isActive ? styles.menuItemSelected : styles.menuItem
+          }
+        >
+          Plant Summary
+        </NavLink>
+        </li>
       </ul>
     </div>
   );

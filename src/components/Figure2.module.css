@@ -22,14 +22,15 @@
     width: 100%;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end;
     text-align: center;
   }
 
   .value {
   color: var(--leafDark);   /* e.g. red for the number */
   font-weight: bold;
-  padding-left: 0.3rem
+  padding-left: 0.3rem;
+  margin-bottom: 0.2rem;
 }
 
 .unit {

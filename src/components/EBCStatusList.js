@@ -17,17 +17,13 @@ const EbcStatusList = ({ charcodeId, ebcEntries = [], onDeleted }) => {
         <colgroup>
           <col style={{ width: '15%' }} />
           <col style={{ width: '50%' }} />
-          <col style={{ width: '15%' }} />
-          <col style={{ width: '10%' }} />
-          <col style={{ width: '10%' }} />
+          <col style={{ width: '35%' }} />
         </colgroup>
         <thead>
           <tr>
             <th>Status</th>
             <th>Reason</th>
             <th>Date</th>
-            <th>Time</th>
-            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -35,36 +31,7 @@ const EbcStatusList = ({ charcodeId, ebcEntries = [], onDeleted }) => {
             <tr key={`${entry.date}-${entry.time}-${entry.status}`}> 
               <td>{entry.status}</td>
               <td>{entry.reason}</td>
-              <td>{entry.date}</td>
-              <td>{entry.time}</td>
-              <td>
-                <Button
-                  name="Delete"
-                  color="Error"
-                  size="small"
-                  onPress={async () => {
-                    if (!window.confirm("Delete this status entry?")) return;
-                    try {
-                      const res = await fetch(
-                        `${API}/ebc/status/${charcodeId}/${encodeURIComponent(entry.date)}/${encodeURIComponent(entry.time)}`,
-                        {
-                          method: 'DELETE',
-                          headers: {
-                            Authorization: `Bearer ${user.token}`,
-                          },
-                        }
-                      );
-                      if (!res.ok) {
-                        console.error("Failed to delete status entry");
-                        return;
-                      }
-                      onDeleted(entry._id);
-                    } catch (err) {
-                      console.error("❌ Delete error:", err);
-                    }
-                  }}
-                />
-              </td>
+              <td>{entry.created_date}</td>
             </tr>
           ))}
         </tbody>

@@ -102,11 +102,11 @@ const sucDelPercent = totalDeliveries > 0
                 </Module>
                 <Module name="Ahlstrom Bags" spanColumn={6} spanRow={2}>
                   <PieChart data={araData} labels={labels}/>
-                  <Figure2 title="ARA" value={araFlaggedPercent} unit="%" blurb="of bags were late"/>
+                  <Figure2 title="ARA" value={araFlaggedPercent} unit="%" blurb="of bags were on time"/>
                 </Module>
                 <Module name="Jenkinson Bags" spanColumn={6} spanRow={2}>
                   <PieChart data={jnrData} labels={labels}/>
-                  <Figure2 title="ARA" value={jnrFlaggedPercent} unit="%" blurb="of bags were late"/>
+                  <Figure2 title="ARA" value={jnrFlaggedPercent} unit="%" blurb="of bags were on time"/>
                 </Module>
                 <Module name="Jenkinson Bagging Performance" spanColumn={12} spanRow={1}>
                   <Figure2 title="ARA" value={jnrFlaggedBags} unit="" variant = '2' blurb="Bags logged more than 3 days after production"/>

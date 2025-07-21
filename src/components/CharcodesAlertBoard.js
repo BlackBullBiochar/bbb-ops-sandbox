@@ -1,8 +1,6 @@
-// CharcodesAlertBoard.jsx
 import React, { useState } from 'react';
 import styles from './CharcodesAlertBoard.module.css';
 import CharcodeOverlayCard from './CharcodeOverlayCard';
-import CharcodeOverlayCardJNR from './CharcodeOverlayCardJNR';
 import SiteSelector from './SiteSelector';
 
 const CharcodesAlertBoard = ({ charcodes = [] }) => {
@@ -21,16 +19,14 @@ const CharcodesAlertBoard = ({ charcodes = [] }) => {
     );
   };
 
-  // 1) Pick out the currently expanded charcode object:
+  // 1) Get expanded charcode and derive mode/date
   const expandedCharcode = expanded !== null ? charcodes[expanded] : null;
-
-  // 2) Derive “mode” and “date” from expandedCharcode:
   const mode = expandedCharcode ? 'single' : null;
-  const date = expandedCharcode 
+  const date = expandedCharcode
     ? String(expandedCharcode.bagging_date).split('T')[0]
     : null;
 
-  // 3) Group all charcodes by their EBC status (lowercased), and tag each with its array index:
+  // 2) Group by latest non-deleted EBC status
   const grouped = {
     approved: [],
     flagged: [],
@@ -40,15 +36,32 @@ const CharcodesAlertBoard = ({ charcodes = [] }) => {
   };
 
   charcodes.forEach((c, idx) => {
-    const status = (c.ebcCertStatus || '').toLowerCase();
-    if (status === 'approved') grouped.approved.push({ ...c, _index: idx });
-    else if (status === 'flagged') grouped.flagged.push({ ...c, _index: idx });
-    else if (status === 'post-approved') grouped.postApproved.push({ ...c, _index: idx });
-    else if (status === 'rejected') grouped.rejected.push({ ...c, _index: idx });
-    else grouped.pending.push({ ...c, _index: idx });
+    // filter and sort statuses
+    const active = (c.ebcStatuses || []).filter(s => !s.is_deleted);
+    active.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+    const status = active.length ? active[0].status : 'Pending';
+    const norm = status.toLowerCase();
+
+    const item = { ...c, _index: idx, ebcCertStatus: status };
+    switch (norm) {
+      case 'approved':
+        grouped.approved.push(item);
+        break;
+      case 'flagged':
+        grouped.flagged.push(item);
+        break;
+      case 'post-approved':
+        grouped.postApproved.push(item);
+        break;
+      case 'rejected':
+        grouped.rejected.push(item);
+        break;
+      default:
+        grouped.pending.push(item);
+    }
   });
 
-  // 4) Render one section of preview‐cards:
+  // 3) Render a section if visible
   const renderSection = (key, label, cards) =>
     visibleGroups.includes(key) && (
       <div className={styles.section} key={key}>
@@ -58,9 +71,7 @@ const CharcodesAlertBoard = ({ charcodes = [] }) => {
             <CharcodePreviewCard
               key={parsed._index}
               parsed={parsed}
-              onClick={() => {
-                setExpanded(parsed._index);
-              }}
+              onClick={() => setExpanded(parsed._index)}
             />
           ))}
         </div>
@@ -87,10 +98,9 @@ const CharcodesAlertBoard = ({ charcodes = [] }) => {
       {renderSection('postApproved', 'Post-Approved', grouped.postApproved)}
       {renderSection('rejected', 'Rejected', grouped.rejected)}
 
-      {/* If we have an expandedCharcode, render the correct overlay: */}
+      {/* Expanded overlay card */}
       {expandedCharcode && (() => {
-        const siteCode = (expandedCharcode._site || '')
-        if (siteCode === '6661c6cc2e943e2babeca581') {
+        const siteCode = String(expandedCharcode._site);
           return (
             <CharcodeOverlayCard
               mode={mode}
@@ -100,30 +110,10 @@ const CharcodesAlertBoard = ({ charcodes = [] }) => {
               site={siteCode}
             />
           );
-        } else if (siteCode === '6661c6bd2e943e2babec9b4d') {
-          return (
-            <CharcodeOverlayCardJNR
-              mode={mode}
-              date={date}
-              parsed={expandedCharcode}
-              onClose={() => setExpanded(null)}
-              site={siteCode}
-            />
-          );
-        } else {
-          // Fallback if site is missing or unrecognized:
-          return (
-            <div className={styles.overlayFallback}>
-              <button onClick={() => setExpanded(null)}>Close</button>
-              <p>No overlay available for site “{expandedCharcode.site}”.</p>
-            </div>
-          );
-        }
       })()}
     </div>
   );
 };
-
 
 const CharcodePreviewCard = ({ parsed, onClick }) => (
   <div
@@ -146,16 +136,12 @@ const CharcodePreviewCard = ({ parsed, onClick }) => (
       <strong>Produced: </strong>
       {parsed.bagging_date ? (
         new Date(parsed.bagging_date).toLocaleDateString('en-GB', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
+          day: 'numeric', month: 'long', year: 'numeric'
         })
-      ) : (
-        '—'
-      )}
+      ) : '—'}
     </div>
     <div>
-      <strong>ID:</strong> {parsed.ID || parsed['Charcode ID'] || parsed.charcode || 'N/A'}
+      <strong>ID:</strong> {parsed.charcode || 'N/A'}
     </div>
   </div>
 );

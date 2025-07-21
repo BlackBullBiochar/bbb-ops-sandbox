@@ -1,250 +1,73 @@
-// UploadDataPage.jsx
-import React, { useEffect, useState, useContext } from "react";
-import styles from "./UploadDataPage.module.css";
-import ScreenHeader from "../ScreenHeader.js";
-import ModuleMain from "../ModuleMain.js";
-import { UserContext } from "../../UserContext.js";
-import { API } from '../../config/api';
+import React, { useState} from 'react';
+import styles from './uploadDataPage.module.css';
+import ScreenHeader from '../ScreenHeader';
+import ModuleMain from '../ModuleMain';
+import DateSelector from '../DateSelector';
+import { useUploadedFiles } from '../../hooks/useUploadedFiles';
+import { useSiteNames } from '../../hooks/useSiteNames';
+import { useFilterDispatch, ACTIONS } from '../../contexts/FilterContext';
 
-const UploadedDataPage = () => {
-  const { user } = useContext(UserContext);
+const UploadDataPage = () => {
+  const dispatch = useFilterDispatch();
+  const siteNames = useSiteNames();
+  const [isRange, setIsRange] = useState(false);
+  const [singleDate, setSingleDate] = useState('');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+  const [fetchTriggered, setFetchTriggered] = useState(false);
+  const mode = isRange ? 'range' : 'single';
 
-  // State for tempData buckets vs. form buckets, both keyed by "site-year-month"
-  const [tempBuckets, setTempBuckets] = useState({});
-  const [formBuckets, setFormBuckets] = useState({});
+  const dataHook = useUploadedFiles('data', fetchTriggered);
 
-  // Which buckets are expanded
-  const [expanded, setExpanded] = useState([]);
-
-  // Cache of fetched rows for each bucket
-  const [rowsCache, setRowsCache] = useState({});
-
-  useEffect(() => {
-    if (!user.token || !API) return;
-
-    // 1) Fetch tempData buckets
-    fetch(`${API}/tempData`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-      },
-    })
-      .then((r) => {
-        if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
-        return r.json();
-      })
-      .then((json) => {
-        // Expect: { success: true, data: { uploads: [ { site, year, month, data: [...] }, … ] } }
-        const uploads = (json.data && json.data.uploads) || [];
-        const m = {};
-        uploads.forEach((doc) => {
-          const key = `${doc.site}-${doc.year}-${doc.month}`;
-          m[key] = doc;
-        });
-        setTempBuckets(m);
-      })
-      .catch((err) => {
-        console.error("TempData fetch error:", err);
-      });
-
-    // 2) Fetch form-data buckets (now grouped by site/year/month)
-    fetch(`${API}/forms`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-      },
-    })
-      .then((r) => {
-        if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
-        return r.json();
-      })
-      .then((json) => {
-        let uploads = Array.isArray(json) ? json : null;
-        if (!uploads && json.data && Array.isArray(json.data)) {
-          uploads = json.data;
-        }
-        const m = {};
-        uploads.forEach((doc) => {
-          const key = `${doc.site}-${doc.year}-${doc.month}`;
-          m[key] = doc;
-        });
-        setFormBuckets(m);
-      })
-      .catch((err) => {
-        console.error("Forms fetch error:", err);
-      });
-  }, [user.token, API]);
-
-  // Toggle expansion for a bucket; fetch detailed rows on first expand
-  const toggle = async (source, type) => {
-    if (!user.token || !API) return;
-
-    if (!expanded.includes(source)) {
-      // First time expanding: fetch rows
-      const [site, year, month] = source.split("-");
-      let url;
-      if (type === "data") {
-        url = `${API}/tempData/data?site=${site}&year=${year}&month=${month}`;
-      } else {
-        url = `${API}/forms/data?site=${site}&year=${year}&month=${month}`;
-      }
-
-      try {
-        const res = await fetch(url, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-          },
-        });
-        if (!res.ok) {
-          throw new Error(`${res.status} ${res.statusText}`);
-        }
-        const payload = await res.json();
-        // Both endpoints return { success: true, data: { data: [...] } }
-        const dataRows = (payload.data && Array.isArray(payload.data.data))
-          ? payload.data.data
-          : [];
-        setRowsCache((prev) => ({ ...prev, [source]: dataRows }));
-      } catch (err) {
-        console.error(`${type} toggle fetch failed:`, err);
-      }
-    }
-
-    setExpanded((list) =>
-      list.includes(source) ? list.filter((x) => x !== source) : [...list, source]
-    );
-  };
-
-  // Delete a bucket (tempData or forms)
-  const handleDelete = async (source, type) => {
-    if (!window.confirm(`Delete all ${type} for "${source}"?`)) return;
-    if (!user.token || !API) return;
-
-    const [site, year, month] = source.split("-");
-    let url;
-    if (type === "data") {
-      url = `${API}/tempData?site=${site}&year=${year}&month=${month}`;
+  const handleFetch = () => {
+    if (mode === 'single' && !singleDate) return alert('Pick a date');
+    if (mode === 'range' && (!fromDate || !toDate)) return alert('Pick both start and end dates');
+    dispatch({ type: ACTIONS.SET_MODE, payload: mode });
+    if (mode === 'single') {
+      dispatch({ type: ACTIONS.SET_SINGLE_DATE, payload: singleDate });
     } else {
-      url = `${API}/forms?site=${site}&year=${year}&month=${month}`;
+      dispatch({ type: ACTIONS.SET_FROM_DATE, payload: fromDate });
+      dispatch({ type: ACTIONS.SET_TO_DATE, payload: toDate });
     }
-
-    try {
-      const res = await fetch(url, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
-      });
-      if (!res.ok) {
-        throw new Error(`Delete failed: ${res.status} ${res.statusText}`);
-      }
-
-      if (type === "data") {
-        setTempBuckets((prev) => {
-          const copy = { ...prev };
-          delete copy[source];
-          return copy;
-        });
-      } else {
-        setFormBuckets((prev) => {
-          const copy = { ...prev };
-          delete copy[source];
-          return copy;
-        });
-      }
-      setExpanded((list) => list.filter((x) => x !== source));
-      setRowsCache((prev) => {
-        const copy = { ...prev };
-        delete copy[source];
-        return copy;
-      });
-    } catch (err) {
-      console.error(`${type} delete error:`, err);
-    }
+    setFetchTriggered(true);
   };
 
-  // Render one bucket (either tempData or forms)
-  const renderTable = (source, summary, type) => {
-    const isOpen = expanded.includes(source);
-    const cachedRows = rowsCache[source] ?? [];
-    // Until expanded, we show only summary.data for tempData; for forms we show nothing until expanded
-    const fallbackRows =
-      type === "data" && Array.isArray(summary.data) ? summary.data : [];
-    const rows = cachedRows.length > 0 ? cachedRows : fallbackRows;
-
-    const headers = rows.length
-      ? Object.keys(rows[0]).filter((k) => k !== "_id" && k !== "__v")
+  const renderTable = (bucketId, summary, hook) => {
+    const isOpen = hook.expanded.includes(bucketId);
+    const rows = hook.rowsCache[bucketId] || [];
+    const headers = rows.length > 0
+      ? Object.keys(rows[0]).filter(h => h !== '_id')
       : [];
 
+    const siteName = siteNames[summary._site] || summary._site;
+    const dateTitle = summary.date
+      ? new Date(summary.date).toLocaleDateString()
+      : `${summary.year}-${String(summary.month).padStart(2, '0')}`;
+    const title = `${siteName} — ${dateTitle}`;
+
     return (
-      <div
-        key={`${type}-${source}`}
-        style={{
-          marginBottom: "1rem",
-          border: "1px solid #ccc",
-          borderRadius: "6px",
-          padding: "1rem",
-        }}
-      >
+      <div key={bucketId} className={styles.bucketContainer}>
         <div
-          className={styles.detailsRowSectionHeader}
-          onClick={() => toggle(source, type)}
-          style={{
-            cursor: "pointer",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
+          className={styles.bucketHeader}
+          onClick={() => hook.toggleBucket(bucketId)}
         >
-          <div>
-            <strong>{source}</strong> &nbsp;|&nbsp;{" "}
-            {type === "data"
-              ? `Updated: ${new Date(summary.updated || summary.created).toLocaleString()}`
-              : `Updated: ${new Date(summary.uploadDate || summary.created).toLocaleString()}`}
-          </div>
+          <div className = {styles.titleBig}>{title}</div>
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDelete(source, type);
-            }}
-            style={{
-              backgroundColor: "red",
-              color: "white",
-              border: "none",
-              padding: "0.4rem 0.8rem",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
+            className={styles.deleteButton}
+            onClick={e => { e.stopPropagation(); hook.deleteBucket(bucketId); }}
           >
             Delete
           </button>
         </div>
-
         {isOpen && (
-          <table
-            border="1"
-            cellPadding="8"
-            style={{
-              width: "100%",
-              fontSize: "1rem",
-              marginTop: "0.5rem",
-              borderCollapse: "collapse",
-            }}
-          >
+          <table className={styles.table}>
             <thead>
-              <tr>
-                {headers.map((h) => (
-                  <th key={h}>{h}</th>
-                ))}
-              </tr>
+              <tr>{headers.map(h => <th key={h}>{h}</th>)}</tr>
             </thead>
             <tbody>
-              {rows.map((row, i) => (
-                <tr key={i}>
-                  {headers.map((h) => (
-                    <td key={h}>{String(row[h])}</td>
-                  ))}
+              {rows.map((row, idx) => (
+                <tr key={idx}>
+                  {headers.map(h => <td key={h}>{row[h]}</td>)}
                 </tr>
               ))}
             </tbody>
@@ -255,35 +78,32 @@ const UploadedDataPage = () => {
   };
 
   return (
-    <div className={styles.mainWhiteContainer} style={{ padding: 0, margin: 0 }}>
+    <div className={styles.container}>
       <ScreenHeader name="Uploaded Data" />
       <ModuleMain>
-        {/* ‒‒‒ TEMP DATA UPLOADS SECTION ‒‒‒ */}
-        <div style={{ marginBottom: "2rem" }}>
-          <h3>Data Uploads</h3>
-          {Object.entries(tempBuckets).length > 0 ? (
-            Object.entries(tempBuckets).map(([key, bucket]) =>
-              renderTable(key, bucket, "data")
-            )
-          ) : (
-            <p>No data uploads found.</p>
-          )}
-        </div>
+        <DateSelector
+          isRange={isRange}
+          singleDate={singleDate}
+          fromDate={fromDate}
+          toDate={toDate}
+          onToggle={() => setIsRange(prev => !prev)}
+          onChange={(type, value) => {
+            if (type === 'single') setSingleDate(value);
+            if (type === 'from') setFromDate(value);
+            if (type === 'to') setToDate(value);
+          }}
+          onFetch={handleFetch}
+        />
 
-        {/* ‒‒‒ FORM DATA UPLOADS SECTION ‒‒‒ */}
-        <div style={{ marginBottom: "2rem" }}>
-          <h3>Form Uploads</h3>
-          {Object.entries(formBuckets).length > 0 ? (
-            Object.entries(formBuckets).map(([key, bucket]) =>
-              renderTable(key, bucket, "forms")
-            )
-          ) : (
-            <p>No form uploads found.</p>
-          )}
-        </div>
+        <div className = {styles.titleBigger}>Temp Data Uploads</div>
+        {fetchTriggered && (
+          Object.entries(dataHook.buckets).length > 0
+            ? Object.entries(dataHook.buckets).map(([id, doc]) => renderTable(id, doc, dataHook))
+            : <p>No data uploads found.</p>
+        )}
       </ModuleMain>
     </div>
   );
 };
 
-export default UploadedDataPage;
+export default UploadDataPage;
