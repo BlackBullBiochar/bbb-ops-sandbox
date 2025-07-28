@@ -8,23 +8,22 @@ import SiteSelector from "../SiteSelector";
 import Figure2 from "../Figure2";
 import Figure from "../Figure";
 import ChartMod from "../ChartMod";
+import EditableFigure from "../EditableFigure.js";
+import EditableParagraph from "../EditableParagraph";
 import { useFilterDispatch, useFilters, ACTIONS } from '../../contexts/FilterContext';
-import { useSiteNames } from '../../hooks/useSiteNames';
 import { useTempDataRows } from '../../hooks/useTempDataRows';
 import { useBagDataRows } from '../../hooks/useBagDataRows';
-import { useAvgTemps } from '../../hooks/useAvg.js';
 import { useSingleRangeTempChart } from '../../hooks/useSingleRangeTempChart'
 import { useRangeTempChart } from '../../hooks/useRangeTempChart';
-import { useBagStats } from '../../hooks/useBagTotal.js';
+import { useBagStats } from '../../hooks/useBagtotal.js';
 import { useRunningHours } from '../../hooks/useTempTotal.js';
 import { useSensorReadings } from '../../hooks/useSensorReadings';
+import { useHeatTotal } from '../../hooks/useHeatTotal.js';
 
 
 const PlantSummaryView = () => {
   const dispatch = useFilterDispatch();
-
   const [expanded, setExpanded] = useState(false);
-  const [singleDate, setSingleDate] = useState('');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [fetchToggle, setFetchToggle] = useState(false)
@@ -69,23 +68,19 @@ const PlantSummaryView = () => {
   const chartRows    = Object.values(rawTempRows).flat();
   const sensorRows    = Object.values(rawSensoreReadings).flat();
 
-
+  const meterDelta = useHeatTotal(sensorRows, 'energy');
   const { totalWeight, bagCount } = useBagStats(rawBagRows);
   const { hours: ARArunningHours } = useRunningHours(rawTempRows, 520, 720, ['r1_temp','r2_temp']);
   const { hours: JNRrunningHours } = useRunningHours(rawTempRows, 520, 720, ['t5_temp']);
   const CO2perBag = 2.5003; // CO₂ removed per bag in tonnes
   const totalCO2 = (totalWeight * CO2perBag).toFixed(2);
-  console.log('Total CO₂ removed:', totalCO2, 't');
 
   const runningHours = selectedSite === 'ARA' ? ARArunningHours : JNRrunningHours;
 
   // for week mode we need full timestamps; build two series of {x:Date,y:number}
   // for week‐mode we use our new hook:
   const { labels: r1WeekLabels, data: r1WeekData } = useSingleRangeTempChart(chartRows, 'r1_temp');
-  const { labels: r2WeekLabels, data: r2WeekData } = useSingleRangeTempChart(
-      chartRows,
-      selectedSite === 'ARA' ? 'r2_temp' : 't5_temp'
-    );
+  const { labels: r2WeekLabels, data: r2WeekData } = useSingleRangeTempChart(chartRows, selectedSite === 'ARA' ? 'r2_temp' : 't5_temp');
 
 // still keep the hooks for range mode
   const { labels: r1RangeLabels, data: r1RangeData } = useRangeTempChart(chartRows, 'r1_temp');
@@ -158,15 +153,33 @@ const PlantSummaryView = () => {
       </div>
 
       <div className={styles.contentGrid}>
-        <Module name="Plant Updates" spanColumn={9} spanRow={2} />
+        <Module name="Plant Updates" spanColumn={9} spanRow={2}>
+          <EditableParagraph
+            initialText="Plant operating smoothly."
+            onSave={newText =>  newText}
+          />
+        </Module>
 
         <Module name="Running Hours" spanColumn={5} spanRow={1}>
           <Figure variant='3' value={runningHours} unit="" />
         </Module>
 
+        {selectedSite === "ARA" && (
         <Module name="Heat Usage" spanColumn={5} spanRow={1}>
-          <Figure variant='3' value={23544} unit="kWh"/>
+          <Figure variant='3' value={meterDelta} unit="kWh"/>
         </Module>
+        )}
+
+        {selectedSite === "JNR" && (
+        <Module name="Heat Usage" spanColumn={5} spanRow={1}>
+          <EditableFigure
+            initialValue={0}
+            unit="kWh"
+            variant="3"
+            decimals={1}
+          />
+        </Module>
+        )}
 
         <Module name="Biochar Produced (t)" spanColumn={5} spanRow={1}>
           <Figure variant='3' value={totalWeight} unit="t" />
@@ -181,7 +194,12 @@ const PlantSummaryView = () => {
         </Module>
 
         <Module name="Biomass Delivered" spanColumn={5} spanRow={1}>
-          <Figure variant='3' value={8} unit="t" blurb="Biomass delivered" />
+          <EditableFigure
+            initialValue={0}
+            unit="t"
+            variant="3"
+            decimals={1}
+          />
         </Module>
 
         {/* Reactor 1 Temps */}

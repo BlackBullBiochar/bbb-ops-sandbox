@@ -64,7 +64,7 @@ const DataAnalysisPageJNR = () => {
 
   return (
     <div className={styles.mainWhiteContainer}>
-      <ScreenHeader name={"Data Analysis Dashboard JNR"} />
+      <ScreenHeader name={"JNR Plant Dashboard"} />
       <ModuleMain>
         <DateSelector
           isRange={isRange}
@@ -113,48 +113,16 @@ const DataAnalysisPageJNR = () => {
             />
           </Module>
 
-          <Module name="T5 Temp" spanColumn={12} spanRow={4}>
-            <ChartMod
-              isTimeAxis={mode === 'single'}
-              title={mode === 'single'
-                ? 'T5 Temps by Time'
-                : 'Avg T5 Temp by Day'}
-              labels={mode === 'single' ? r2SingleLabels : r2RangeLabels}
-              dataPoints={mode === 'single'
-                ? r2SingleLabels.map((t, i) => ({ x: `${singleDate}T${t}`, y: r2SingleData[i] }))
-                : r2RangeLabels.map((d, i) => ({ x: d, y: r2RangeData[i] }))}
-              unit="°C"
-              extraLines={[
-                { label: 'Upper Bound', value: specHigh },
-                { label: 'Lower Bound', value: specLow }
-              ]}
-            />
-          </Module>
-
           <Module name="Com. Biochar Produced (kg)" spanColumn={4} spanRow={2}>
             <Figure value={bagTotalWeight} variant="2" unit="kg" decimals={0} />
           </Module>
 
-          <Module name="Avg. Heat Generated (per hour)" spanColumn={4} spanRow={2}>
-            <Figure value={dailyHeatGenARA / 24} variant="2" unit="kW" />
-          </Module>
-
-          <Module name="Avg. Heat Generated (daily)" spanColumn={4} spanRow={2}>
-            <Figure value={dailyHeatGenARA} variant="2" unit="kW" />
-          </Module>
-
-          <Module name="Fault Messages" spanColumn={12} spanRow={3}>
+          <Module name="Fault Messages" spanColumn={8} spanRow={4}>
             <FaultMessages messages={faultMessagesARA} wrapperSize="full" />
           </Module>
-
-          <Module name="Avg. Biomass MC" spanColumn={4} spanRow={1}>
+          
+          <Module name="Avg. Biomass MC" spanColumn={4} spanRow={2}>
             <Figure value={bagAvgMC} unit="" />
-          </Module>
-          <Module name="Biochar (Overflow)" spanColumn={4} spanRow={1}>
-            <Figure value={dailyHeatGenARA} unit="kW" />
-          </Module>
-          <Module name="Biochar (Total Weight)" spanColumn={4} spanRow={1}>
-            <Figure value={dailyHeatGenARA} unit="kW" />
           </Module>
         </div>
       </ModuleMain>

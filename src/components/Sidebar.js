@@ -1,4 +1,3 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
 import styles from './Sidebar.module.css';
 import logo from '../assets/images/bbbLogoWhite.png';
@@ -32,7 +31,7 @@ const Sidebar = () => {
             isActive ? styles.menuItemSelected : styles.menuItem
           }
         >
-          View Uploads
+          Upload History
         </NavLink>
         </li>
         <li>
@@ -42,7 +41,7 @@ const Sidebar = () => {
             isActive ? styles.menuItemSelected : styles.menuItem
           }
         >
-          Data Analysis ARA
+          ARA Dashboard
         </NavLink>
         </li>
         <li>
@@ -52,7 +51,7 @@ const Sidebar = () => {
             isActive ? styles.menuItemSelected : styles.menuItem
           }
         >
-          Data Analysis JNR
+          JNR Dashboard
         </NavLink>
         </li>
         <li>
@@ -62,8 +61,18 @@ const Sidebar = () => {
               isActive ? styles.menuItemSelected : styles.menuItem
             }
           >
-            Checks & Alerts
+            EBC Dashboard
           </NavLink>
+        </li>
+        <li>
+        <NavLink
+          to="/Bag-Inventory"
+          className={({ isActive }) =>
+            isActive ? styles.menuItemSelected : styles.menuItem
+          }
+        >
+          Bag Inventory  
+        </NavLink>
         </li>
         <li>
         <NavLink

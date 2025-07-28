@@ -5,6 +5,8 @@ import { useUpload }   from "../../hooks/useUpload";
 import styles from "./UploadForm.module.css";
 import ScreenHeader from "../ScreenHeader.js";
 import ModuleMain from '../ModuleMain.js'
+import Module from '../Module.js';
+import EditableParagraph from "../EditableParagraph.js";
 
 const SITECODE_OPTIONS   = ["ARA","JNR"];
 const UPLOAD_TYPES   = [
@@ -41,9 +43,11 @@ export default function UploadForm() {
 
   return (
     <div className={styles.mainWhiteContainer}>
-        <ScreenHeader name={"Upload Data"}/>
+        <ScreenHeader name={"Upload Portal"}/>
         <ModuleMain>
-          <h2>Upload CSV or JSON File</h2>
+          <div className={styles.contentGrid}>
+            <Module name="Upload TempData" spanColumn={12} spanRow={2}>
+          <div className={styles.title}>Upload CSV or JSON File</div>
           <div className= {styles.formContainer}>
               <input type="file" accept=".csv,.json" onChange={handleChange} />
                 <select value={siteCode} onChange={e => setSiteCode(e.target.value)}>
@@ -59,6 +63,24 @@ export default function UploadForm() {
             <button onClick={handleUpload} disabled={loading}>
               {loading ? "Uploading…" : "Upload"}
             </button>
+          </div>
+          </Module>
+          <Module name="Plant Notes" spanColumn={12} spanRow={2}>
+            <div style={{ display: 'flex', flexDirection: 'row', gap: '1rem' }}>
+              <div>
+            <EditableParagraph
+              initialText="Plant operating smoothly."
+              onSave={newText =>  newText}
+            />
+            </div>
+            <div>
+            <EditableParagraph
+              initialText="24/07/2025"
+              onSave={newText =>  newText}
+            />
+            </div>
+            </div>
+          </Module>
           </div>
 
           {error && <p style={{ color: 'red' }}>Error: {error.message}</p>}

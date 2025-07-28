@@ -11,6 +11,7 @@ import DataAnalysisPageJNR from './components/pages/DataAnalysisPageJNR';
 import AlertDashboard from './components/pages/AlertDashboard';
 import LoginScreen from './components/pages/LoginScreen';
 import SignUpPage from './components/pages/SignUpPage';
+import BagInventory from './components/pages/BagInventory';
 import CharcodeSummary from './components/pages/CharcodeSummary'
 import PlantSummary from './components/pages/PlantSummary';
 import { DataAnalysisProvider } from './components/DataAnalysisContext';
@@ -146,6 +147,7 @@ const App = () => {
                       <Route path="/data-analysis-jnr" element={<DataAnalysisPageJNR />} />
                       <Route  path="/AlertDashboard" element={<AlertDashboard />} />
                       <Route path="*" element={<Navigate to="/upload" replace />} />
+                      <Route path="/Bag-Inventory" element={<BagInventory />} />
                       <Route path="/Charcode-Summary" element={<CharcodeSummary/>} />
                       <Route path="/Plant-Summary" element={<PlantSummary />} />
                     </Routes>

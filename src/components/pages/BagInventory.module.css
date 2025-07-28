@@ -449,30 +449,3 @@ overflow: visible;
   z-index: 10;
 }
 
-.formContainer {
-  padding: 1rem;
-  display: flex;
-  width: 100% -1rem;
-  gap: 1rem;
-  flex-direction: column;
-}
-
-.title {
-  font-family: "Roboto";
-  font-size: 1.5rem;
-  color: var(--leafDark);
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-}
-
-.contentGrid {
-padding: 0.5rem 0.5rem 0.5rem 0.5rem;
-width: calc(100% - 1rem);
-display: grid;
-grid-template-columns: repeat(24, 1fr);
-grid-auto-rows: minmax(100px, auto);
-grid-gap: 1.2rem !important;
-margin-bottom: 1rem;
-overflow: visible;
-}
-

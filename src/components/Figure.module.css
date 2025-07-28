@@ -39,3 +39,23 @@
     text-align: center;
     padding-top: 0rem;
   }
+
+/* wrap your input+unit together */
+.FigureInput {
+  display: flex;
+  align-items: center;
+  gap: 0.25ch;
+  position: relative;  /* for easy hover targeting */
+}
+
+/* the unit itself */
+.FigureInputUnit {
+  display: inline-block;
+  transition: transform 0.2s ease;
+  transform: translateX(-1.7rem)
+}
+
+/* when .FigureInput is hovered, move its .FigureInputUnit */
+.FigureInput:hover .FigureInputUnit {
+  transform: translateX(0rem);
+}

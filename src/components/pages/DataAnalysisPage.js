@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import styles from './DataAnalysisPage.module.css';
 import ScreenHeader from "../ScreenHeader.js";
 import ModuleMain from '../ModuleMain.js';
@@ -8,6 +8,8 @@ import Figure from '../Figure.js';
 import DateSelector from '../DateSelector.js';
 import CharcodesList from '../CharcodesList.js';
 import FaultMessages from '../FaultMessages';
+import { useRangeHours } from '../../hooks/useRangeHours.js';
+import { useHeatTotal } from '../../hooks/useHeatTotal.js';
 import { useFilterDispatch, useFilters, ACTIONS } from '../../contexts/FilterContext';
 import { useSiteNames } from '../../hooks/useSiteNames';
 import { useTempDataRows } from '../../hooks/useTempDataRows';
@@ -16,6 +18,7 @@ import { useAvgTemps } from '../../hooks/useAvg.js';
 import { useSingleTempChart } from '../../hooks/useSingleTempChart'
 import { useRangeTempChart } from '../../hooks/useRangeTempChart';
 import { useSensorReadings } from '../../hooks/useSensorReadings';
+import { useBagStats } from '../../hooks/useBagtotal';
 
 const DataAnalysisPage = () => {
   const dispatch = useFilterDispatch();
@@ -34,9 +37,15 @@ const DataAnalysisPage = () => {
   const bagRows = useBagDataRows('ARA', fetchToggle);
   const tempRows = useTempDataRows('ARA', fetchToggle);
   const rawSensoreReadings = useSensorReadings(fetchToggle);
-  
+
+  const noHours = useRangeHours();
+  console.log('noHours', noHours);
   const sensorRows    = Object.values(rawSensoreReadings).flat();
-  const [avg1, avg2, avg5, bagAvgWeight, bagAvgMC, bagTotalWeight] = useAvgTemps(tempRows, bagRows);
+  const meterDelta = useHeatTotal(sensorRows, 'energy');
+  const avgHeatGenerated = meterDelta / noHours;  
+  console.log('meterDelta', meterDelta, 'noHours', noHours,'avgHeatGenerated', avgHeatGenerated);
+  const { totalWeight, bagCount } = useBagStats(bagRows);
+  const [avg1, avg2, avg5, bagAvgWeight, bagAvgMC] = useAvgTemps(tempRows, bagRows);
   const { labels: r1SingleLabels, data: r1SingleData } = useSingleTempChart(tempRows, 'r1_temp');
   const { labels: r1RangeLabels, data: r1RangeData } = useRangeTempChart(tempRows, 'r1_temp');
   const { labels: r2SingleLabels, data: r2SingleData } = useSingleTempChart(tempRows, 'r2_temp');
@@ -45,7 +54,6 @@ const DataAnalysisPage = () => {
   const {labels: sensorRangeLabels, data: sensorRangeData} = useRangeTempChart(sensorRows,'energy');
 
   // placeholders—replace or move into context as needed
-  const dailyHeatGenARA = 23;
   const faultMessagesARA = [];
 
   const mode = isRange ? 'range' : 'single';
@@ -58,7 +66,6 @@ const DataAnalysisPage = () => {
     dispatch({ type: ACTIONS.SET_SINGLE_DATE, payload: singleDate });
     dispatch({ type: ACTIONS.SET_FROM_DATE, payload: fromDate });
     dispatch({ type: ACTIONS.SET_TO_DATE, payload: toDate });
-    setTimeout(() => { dispatch({ type: ACTIONS.RESET_FILTERS }); }, 10);
 
     // toggle to re-trigger data hooks
     setFetchToggle(true);
@@ -67,7 +74,7 @@ const DataAnalysisPage = () => {
 
   return (
     <div className={styles.mainWhiteContainer}>
-      <ScreenHeader name="Data Analysis Dashboard ARA" />
+      <ScreenHeader name="ARA Plant Dashboard" />
       <ModuleMain>
         <DateSelector
           isRange={isRange}
@@ -135,29 +142,15 @@ const DataAnalysisPage = () => {
           </Module>
 
           <Module name="Com. Biochar Produced (kg)" spanColumn={4} spanRow={2}>
-            <Figure value={bagTotalWeight} variant="2" unit="kg" decimals={0} />
+            <Figure value={totalWeight} variant="2" unit="kg" decimals={0} />
           </Module>
 
           <Module name="Avg. Heat Generated (per hour)" spanColumn={4} spanRow={2}>
-            <Figure value={dailyHeatGenARA / 24} variant="2" unit="kW" />
+            <Figure value={avgHeatGenerated} variant="2" unit="kW" />
           </Module>
 
-          <Module name="Avg. Heat Generated (daily)" spanColumn={4} spanRow={2}>
-            <Figure value={dailyHeatGenARA} variant="2" unit="kW" />
-          </Module>
-
-          <Module name="Fault Messages" spanColumn={12} spanRow={3}>
-            <FaultMessages messages={faultMessagesARA} wrapperSize="full" />
-          </Module>
-
-          <Module name="Avg. Biomass MC" spanColumn={4} spanRow={1}>
-            <Figure value={bagAvgMC} unit="" />
-          </Module>
-          <Module name="Biochar (Overflow)" spanColumn={4} spanRow={1}>
-            <Figure value={dailyHeatGenARA} unit="kW" />
-          </Module>
-          <Module name="Biochar (Total Weight)" spanColumn={4} spanRow={1}>
-            <Figure value={dailyHeatGenARA} unit="kW" />
+          <Module name="Heat Generated (total)" spanColumn={4} spanRow={2}>
+            <Figure value={meterDelta} variant="2" unit="kWh" />
           </Module>
 
           <Module name="Heat Monitor" spanColumn={12} spanRow={4}>
@@ -174,6 +167,14 @@ const DataAnalysisPage = () => {
                 : sensorRangeLabels.map((d, i) => ({ x: d, y: sensorRangeData[i] }))}
               unit="kWh"
             />
+          </Module>
+
+          <Module name="Fault Messages" spanColumn={8} spanRow={2}>
+            <FaultMessages messages={faultMessagesARA} wrapperSize="full" />
+          </Module>
+
+          <Module name="Avg. Biomass MC" spanColumn={4} spanRow={2}>
+            <Figure value={bagAvgMC} variant="2" unit="" />
           </Module>
         </div>
       </ModuleMain>
