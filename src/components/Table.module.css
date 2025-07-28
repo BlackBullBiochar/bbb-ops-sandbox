@@ -1,0 +1,55 @@
+.tableContainer {
+    flex-direction: column;
+    justify-content: flex-start;
+    height: fit-content;
+}
+
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.headerRow {
+  background-color: #ededed;
+}
+
+.headerCell {
+  padding: 12px;
+  text-align: center;
+  font-weight: bold;
+  border-bottom: 2px solid #ddd;
+  background-color: #ededed;
+}
+
+/* Apply border-radius only on the outer edges */
+.headerCell:first-child {
+  border-top-left-radius: 2rem;
+  border-bottom-left-radius: 2rem;
+}
+
+.headerCell:last-child {
+  border-top-right-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+}
+
+
+
+.cell {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: center;       /* horizontal centering */
+  vertical-align: middle;
+}
+
+.row:hover {
+  background-color: #f9f9f9;
+}
+
+.emptyRow {
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+  color: #888;
+}
