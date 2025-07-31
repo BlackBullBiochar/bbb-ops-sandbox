@@ -15,7 +15,7 @@ import { useTempDataRows } from '../../hooks/useTempDataRows';
 import { useBagDataRows } from '../../hooks/useBagDataRows';
 import { useSingleRangeTempChart } from '../../hooks/useSingleRangeTempChart'
 import { useRangeTempChart } from '../../hooks/useRangeTempChart';
-import { useBagStats } from '../../hooks/useBagtotal.js';
+import { useBagStats } from '../../hooks/useBagTotal.js';
 import { useRunningHours } from '../../hooks/useTempTotal.js';
 import { useSensorReadings } from '../../hooks/useSensorReadings';
 import { useHeatTotal } from '../../hooks/useHeatTotal.js';
