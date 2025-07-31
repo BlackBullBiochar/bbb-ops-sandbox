@@ -18,7 +18,7 @@ import { useAvgTemps } from '../../hooks/useAvg.js';
 import { useSingleTempChart } from '../../hooks/useSingleTempChart'
 import { useRangeTempChart } from '../../hooks/useRangeTempChart';
 import { useSensorReadings } from '../../hooks/useSensorReadings';
-import { useBagStats } from '../../hooks/useBagtotal';
+import { useBagStats } from '../../hooks/useBagTotal.js';
 import usePowerFromSensorRows from '../../hooks/usePowerFromSensorRows.js'
 
 const DataAnalysisPage = () => {
