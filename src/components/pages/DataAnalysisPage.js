@@ -19,6 +19,7 @@ import { useSingleTempChart } from '../../hooks/useSingleTempChart'
 import { useRangeTempChart } from '../../hooks/useRangeTempChart';
 import { useSensorReadings } from '../../hooks/useSensorReadings';
 import { useBagStats } from '../../hooks/useBagtotal';
+import usePowerFromSensorRows from '../../hooks/usePowerFromSensorRows.js'
 
 const DataAnalysisPage = () => {
   const dispatch = useFilterDispatch();
@@ -52,6 +53,8 @@ const DataAnalysisPage = () => {
   const { labels: r2RangeLabels, data: r2RangeData } = useRangeTempChart(tempRows, 'r2_temp');
   const {labels: sensorSingleLabels, data: sensorSingleData} = useSingleTempChart(sensorRows,'energy');
   const {labels: sensorRangeLabels, data: sensorRangeData} = useRangeTempChart(sensorRows,'energy');
+  const { powerData, powerLabels } = usePowerFromSensorRows(sensorRows);
+  console.log(sensorRows);
 
   // placeholders—replace or move into context as needed
   const faultMessagesARA = [];
@@ -152,7 +155,6 @@ const DataAnalysisPage = () => {
           <Module name="Heat Generated (total)" spanColumn={4} spanRow={2}>
             <Figure value={meterDelta} variant="2" unit="kWh" />
           </Module>
-
           <Module name="Heat Monitor" spanColumn={12} spanRow={4}>
             <ChartMod
               isTimeAxis={mode === 'single'}
@@ -160,15 +162,20 @@ const DataAnalysisPage = () => {
                 ? 'Heat Meter readings by Time'
                 : 'Max Meter reading by Day'}
               labels={mode === 'single'
-                ? sensorSingleLabels.map(t => t.slice(0,5)).reverse()
-                : sensorRangeLabels}
+                ? powerLabels.map(t => t.slice(0, 5)).reverse()
+                : powerLabels}
               dataPoints={mode === 'single'
-                ? sensorSingleLabels.map((t, i) => ({ x: new Date(`1970-01-01T${t}`), y: sensorSingleData[i] })).reverse()
-                : sensorRangeLabels.map((d, i) => ({ x: d, y: sensorRangeData[i] }))}
-              unit="kWh"
+                ? powerLabels.map((timestamp, i) => ({
+                    x: new Date(timestamp),
+                    y: powerData[i],
+                  })).reverse()
+                : powerLabels.map((d, i) => ({
+                    x: d,
+                    y: powerData[i],
+                  }))}
+              unit="MW"
             />
           </Module>
-
           <Module name="Fault Messages" spanColumn={8} spanRow={2}>
             <FaultMessages messages={faultMessagesARA} wrapperSize="full" />
           </Module>

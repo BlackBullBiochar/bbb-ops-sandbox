@@ -42,8 +42,9 @@ const AhlstromForm = () => {
     { name: 'BioBin', label: 'Biomass Bin in Service', type: 'radio', options: ['1', '2'], required: true },
     { name: 'biomassBinChanged', label: 'Biomass bin changed?', type: 'radio+compound', options: ['No', 'Yes'], required: true, compound: { showIf: 'Yes',
     fields: [
-      {name: 'biomassChangeTime', label: 'Change Date & Time', type: 'datetime-local', defaultValue: new Date().toISOString().slice(0, 16), required: true},
-      { name: 'biomassMC', label: 'Biomass MC (%)', type: 'text', placeholder: 'e.g. 25', required: true}
+      {name: 'biomassChangeTime', label: 'Date', type: 'datetime-local', defaultValue: new Date().toISOString().slice(0, 16), required: true},
+      { name: 'Time', label: 'Time (00:00)', type: 'text', required: true},
+      { name: 'biomassMC', label: 'Biomass MC (%)', type: 'text', required: true}
     ]}}
     ];
 

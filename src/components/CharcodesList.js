@@ -70,7 +70,7 @@ const CharcodeCard = ({ parsed }) => {
             : '—',
         },
         { label: 'Biochar Weight (kg)', value: parsed.weight },
-        { label: 'Batch ID',            value: parsed.batch_id },
+        { label: 'EBC Batch ID',            value: parsed.batch_id },
       ].map(({ label, value }, i) => (
         <div key={i} className={styles.row}>
           <strong>{label}:</strong>{' '}
