@@ -1,5 +1,5 @@
 import React, { useState} from 'react';
-import styles from './uploadDataPage.module.css';
+import styles from './UploadDataPage.module.css';
 import ScreenHeader from '../ScreenHeader';
 import ModuleMain from '../ModuleMain';
 import DateSelector from '../DateSelector';
