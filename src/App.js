@@ -18,6 +18,8 @@ import { DataAnalysisProvider } from './components/DataAnalysisContext';
 import { UserContext } from "./UserContext";
 import { API } from './config/api';
 import { FilterProvider } from './contexts/FilterContext';
+import AhlstromForm from './components/pages/AhlstomForm';
+import JenkinsonForm from './components/pages/JenkinsonForm';
 
 const App = () => {
    const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -126,38 +128,44 @@ const App = () => {
     setIsAuthenticated(true);
   };
 
-  return (
-      <UserContext.Provider value={{ user, setUser }}>
-        <FilterProvider> 
-            <DataAnalysisProvider>
-              {!user.authed ? (
-                <Routes>
-                  <Route path="/login" element={<LoginScreen onLogin={handleLogin} setUserDetails={setUserDetails} setAdminDetails={setAdminDetails} />} setPath = "/login"/>
-                  <Route path="/signup" element={<SignUpPage onSignUp={handleSignUp} />}/>
-                  <Route path="*" element={<Navigate to="/login" replace />}/>
-                </Routes>
-              ) : (
-                <div className={styles.appContainer}>
-                  <Sidebar />
-                  <div className={styles.mainWhiteContainer}>
-                    <Routes>
-                      <Route path="/upload" element={<UploadForm />} setPath = "/login"/>
-                      <Route path="/view-uploads" element={<UploadDataPage />} />
-                      <Route path="/data-analysis" element={<DataAnalysisPage />} />
-                      <Route path="/data-analysis-jnr" element={<DataAnalysisPageJNR />} />
-                      <Route  path="/AlertDashboard" element={<AlertDashboard />} />
-                      <Route path="*" element={<Navigate to="/upload" replace />} />
-                      <Route path="/Bag-Inventory" element={<BagInventory />} />
-                      <Route path="/Charcode-Summary" element={<CharcodeSummary/>} />
-                      <Route path="/Plant-Summary" element={<PlantSummary />} />
-                    </Routes>
-                  </div>
-                </div>
-              )}
-            </DataAnalysisProvider>
-        </FilterProvider>
-      </UserContext.Provider>
-  );
+ return (
+  <UserContext.Provider value={{ user, setUser }}>
+    <FilterProvider>
+      <DataAnalysisProvider>
+        {!user.authed ? (
+          window.location.pathname === '/Ahlstrom-Form' ? (
+            <AhlstromForm />
+          ) : (
+            <LoginScreen
+              onLogin={handleLogin}
+              setUserDetails={setUserDetails}
+              setAdminDetails={setAdminDetails}
+            />
+          )
+        ) : window.location.pathname === '/Ahlstrom-Form' ? (
+          <AhlstromForm />
+        ) : window.location.pathname === '/Jenkinson-Form' ? (
+          <JenkinsonForm />
+        ) : (
+          <div className={styles.appContainer}>
+            <Sidebar />
+            <div className={styles.mainWhiteContainer}>
+              {window.location.pathname === '/upload' && <UploadForm />}
+              {window.location.pathname === '/view-uploads' && <UploadDataPage />}
+              {window.location.pathname === '/data-analysis' && <DataAnalysisPage />}
+              {window.location.pathname === '/data-analysis-jnr' && <DataAnalysisPageJNR />}
+              {window.location.pathname === '/AlertDashboard' && <AlertDashboard />}
+              {window.location.pathname === '/Bag-Inventory' && <BagInventory />}
+              {window.location.pathname === '/Charcode-Summary' && <CharcodeSummary />}
+              {window.location.pathname === '/Plant-Summary' && <PlantSummary />}
+              {window.location.pathname === '/Ahlstrom-Form1' && <AhlstromForm />}
+            </div>
+          </div>
+        )}
+      </DataAnalysisProvider>
+    </FilterProvider>
+  </UserContext.Provider>
+);
 };
 
 export default App;

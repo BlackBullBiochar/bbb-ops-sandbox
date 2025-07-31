@@ -14,7 +14,6 @@ const BagInventory = () => {
   const [fetchToggle, setFetchToggle] = useState(false);
 
   const { stats = {}, loading, error } = useBagInventory(fetchToggle);
-  console.log(stats);
   const ARATBags = stats?.baggedARA?.total ?? 0;
   const JNRTBags = stats?.baggedJNR?.total ?? 0;
   const BOWTBags = stats?.deliveredToStorage?.total ?? 0;
@@ -41,7 +40,7 @@ const BagInventory = () => {
     { key: 'EBCBags', label: 'EBC Bags' },
     { key: 'NONEBC', label: 'NON-EBC Bags' },
     { key: 'AssBags', label: 'Assigned Bags' },
-    { key: 'FBags', label: 'Free Bags' }
+    { key: 'FBags', label: 'Bags Instock' }
   ];
 
   const data = [

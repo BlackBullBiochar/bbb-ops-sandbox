@@ -165,7 +165,7 @@ const PlantSummaryView = () => {
         </Module>
 
         {selectedSite === "ARA" && (
-        <Module name="Heat Usage" spanColumn={5} spanRow={1}>
+        <Module name="Heat Output" spanColumn={5} spanRow={1}>
           <Figure variant='3' value={meterDelta} unit="kWh"/>
         </Module>
         )}
