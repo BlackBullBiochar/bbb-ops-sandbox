@@ -8,9 +8,9 @@ const getAPI = () => {
 
   if (isLocalhost) return "http://localhost:4000";
   if (isNgrok) return "https://relevant-feline-equal.ngrok-free.app";
-  if (isStaging) return "https://relevant-feline-equal.ngrok-free.app";
+  if (isStaging) return "https://bbb-app-staging.netlify.app";
 
-  return "https://relevant-feline-equal.ngrok-free.app";
+  return "https://bbb-app-staging.netlify.app";
 };
 
 export const API = getAPI();
