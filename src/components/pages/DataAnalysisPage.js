@@ -54,7 +54,6 @@ const DataAnalysisPage = () => {
   const {labels: sensorSingleLabels, data: sensorSingleData} = useSingleTempChart(sensorRows,'energy');
   const {labels: sensorRangeLabels, data: sensorRangeData} = useRangeTempChart(sensorRows,'energy');
   const { powerData, powerLabels } = usePowerFromSensorRows(sensorRows);
-  console.log(sensorRows);
 
   // placeholders—replace or move into context as needed
   const faultMessagesARA = [];
@@ -159,8 +158,8 @@ const DataAnalysisPage = () => {
             <ChartMod
               isTimeAxis={mode === 'single'}
               title={mode === 'single'
-                ? 'Heat Meter readings by Time'
-                : 'Max Meter reading by Day'}
+                ? 'Instantaneous Power Output'
+                : 'Instantaneous Power Output'}
               labels={mode === 'single'
                 ? powerLabels.map(t => t.slice(0, 5)).reverse()
                 : powerLabels}

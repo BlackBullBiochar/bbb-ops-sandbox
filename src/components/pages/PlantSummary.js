@@ -19,6 +19,7 @@ import { useBagStats } from '../../hooks/useBagTotal.js';
 import { useRunningHours } from '../../hooks/useTempTotal.js';
 import { useSensorReadings } from '../../hooks/useSensorReadings';
 import { useHeatTotal } from '../../hooks/useHeatTotal.js';
+import usePowerFromSensorRows from '../../hooks/usePowerFromSensorRows.js'
 
 
 const PlantSummaryView = () => {
@@ -88,6 +89,7 @@ const PlantSummaryView = () => {
 
   const {labels: sensorWeekLabels, data: sensorWeekData} = useSingleRangeTempChart(sensorRows,'energy');
   const {labels: sensorRangeLabels, data: sensorRangeData} = useRangeTempChart(sensorRows,'energy');
+    const { powerData, powerLabels } = usePowerFromSensorRows(sensorRows);
 
   const mode = isWeek ? 'week' : 'range';
 
@@ -257,19 +259,25 @@ const PlantSummaryView = () => {
         <Module name="Photo of the Week" spanColumn={12} spanRow={4} />
 
         {selectedSite === "ARA" && (
-        <Module name="Heat Monitor" spanColumn={12} spanRow={4}>
+          <Module name="Heat Monitor" spanColumn={12} spanRow={4}>
             <ChartMod
-              isTimeAxis={false}
-              title={mode === 'week'
-                ? 'Heat Meter readings by Time'
-                : 'Max Meter reading by Day'}
-              labels={mode === 'week'
-                ? sensorWeekLabels
-                : sensorRangeLabels}
-              dataPoints={mode === 'week'
-                ? sensorWeekLabels.map((d, i) => ({ x: d, y: sensorWeekData[i] }))
-                : sensorRangeLabels.map((d, i) => ({ x: d, y: sensorRangeData[i] }))}
-              unit="kWh"
+              isTimeAxis={mode === 'single'}
+              title={mode === 'single'
+                ? 'Instantaneous Power Output'
+                : 'Instantaneous Power Output'}
+              labels={mode === 'single'
+                ? powerLabels.map(t => t.slice(0, 5)).reverse()
+                : powerLabels}
+              dataPoints={mode === 'single'
+                ? powerLabels.map((timestamp, i) => ({
+                    x: new Date(timestamp),
+                    y: powerData[i],
+                  })).reverse()
+                : powerLabels.map((d, i) => ({
+                    x: d,
+                    y: powerData[i],
+                  }))}
+              unit="MW"
             />
           </Module>
         )}
