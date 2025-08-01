@@ -6,7 +6,8 @@ import styles from "./UploadForm.module.css";
 import ScreenHeader from "../ScreenHeader.js";
 import ModuleMain from '../ModuleMain.js'
 import Module from '../Module.js';
-import EditableParagraph from "../EditableParagraph.js";
+import Jenkinson from '../../assets/images/adobe-express-qr-code (1).png';
+import Ahlstrom from '../../assets/images/adobe-express-qr-code.png';
 
 const SITECODE_OPTIONS   = ["ARA","JNR"];
 
@@ -57,6 +58,14 @@ export default function UploadForm() {
             </Module>
             <Module name="Plant Forms" spanColumn={12} spanRow={2}>
               <div style={{ display: 'flex', flexDirection: 'row', gap: '1rem' }}>
+                <div>
+                  <div className={styles.title}>Ahlstrom</div>
+                  <img src={Ahlstrom} className= {styles.bbbLogo}/>
+                </div>
+                <div>
+                  <div className={styles.title}>Jenkinson</div>
+                  <img src={Jenkinson} className= {styles.bbbLogo}/>
+                </div>
               </div>
             </Module>
           </div>
