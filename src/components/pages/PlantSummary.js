@@ -168,7 +168,7 @@ const PlantSummaryView = () => {
 
         {selectedSite === "ARA" && (
         <Module name="Heat Output" spanColumn={5} spanRow={1}>
-          <Figure variant='3' value={meterDelta} unit="kWh"/>
+          <Figure variant='3' value={meterDelta} unit="MWh"/>
         </Module>
         )}
 
@@ -195,7 +195,7 @@ const PlantSummaryView = () => {
           <Figure variant='3' value={bagCount} unit=""/>
         </Module>
 
-        <Module name="Biomass Delivered" spanColumn={5} spanRow={1}>
+        <Module name="Biomass Delivered (*Not Stored)" spanColumn={5} spanRow={1}>
           <EditableFigure
             initialValue={0}
             unit="t"

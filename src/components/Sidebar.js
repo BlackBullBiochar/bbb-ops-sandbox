@@ -94,26 +94,6 @@ const Sidebar = () => {
           Plant Summary
         </NavLink>
         </li>
-        <li>
-        <NavLink
-          to="/Ahlstrom-Form"
-          className={({ isActive }) =>
-            isActive ? styles.menuItemSelected : styles.menuItem
-          }
-        >
-          AHL Form
-        </NavLink>
-        </li>
-        <li>
-        <NavLink
-          to="/Jenkinson-Form"
-          className={({ isActive }) =>
-            isActive ? styles.menuItemSelected : styles.menuItem
-          }
-        >
-          JNR Form
-        </NavLink>
-        </li>
       </ul>
     </div>
   );

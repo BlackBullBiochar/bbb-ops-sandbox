@@ -148,11 +148,11 @@ const DataAnalysisPage = () => {
           </Module>
 
           <Module name="Avg. Heat Generated (per hour)" spanColumn={4} spanRow={2}>
-            <Figure value={avgHeatGenerated} variant="2" unit="kW" />
+            <Figure value={avgHeatGenerated} variant="2" unit="MWh" />
           </Module>
 
           <Module name="Heat Generated (total)" spanColumn={4} spanRow={2}>
-            <Figure value={meterDelta} variant="2" unit="kWh" />
+            <Figure value={meterDelta} variant="2" unit="MWh" />
           </Module>
           <Module name="Heat Monitor" spanColumn={12} spanRow={4}>
             <ChartMod
