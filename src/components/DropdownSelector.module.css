@@ -1,0 +1,224 @@
+.bgContainer {
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(156deg, rgba(3,3,3,1) 1%, rgba(32,32,32,1) 40%, rgba(70,70,70,1) 100%);
+  }
+  
+  
+  .mainBlackContainer {
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+  }
+
+  .detailsWrapper{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+  }
+  
+  .contentWrapper {
+    padding-top: 3rem;
+    flex-direction: column;
+    width: 70%;
+  }
+
+
+  .bgContainer {
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(156deg, rgba(3,3,3,1) 1%, rgba(32,32,32,1) 40%, rgba(70,70,70,1) 100%);
+  }
+  
+  
+  .mainBlackContainer {
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+  }
+  
+  .detailsContainer {
+    width: 100%;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  
+  .detailsButtonsRow {
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    width: 100%;
+    gap: 1rem;
+  }
+  
+  .gaugesContainer {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .gaugeLabel {
+    font-family: "TruenoSBd";
+    font-weight: 600;
+    font-size: 1.3rem;
+    margin-top: 1rem;
+    letter-spacing: -0.05rem;
+  }
+  
+  .flexFill {
+    flex: 1;
+  }
+
+  .gaugesSeparatorLine {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    height: 1px;
+    width: 90%;
+    background: var(--greyLight);
+  }
+  
+  .detailsWrapper{
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+    font-family: "RobotoCondensed";
+  }
+
+  .dropdownOption {
+    font-size: 16px;
+    text-align: center;
+    background-color: white;
+    color: black;
+    font-family: "RobotoCondensed";
+  }
+
+  .dropdown {
+    width: 100%;
+    padding: 10px 20px;
+    border-radius: 10px;
+    background-color: #3a3a3a; /* match button background */
+    color: white;              /* match button text */
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;        /* centers the SELECT element's text */
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    font-family: "RobotoCondensed";
+  }
+  
+  .detailsRow{
+    margin-top: 2rem;
+    width: 100%;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 5rem;
+    color: var(--coalVeryLight);
+  }
+  
+  .detailsRowSection {
+    width: 50%;
+    padding-left: 0.6rem;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    border-left: 1px solid var(--greyLight);
+    font-family: "RobotoCondensed";
+  }
+  
+  .detailsRowSectionFullWidth {
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    width: 100%;
+    min-height: 10rem;
+    font-family: "Roboto";
+  
+  }
+  
+  .detailsRowSectionHeader {
+    font-weight: 600;
+    margin-bottom: 0.7rem;
+    color: var(--coalLight);
+    font-family: "RobotoCondensed";
+  }
+
+  .buttonRow {
+    margin-top: -1rem;
+    width: 100%;
+    gap: 3rem;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .buttonRow2 {
+    margin-top: -1rem;
+    width: 100%;
+    gap: 3rem;
+    justify-content: space-between;
+    margin-bottom: -1rem;
+  }
+  
+  
+  .charpointsContainer {
+    background-color: var(--coal);
+    color: white;
+    font-family: "TruenoBd";
+    font-size: 22px;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    width: 100%;
+    height: 80px;
+    border-radius: 30px;
+    box-shadow: inset 0px 0px 4px rgba(0, 0, 0, 0.25);
+    filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.25));
+  }
+  
+  .points {
+    font-size: 13px;
+    margin-left: 2px;
+  
+  }
+  
+  .stuffContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(156deg, rgba(3,3,3,1) 1%, rgba(32,32,32,1) 40%, rgba(70,70,70,1) 100%);
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
+    filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.25));
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--greyLight);
+    backdrop-filter: blur(5px);
+  }
+  
+  .item {
+    width: 100%;
+    font-family: "TruenoBd" !important;
+    font-size: 1.5rem;
+    color: var(--coalVeryLight);
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(156deg, rgba(3,3,3,1) 1%, rgba(32,32,32,1) 40%, rgba(70,70,70,1) 100%);
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
+    filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.25));
+  }

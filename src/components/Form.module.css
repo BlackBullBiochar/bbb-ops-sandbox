@@ -1,0 +1,80 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  gap: 0.5rem;
+}
+
+.input,
+.textarea,
+select {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.input:focus,
+.textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #34b61f;
+  box-shadow: 0 0 0 1px #34b61f;
+}
+
+.button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background-color: #34b61f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #2a991b;
+}
+
+.fieldset {
+  border: none;
+  padding: 0;
+}
+
+.radioOption,
+.checkboxOption {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font: "TruenoRg";
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  height:2rem;
+  font-size: 1rem;
+}
+.radioOption:selected {
+    color: var(--leafDark)
+}
+
+input[type="date"] {
+    font-family: "TruenoRg";
+    font-size: 0.95rem;
+    padding: 0.4rem 0.6rem;
+    border: 2px solid var(--coalDark);
+    border-radius: 0.4rem;
+    background-color: #fff;
+    color: var(--coalDark);
+    margin-bottom: 0.5rem;
+    gap: 0.5rem;
+}
+
+

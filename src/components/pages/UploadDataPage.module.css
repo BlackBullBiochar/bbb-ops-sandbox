@@ -1,0 +1,67 @@
+.titleBig{
+  margin-left: 0.5rem;
+  font-family: "TruenoRg";
+  font-size: 1.5rem;
+  font-weight: normal;
+  color: var(--coalLight);
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: center;
+}
+
+.titleBigger{
+  margin-left: 0.5rem;
+  font-family: "TruenoRg";
+  font-size: 2rem;
+  font-weight: normal;
+  color: var(--coal);
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.container {
+  padding: 0;
+  margin: 0;
+}
+
+.bucketContainer {
+  margin: 1rem 0;
+  border: 2px solid black;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.bucketHeader {
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.deleteButton {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.table {
+  width: 100%;
+  margin-top: 0.5rem;
+  border-collapse: collapse;
+  border: 1px solid black;
+  border-radius: 6px;
+}
+
+.table th,
+.table td {
+  padding: 8px;
+  border: 1px solid black;
+}

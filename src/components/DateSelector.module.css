@@ -1,0 +1,25 @@
+.dateBar {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin: 0.5rem 0;
+  }
+  
+  .dateInput {
+    font-family: "TruenoRg";
+    font-size: 0.95rem;
+    padding: 0.4rem 0.6rem;
+    border: 2px solid var(--coalDark);
+    border-radius: 0.4rem;
+    background-color: #fff;
+    color: var(--coalDark);
+    width: fit-content;
+  }
+
+  .dateRange {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  

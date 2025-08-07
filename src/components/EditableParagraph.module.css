@@ -1,0 +1,25 @@
+/* EditableParagraph.module.css */
+
+.editableParagraph {
+  position: relative;
+  padding: 0.5rem;
+  font-family: "TruenoRg";
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--coalLight);
+  cursor: text;
+}
+
+.editableParagraph:hover {
+  background: rgba(0,0,0,0.02);
+}
+
+.editableParagraph[contenteditable="true"] {
+  outline: 2px dashed var(--leafDark);
+}
+
+.editableParagraph.empty::before {
+  content: "Click to edit...";
+  color: #aaa;
+  pointer-events: none;
+}

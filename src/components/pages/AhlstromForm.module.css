@@ -1,0 +1,11 @@
+.page {
+  padding: 2rem;
+  width: 100vw;
+  margin: 0 auto;
+}
+
+.heading {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}

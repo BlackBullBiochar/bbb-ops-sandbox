@@ -1,0 +1,338 @@
+.blackContainerContent {
+  width: 20%;
+  height: 100%;
+  position: relative;
+  opacity: 1;
+  transition: width 0.5s;
+  transition-delay: 0.2s;
+}
+
+.blackContainerContentGoToSignUp {
+  width: 28%;
+}
+
+.blackContainerContentGoToForgotPassword {
+  opacity: 0;
+  width: 0%;
+}
+
+.bbbLogoWhiteContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 1rem 0 0 2.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.bbbLogoWhite {
+  max-width: 3.7rem;
+}
+
+.bbbLogoText {
+  font-family: "TruenoBd";
+  font-weight: 700;
+  color: white;
+  font-size: 1.4rem;
+  margin-left: 0.4rem;
+  margin-bottom: 0.1rem;
+}
+
+.welcomeMessageContainer {
+  height: fit-content;
+  align-items: flex-start;
+  width: 75%;
+  opacity: 1;
+  transition: opacity 0.2s;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box
+}
+
+.welcomeMessageContainerGoToSignUp {
+  opacity: 0;
+}
+
+.welcomeMessageContainerGoToForgotPassword {
+  opacity: 0;
+}
+
+.welcomeHeader {
+  display: block;
+  font-family: "TruenoSBd";
+  font-weight: 600;
+  font-size: 3rem;
+  color: var(--leaf);
+  text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.25), 3px 4px 4px rgba(0, 0, 0, 0.47);
+}
+
+.welcomeText {
+  color: var(--grey);
+  font-size: 1.2rem;
+  display: block;
+}
+
+.headerGreen {
+  color: var(--grass);
+}
+
+.textLink {
+  text-decoration: underline;
+  font-weight: bold;
+  color: var(--grey);
+  cursor: pointer;
+}
+
+.textLink:hover {
+  opacity: 0.7;
+}
+
+.welcomeMessageTextContainer {
+  flex-direction: column;
+  align-items: flex-start;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box
+}
+
+.mainWhiteContainerGoToSignUp {
+  width: 40%;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box
+} 
+
+.mainWhiteContainerGoToForgotPassword {
+  width: 40%;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box
+} 
+
+.loginContent {
+  flex-direction: column;
+  gap: 0.2rem;
+  width: 100%;
+  max-width: 340px;
+  opacity: 1;
+  transition: opacity 0.2s;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box
+}
+
+.loginContentHidden {
+  opacity: 0;
+}
+
+.logoContainer {
+  height: 20%;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: -5vh;
+  z-index: 3;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box
+}
+
+.bbbLogo {
+  margin-top: 1vh;
+  height: 100%;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box
+}
+
+
+.greenCirclesWrapper {
+  width: 100%;
+  height: 100.2%;
+  position: absolute;
+  border-radius: 20px;
+  pointer-events: none;
+  overflow: hidden;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box
+}
+
+.greenCircle1 {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  max-width: 3.5vw;
+  border-radius: 0px 20px 0px 0px;
+  transition: all 0.4s;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box
+}
+
+.greenCircle1Hidden {
+  max-width: 0vw;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box
+}
+
+.greenCircle2 {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  max-width: 3.5vw;
+  border-radius: 0px 20px 0px 0px;
+  transform: rotateZ(180deg);
+  transition: all 0.4s ease;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box
+}
+
+.greenCircle2Hidden {
+  max-width: 0vw;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box
+}
+
+.loginHeader {
+  color: var(--coal);
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box
+}
+
+.loginOptionsContainer {
+  margin-top: 1rem;
+  width: 100%;
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box; 
+}
+
+.forgotPassword {
+  color: var(--coalLight);
+  font-family: "RobotoCondensedBold";
+  font-size: 1.3rem;
+  text-decoration: underline;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box; 
+}
+
+.forgotPassword:hover {
+  opacity: 0.7;
+}
+
+.errorPromptContainer {
+  position: relative;
+  top: 1rem;
+  height: 0;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box; 
+}
+
+
+@media only screen and (min-width: 1440px) { 
+  .mainWhiteContainerLogin {
+    margin-left: 1.5vh;
+  }
+}
+
+.mainBlackContainerLogin {
+  z-index: 1;
+    border-radius: 20px;
+    width: calc(70vw + 100px);
+    height: calc(70vh + 70px);
+    max-width: 1200px;
+    max-height: 700px;
+    box-sizing: border-box;
+    padding: calc(0.5vw + 5px);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background: linear-gradient(123.54deg, #131313 -1.2%, #676767 94.45%);
+    box-shadow: 3px 1px 84px 0px rgba(0, 0, 0, 1);
+    -webkit-box-shadow: 3px 1px 84px 0px rgba(0, 0, 0, 1);
+    -moz-box-shadow: 3px 1px 84px 0px rgba(0,0,0,1);
+    position: relative;
+}
+.blackContainerContentLogin {
+    width: 60%;
+    height: 100%;
+    position: relative;
+    opacity: 1;
+    transition: width 0.5s;
+    transition-delay: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    z-index: 1;
+}
+
+.mainWhiteContainerLogin {
+  border-radius: 20px;
+  width: 40%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: linear-gradient(354deg, rgba(247,247,247,1) 0%, rgba(223,223,223,1) 40%, rgba(255,255,255,1) 80%);
+  box-shadow: inset 1 0 20px #959687;
+  box-shadow: 0px 3px 17px #000000;
+  align-items: center;
+  justify-content: center;
+}
+
+.BgContainer {
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(336deg, rgba(3,3,3,1) 1%, rgba(32,32,32,1) 40%, rgb(31, 31, 31) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.BgHexOverlay{
+  pointer-events: none;
+  position: absolute;
+  z-index: -100;
+  top: -10vh;
+  left: 0px;
+  width: 120%;
+  height: 120%;
+  opacity: 0.3;
+  background-image: url("../../assets/images/backgroundHexagonTiles.png");
+  background-repeat: repeat;
+  background-size: 15%;
+  filter: drop-shadow(0px 0px 6px rgba(255, 255, 255, 0.567));
+}
+
+.errorPromptContainer {
+  position: relative;
+  top: 0.1rem;
+  height: 0;
+}

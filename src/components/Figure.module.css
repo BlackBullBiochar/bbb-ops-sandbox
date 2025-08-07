@@ -1,0 +1,61 @@
+.Figure{
+    margin: 0;
+    padding: 0;
+    font-family: "TruenoRg";
+    font-size: 1vw;
+    font-weight: normal;
+    color: var(--coalLight);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .Figure2{
+    margin: 0;
+    padding-top: 2.3rem;
+    font-family: "TruenoRg";
+    font-size: 2.5vw;
+    font-weight: normal;
+    color: var(--coalLight);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+    .Figure3{
+    margin: 0;
+    font-family: "TruenoRg";
+    font-size: 2vw;
+    font-weight: normal;
+    color: var(--leafDark);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-top: 0rem;
+  }
+
+/* wrap your input+unit together */
+.FigureInput {
+  display: flex;
+  align-items: center;
+  gap: 0.25ch;
+  position: relative;  /* for easy hover targeting */
+}
+
+/* the unit itself */
+.FigureInputUnit {
+  display: inline-block;
+  transition: transform 0.2s ease;
+  transform: translateX(-1.7rem)
+}
+
+/* when .FigureInput is hovered, move its .FigureInputUnit */
+.FigureInput:hover .FigureInputUnit {
+  transform: translateX(0rem);
+}
