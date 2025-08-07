@@ -158,7 +158,6 @@ const App = () => {
               {window.location.pathname === '/Bag-Inventory' && <BagInventory />}
               {window.location.pathname === '/Charcode-Summary' && <CharcodeSummary />}
               {window.location.pathname === '/Plant-Summary' && <PlantSummary />}
-              {window.location.pathname === '/Ahlstrom-Form1' && <AhlstromForm />}
             </div>
           </div>
         )}
@@ -167,5 +166,5 @@ const App = () => {
   </UserContext.Provider>
 );
 };
-
+//lolololololol
 export default App;
