@@ -1,0 +1,39 @@
+/* DbSearch.module.css */
+.container {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.fieldSelector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tableContainer {
+  overflow: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.th, .td {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+.downloadButton {
+  display: inline-block;
+  background-color: #22c55e;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+}

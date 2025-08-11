@@ -22,4 +22,15 @@
     align-items: center;
   }
 
-  
+  .dropdown {
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.searchInput {
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 200px;
+}

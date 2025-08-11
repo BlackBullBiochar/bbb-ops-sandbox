@@ -36,6 +36,16 @@ const Sidebar = () => {
         </li>
         <li>
         <NavLink
+          to="/Database"
+          className={({ isActive }) =>
+            isActive ? styles.menuItemSelected : styles.menuItem
+          }
+        >
+          Database
+        </NavLink>
+        </li>
+        <li>
+        <NavLink
           to="/data-analysis"
           className={({ isActive }) =>
             isActive ? styles.menuItemSelected : styles.menuItem

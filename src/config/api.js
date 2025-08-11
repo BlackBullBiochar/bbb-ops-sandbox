@@ -10,7 +10,7 @@ const getAPI = () => {
   if (isNgrok) return "https://relevant-feline-equal.ngrok-free.app";
   if (isStaging) return "https://bbb-staging-ae2bb81703e0.herokuapp.com";
 
-  return "https://bbb-staging-ae2bb81703e0.herokuapp.com";
+  return "https://api.blackbullbiochar.com";
 };
 
 export const API = getAPI();

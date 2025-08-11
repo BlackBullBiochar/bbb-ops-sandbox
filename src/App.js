@@ -20,6 +20,7 @@ import { API } from './config/api';
 import { FilterProvider } from './contexts/FilterContext';
 import AhlstromForm from './components/pages/AhlstomForm';
 import JenkinsonForm from './components/pages/JenkinsonForm';
+import DBSearch from './components/pages/DbSearch'
 
 const App = () => {
    const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -158,6 +159,8 @@ const App = () => {
               {window.location.pathname === '/Bag-Inventory' && <BagInventory />}
               {window.location.pathname === '/Charcode-Summary' && <CharcodeSummary />}
               {window.location.pathname === '/Plant-Summary' && <PlantSummary />}
+              {window.location.pathname === '/Database' && <DBSearch />}
+
             </div>
           </div>
         )}
