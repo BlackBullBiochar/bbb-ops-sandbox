@@ -6,8 +6,10 @@ import styles from "./UploadForm.module.css";
 import ScreenHeader from "../ScreenHeader.js";
 import ModuleMain from '../ModuleMain.js'
 import Module from '../Module.js';
-import Jenkinson from '../../assets/images/adobe-express-qr-code (1).png';
-import Ahlstrom from '../../assets/images/adobe-express-qr-code.png';
+import JNRStaging from '../../assets/images/JNRStaging.png';
+import AHLStaging from '../../assets/images/AHLStaging.png';
+import JNRProduction from '../../assets/images/JNRProduction.png'
+import AHLProduction from '../../assets/images/AHLProduction.png'
 
 const SITECODE_OPTIONS   = ["ARA","JNR"];
 
@@ -38,6 +40,21 @@ export default function UploadForm() {
     }
   };
 
+  const isProductionLaunch = () => {
+  const { hostname, href } = window.location;
+  const isLocalhost = hostname === 'localhost';
+  const isNgrok = href.includes('ngrok');
+  const isStaging = href.includes('staging');
+  return !(isLocalhost || isNgrok || isStaging); // only true for real production launch
+};
+
+const getQR = (site) => {
+  const prod = isProductionLaunch();
+  if (site === 'AHL') return prod ? AHLProduction : AHLStaging;
+  if (site === 'JNR') return prod ? JNRProduction : JNRStaging;
+  throw new Error('Unknown site (use "AHL" or "JNR")');
+};
+
   return (
     <div className={styles.mainWhiteContainer}>
         <ScreenHeader name={"Upload Portal"}/>
@@ -60,11 +77,11 @@ export default function UploadForm() {
               <div style={{ display: 'flex', flexDirection: 'row', gap: '1rem' }}>
                 <div>
                   <div className={styles.title}>Ahlstrom</div>
-                  <img src={Ahlstrom} className= {styles.bbbLogo}/>
+                  <img src={getQR('AHL')} className={styles.bbbLogo} alt="Ahlstrom QR" />
                 </div>
                 <div>
                   <div className={styles.title}>Jenkinson</div>
-                  <img src={Jenkinson} className= {styles.bbbLogo}/>
+                  <img src={getQR('JNR')} className={styles.bbbLogo} alt="Jenkinson QR" />
                 </div>
               </div>
             </Module>
