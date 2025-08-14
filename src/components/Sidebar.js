@@ -34,7 +34,7 @@ const Sidebar = () => {
           Upload History
         </NavLink>
         </li>
-        <li>
+        {/*<li>
         <NavLink
           to="/Database"
           className={({ isActive }) =>
@@ -43,7 +43,7 @@ const Sidebar = () => {
         >
           Database
         </NavLink>
-        </li>
+        </li>*/}
         <li>
         <NavLink
           to="/data-analysis"
