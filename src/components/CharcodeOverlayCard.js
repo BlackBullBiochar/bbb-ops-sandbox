@@ -20,14 +20,11 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
   const bagDate = parsed.bagging_date
     ? parsed.bagging_date.slice(0, 10)
     : '';
-    console.log('Parsed bagging date:', bagDate);
   const siteId = parsed._site;
   const siteName =
     siteId === '6661c6cc2e943e2babeca581' ? 'ARA' :
     siteId === '6661c6bd2e943e2babec9b4d' ? 'JNR' :
     'Unknown Site';
-
-  console.log('Resolved site name:', siteName);
 
 
   // Initialize EBC history from parsed data
@@ -66,7 +63,6 @@ if (siteName === 'ARA') {
   ({ labels: r1Labels, data: r1Data } = jnrT5);
   ({ labels: r2Labels, data: r2Data } = jnrT5);
 } else {
-  console.warn('Unknown site for temperature data:', siteName);
   r1Labels = r1Data = r2Labels = r2Data = [];
 }
 

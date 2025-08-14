@@ -40,11 +40,9 @@ const DataAnalysisPage = () => {
   const rawSensoreReadings = useSensorReadings(fetchToggle);
 
   const noHours = useRangeHours();
-  console.log('noHours', noHours);
   const sensorRows    = Object.values(rawSensoreReadings).flat();
   const meterDelta = useHeatTotal(sensorRows, 'energy');
   const avgHeatGenerated = meterDelta / noHours;  
-  console.log('meterDelta', meterDelta, 'noHours', noHours,'avgHeatGenerated', avgHeatGenerated);
   const { totalWeight, bagCount } = useBagStats(bagRows);
   const [avg1, avg2, avg5, bagAvgWeight, bagAvgMC] = useAvgTemps(tempRows, bagRows);
   const { labels: r1SingleLabels, data: r1SingleData } = useSingleTempChart(tempRows, 'r1_temp');
