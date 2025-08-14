@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ToggleSwitch from './ToggleSwitch';
-import styles from './DateSelector.module.css';
+import styles from './IndexSearchbar.module.css';
+import helpers from '../helpers'; // adjust path if needed
+import arrowGrey from "../assets/images/selectArrowGrey.png";
+import arrowWhite from "../assets/images/selectArrowWhite.png";
 
 const normalizeOptions = (options = []) =>
   options.map((opt, i) => {
     if (typeof opt === 'string') {
       return { value: opt, label: opt, __i: i };
     }
-    // Coerce to strings in case value/label are numbers or objects
     const value = String(opt?.value ?? '');
     const label = String(opt?.label ?? value);
     return { value, label, __i: i };
@@ -26,31 +28,69 @@ const IndexSearch = ({
   onIndexChange,
   searchQuery,
   onSearchChange,
+  color = "white",
 }) => {
   const options = normalizeOptions(indexOptions);
 
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const selectedOption = options.find(opt => opt.value === selectedIndex);
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      e.preventDefault(); // prevents form submission if inside a form
+      e.preventDefault();
       onFetch?.();
     }
   };
 
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
     <div className={styles.dateBar}>
-      {/* Index dropdown */}
-      <select
-        value={String(selectedIndex ?? '')}
-        onChange={e => onIndexChange?.(e.target.value)}
-        className={styles.dropdown}
-      >
-        <option value="">Select Index</option>
-        {options.map(opt => (
-          <option key={`${opt.value}__${opt.__i}`} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
+      {/* Custom dropdown */}
+      <div className={styles.customSelect} ref={dropdownRef}>
+        <div
+          className={helpers.clx(
+            styles.selectedOption,
+            !selectedOption && styles.selectedOptionPlaceholder,
+            isOpen && styles.selectedOptionOpen 
+          )}
+          onClick={() => setIsOpen(prev => !prev)}
+        >
+          <img
+            src={color === "white" ? arrowGrey : arrowWhite}
+            className={helpers.clx(styles.arrow, isOpen && styles.arrowReversed)}
+            alt=""
+          />
+          {selectedOption ? selectedOption.label : 'Select Index'}
+        </div>
+        {isOpen && (
+          <div className={styles.dropdownMenu}>
+            {options.map(opt => (
+              <div
+                key={`${opt.value}__${opt.__i}`}
+                className={styles.dropdownItem}
+                onClick={() => {
+                  onIndexChange?.(opt.value);
+                  setIsOpen(false);
+                }}
+              >
+                {opt.label}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Search bar */}
       <input
@@ -89,7 +129,9 @@ const IndexSearch = ({
         />
       )}
 
-      <button onClick={onFetch}>Fetch Data</button>
+      <button className={styles.button} onClick={onFetch}>
+        Fetch Data
+      </button>
     </div>
   );
 };

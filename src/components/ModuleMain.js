@@ -3,7 +3,7 @@ import helpers from '../helpers.js';
 import { useCallback } from 'react';
 
 
-const Module = ({
+const ModuleMain = ({
     height = "",
     marginBottom = "3rem",
     background = "",
@@ -34,15 +34,11 @@ const Module = ({
           background
         }}
       >
-        <h3 className={styles.header}>
-          {renderIcon()}
-          {name}
-        </h3>
         {name !== "" ? <div className={styles.line} /> : null}
         {children}
       </div>
     );
   };
   
-  export default Module;
+  export default ModuleMain;
   
