@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { CSVLink } from "react-csv";
 import IndexSearch from "../IndexSearchbar";
 import { useInventorySearch } from "../../hooks/useInventorySearch";
 import styles from "./DbSearch.module.css";
 import ScreenHeader from "../ScreenHeader";
 import ModuleMain from "../ModuleMain";
+import Module from "../Module";
 import MultiSelector from "../MultiSelect";
 import iconCSV from "../../assets/images/iconCSV.png"
 
@@ -115,25 +116,36 @@ const DbSearch = () => {
     });
   };
 
-  // Trigger fetch when key inputs change (date, filters, index, selected fields)
-  useEffect(() => {
-    if (selectedFields.length) {
-      handleSearch();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    selectedIndex,
-    selectedFields,
-    // date
-    isRange,
-    singleDate,
-    fromDate,
-    toDate,
-    // filters
-    statusFilters,
-    ebcStatusFilters,
-    siteFilters,
-  ]);
+const isFirstRun = useRef(true);
+const initialFieldCount = useRef(selectedFields.length);
+
+useEffect(() => {
+  const hasQuery = query.trim() !== "";
+  const fieldCountChanged = selectedFields.length !== initialFieldCount.current;
+
+  // Block the very first run unless the gate conditions are already true
+  if (isFirstRun.current) {
+    isFirstRun.current = false;
+    if (!fieldCountChanged && !hasQuery) return;
+  }
+
+  // From now on, only search if either condition is true
+  if (fieldCountChanged || hasQuery) {
+    handleSearch();
+  }
+}, [
+  selectedFields.length, // only care about count
+  query,                 // text in search bar
+  selectedIndex,
+  isRange,
+  singleDate,
+  fromDate,
+  toDate,
+  statusFilters,
+  ebcStatusFilters,
+  siteFilters,
+]);
+
 
   return (
     <div className={styles.mainWhiteContainer}>
@@ -219,24 +231,25 @@ const DbSearch = () => {
           </div>
 
           {/* Field selector */}
-          <div className={styles.fieldSelector}>
+          <div className={styles.contentGrid}>
             {fields.map((field) => {
               const id = `field-${field}`;
               return (
-                <label style={{ alignItems: "center" }} key={field} htmlFor={id} title={field}>
-                  <input
-                    id={id}
-                    type="checkbox"
-                    checked={selectedFields.includes(field)}
-                    onChange={() => handleFieldToggle(field)}
-                    className={styles.cb}
-                  />
-                  {labelize(field)}
-                </label>
+                <ModuleMain key={field} spanRow={1} spanColumn={2} height = "4rem" alignItems="center" marginBottom="0rem">
+                  <label className={styles.fieldLabel} htmlFor={id} title={field}>
+                    <input
+                      id={id}
+                      type="checkbox"
+                      checked={selectedFields.includes(field)}
+                      onChange={() => handleFieldToggle(field)}
+                      className={styles.cb}
+                    />
+                    {labelize(field)}
+                  </label>
+                </ModuleMain>
               );
             })}
           </div>
-
           {/* Results table */}
           <div className={styles.tableContainer}>
             <ModuleMain marginBottom="0rem">
@@ -300,11 +313,11 @@ const DbSearch = () => {
 
                           if (field === "ebc_status") {
                             const cls =
-                              raw === "Approved"      ? styles.ebcApproved :
-                              raw === "Flagged"       ? styles.ebcFlagged :
-                              raw === "Rejected"      ? styles.ebcRejected :
-                              raw === "Post-Approved" ? styles.ebcPostApproved :
-                              raw === "Pending"       ? styles.ebcPending : undefined;
+                              raw === "Approved"      ? styles.statusDelivered :
+                              raw === "Flagged"       ? styles.statusCancelled :
+                              raw === "Rejected"      ? styles.statusCancelled :
+                              raw === "Post-Approved" ? styles.statusDelivered :
+                              raw === "Pending"       ? styles.statusPending : undefined;
                             return <td key={field} className={cls}>{raw || "N/A"}</td>;
                           }
 

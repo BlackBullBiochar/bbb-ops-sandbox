@@ -8,6 +8,7 @@ const Module = ({
     background = "",
     icon = "",
     name = "",
+    marginBottom = "",
     spanRow,
     spanColumn,
     children
@@ -29,7 +30,8 @@ const Module = ({
           gridRow: `span ${spanRow}`,
           gridColumn: `span ${spanColumn}`,
           height,
-          background
+          background,
+          marginBottom: marginBottom || "",
         }}
       >
         <h3 className={styles.header}>

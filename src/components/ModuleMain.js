@@ -10,6 +10,8 @@ const ModuleMain = ({
     icon = "",
     name = "",
     spanRow,
+    width = "",
+    padding = "",
     spanColumn,
     children
   }) => {
@@ -30,6 +32,8 @@ const ModuleMain = ({
           gridRow: `span ${spanRow}`,
           gridColumn: `span ${spanColumn}`,
           height,
+          width,
+          padding,
           marginBottom,
           background
         }}
