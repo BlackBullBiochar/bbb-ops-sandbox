@@ -74,7 +74,7 @@ const PlantSummaryView = () => {
   const { hours: ARArunningHours } = useRunningHours(rawTempRows, 520, 720, ['r1_temp','r2_temp']);
   const { hours: JNRrunningHours } = useRunningHours(rawTempRows, 520, 720, ['t5_temp']);
   const CO2perBag = 2.5003; // CO₂ removed per bag in tonnes
-  const totalCO2 = (totalWeight * CO2perBag).toFixed(2);
+  const totalCO2 = (totalWeight/1000 * CO2perBag).toFixed(2);
 
   const runningHours = selectedSite === 'ARA' ? ARArunningHours : JNRrunningHours;
 
@@ -184,7 +184,7 @@ const PlantSummaryView = () => {
         )}
 
         <Module name="Biochar Produced (t)" spanColumn={5} spanRow={1}>
-          <Figure variant='3' value={totalWeight} unit="t" />
+          <Figure variant='3' value={totalWeight/1000} unit="t" />
         </Module>
 
         <Module name="Equivalent CO₂ removed (t)" spanColumn={5} spanRow={1}>

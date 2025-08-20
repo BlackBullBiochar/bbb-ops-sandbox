@@ -3,13 +3,15 @@ import helpers from '../helpers.js';
 import { useCallback } from 'react';
 
 
-const Module = ({
+const ModuleMain = ({
     height = "",
     marginBottom = "3rem",
     background = "",
     icon = "",
     name = "",
     spanRow,
+    width = "",
+    padding = "",
     spanColumn,
     children
   }) => {
@@ -30,19 +32,17 @@ const Module = ({
           gridRow: `span ${spanRow}`,
           gridColumn: `span ${spanColumn}`,
           height,
+          width,
+          padding,
           marginBottom,
           background
         }}
       >
-        <h3 className={styles.header}>
-          {renderIcon()}
-          {name}
-        </h3>
         {name !== "" ? <div className={styles.line} /> : null}
         {children}
       </div>
     );
   };
   
-  export default Module;
+  export default ModuleMain;
   

@@ -11,21 +11,23 @@ const SOURCE_MAP = {
 };
 
 // normalise UI state -> service params for GET
+// hooks/useInventorySearch.js
 const buildQueryParams = ({
-  selectedIndex,            // 'bags' | 'orders' | 'deliveries'
-  queryText,                // e.g. 'ORD-00102' | 'DEL-00037' | 'ARA-2024-000123'
-  selectedFields,           // ['charcode','status',...]
-  isRange,                  // boolean
+  selectedIndex,           
+  queryText,                
+  selectedFields,    
+  isRange,           
   singleDate, fromDate, toDate,
-  activeFilterType,         // 'date' | 'status' | ''
-  statusFilter,             // only for bags
+  statusFilters, 
+  siteFilters,           
+  ebcStatusFilters,       
   page = 1,
   limit = 500,
   sortKey = "bagging_date",
   sortDir = "desc",
-  charcodeLike = true,       // prefix/ci search for bags by default
-  orderLike = true,       // prefix/ci search for bags by default
-  deliveryLike = true       // prefix/ci search for bags by default
+  charcodeLike = true,
+  orderLike = true,
+  deliveryLike = true,
 }) => {
   const params = new URLSearchParams();
   const source = SOURCE_MAP[selectedIndex] || "bags";
@@ -34,14 +36,14 @@ const buildQueryParams = ({
   // Map query by source
   const trimmed = (queryText || "").trim();
   if (source === "orders" && trimmed) {
-    params.set("order_id", trimmed);          // controller normaliser supports top-level
-    if (orderLike) params.set("like", "true"); // optional prefix/CI match on server
+    params.set("order_id", trimmed);
+    if (orderLike) params.set("like", "true");
   } else if (source === "deliveries" && trimmed) {
-    params.set("delivery_id", trimmed);       // top-level
-    if (deliveryLike) params.set("like", "true"); // optional prefix/CI match on server
+    params.set("delivery_id", trimmed);
+    if (deliveryLike) params.set("like", "true");
   } else if (source === "bags" && trimmed) {
-    params.set("charcode", trimmed);          // top-level
-    if (charcodeLike) params.set("like", "true"); // optional prefix/CI match on server
+    params.set("charcode", trimmed);
+    if (charcodeLike) params.set("like", "true");
   }
 
   // Fields
@@ -55,24 +57,33 @@ const buildQueryParams = ({
   params.set("page", String(page));
   params.set("limit", String(limit));
 
-  // Filters: date/status routed as generic filters.*
-  if (activeFilterType === "date") {
-    if (isRange) {
-      if (fromDate) params.set("filters.from", fromDate);
-      if (toDate)   params.set("filters.to", toDate);
-    } else if (singleDate) {
-      params.set("filters.from", singleDate);
-      params.set("filters.to", singleDate);
-    }
-    // server interprets date field based on source
+  // ✅ Auto-apply date filters when provided (no dropdown needed)
+  if (isRange) {
+    if (fromDate) params.set("filters.from", fromDate); // expect 'YYYY-MM-DD'
+    if (toDate)   params.set("filters.to", toDate);
+  } else if (singleDate) {
+    // single day => from = to = that date
+    params.set("filters.from", singleDate);
+    params.set("filters.to", singleDate);
   }
 
-  if (activeFilterType === "status" && source === "bags" && statusFilter) {
-    params.set("filters.status", statusFilter);
+  // ✅ Multi-select status (bags)
+  if (Array.isArray(statusFilters) && statusFilters.length) {
+    params.set("filters.status", statusFilters.join(","));
+  }
+
+  // ✅ Multi-select EBC status
+  if (Array.isArray(ebcStatusFilters) && ebcStatusFilters.length) {
+    params.set("filters.ebc_status", ebcStatusFilters.join(","));
+  }
+
+  if (Array.isArray(siteFilters) && siteFilters.length) {
+    params.set("filters.site", siteFilters.join(","));
   }
 
   return params.toString();
 };
+
 
 export const useInventorySearch = () => {
   const { user } = useContext(UserContext);

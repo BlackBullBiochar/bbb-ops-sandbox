@@ -1,0 +1,151 @@
+.dateBar {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin: 0rem !important;
+  }
+  
+.dateInput {
+    font-family: "TruenoRg";
+    font-size: 0.95rem;
+    padding: 0rem;
+    border: 2px solid var(--coalDark);
+    border-radius: 0.4rem;
+    background-color: #fff;
+    color: var(--coalDark);
+    width: fit-content;
+    height: 1.3rem;
+    margin: 0rem !important;
+}
+
+.dateRange {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.dropdown {
+  font-family: "RobotoMed";
+  font-size: 1.2rem;
+  color: var(--coalVeryLight);
+  box-sizing: border-box;
+  width: 15rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0px 3.45713px 8.64283px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  height: 2.5rem;
+  margin-bottom: 0.1rem !important;
+}
+
+.dropdown option {
+  background-color: #fff;
+  color: #333;
+  padding: 8px;
+}
+
+/* Hover/active option in some browsers */
+.dropdown option:hover {
+  background-color: #eee;
+}
+
+.searchInput {
+  height: 2.5rem;
+  padding-left: 1rem;
+  font-family: "RobotoMed";
+  font-size: 1.2rem;
+  color: var(--coalVeryLight);
+  box-sizing: border-box;
+  width: 15rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0px 3.45713px 8.64283px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  border: 1px black;
+}
+
+.button {
+    display:flex;
+    align-items: center;
+    height: 2.6rem;
+    margin: 0.1rem;
+    font-size: 1.5rem;
+}
+
+.customSelect {
+  position: relative;
+  width: 10rem; /* match MultiSelector width */
+}
+
+.selectedOption {
+  font-family: "RobotoMed";
+  font-size: 1.2rem;
+  color: var(--coalVeryLight);
+  box-sizing: border-box;
+  width: 10rem;
+  padding: 0.5rem;
+  padding-left: 1rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0px 3.45713px 8.64283px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  height: 2.5rem;
+  margin-bottom: 0.1rem !important;
+}
+
+.selectedOptionOpen {
+  font-family: "RobotoMed";
+  font-size: 1.2rem;
+  color: var(--coalVeryLight);
+  box-sizing: border-box;
+  width: 10rem;
+  padding: 0.5rem;
+  padding-left: 1rem;
+  background: white;
+  border-radius: 1rem 1rem 0 0;
+  box-shadow: 0px 3.45713px 8.64283px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  height: 2.5rem;
+  margin-bottom: 0.1rem !important;
+}
+
+.arrow {
+  position: absolute;
+  max-width: 1.3rem;
+  right: 1.6rem;
+  top: 0.4rem;
+  z-index: 1;
+  transition: transform 0.2s ease;
+}
+
+.arrowReversed {
+  transform: scaleY(-1);
+  top: 0.8rem;
+}
+
+.selectedOptionPlaceholder {
+  color: var(--greyLight) !important;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: calc(100%);
+  left: 0;
+  width: 10rem;
+  background: white;
+  border-radius: 0 0 1rem 1rem;
+  z-index: 100;
+  font-family: "RobotoMed";
+  font-size: 1.2rem;
+  padding-top: 10px;
+}
+
+.dropdownItem {
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.dropdownItem:hover {
+  background: #f0f0f0;
+}
+
