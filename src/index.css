@@ -62,12 +62,12 @@ button {
   font-size: 1.5rem;
   font-weight: 500;
   font-family: "RobotoCondensedBold" !important;
-  background-color: #1eff00;
+  background-color: var(--leaf);
   cursor: pointer;
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #15ff00;
+  border-color: var(--leafDark);
 }
 button:focus,
 button:focus-visible {

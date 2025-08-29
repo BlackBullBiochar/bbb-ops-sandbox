@@ -310,3 +310,16 @@ margin-bottom: 0.5rem;
 overflow: visible;
 align-items: center;
 }
+
+/* DbSearch.module.css */
+.clickableRow {
+  cursor: pointer;
+}
+.clickableRow:hover {
+  background: rgba(0,0,0,0.04);
+}
+
+/* DbSearch.module.css */
+.clickableRow { cursor: pointer; }
+.clickableRow:hover,
+.clickableRow:focus { background: rgba(0,0,0,0.04); outline: none; }
