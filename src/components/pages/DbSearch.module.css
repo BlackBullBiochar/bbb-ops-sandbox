@@ -323,3 +323,22 @@ align-items: center;
 .clickableRow { cursor: pointer; }
 .clickableRow:hover,
 .clickableRow:focus { background: rgba(0,0,0,0.04); outline: none; }
+
+.totalsButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.25rem;
+  min-width: 2.25rem;
+  padding: 0 0.5rem;
+  margin-left: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background: #fff;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.totalsButton:hover { transform: translateY(-1px); }
+.totalsButton:active { transform: translateY(0); }
