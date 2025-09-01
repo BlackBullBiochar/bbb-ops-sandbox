@@ -173,7 +173,7 @@ const PlantSummaryView = () => {
         )}
 
         {selectedSite === "JNR" && (
-        <Module name="Heat Usage" spanColumn={5} spanRow={1}>
+        <Module name="Heat Usage (*Not Stored)" spanColumn={5} spanRow={1}>
           <EditableFigure
             initialValue={0}
             unit="kWh"
