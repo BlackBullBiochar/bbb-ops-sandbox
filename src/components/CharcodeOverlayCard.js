@@ -101,7 +101,6 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
               { label: 'Status', value: parsed?.status },
               { label: 'Site', value: siteName },
               { label: 'Bagging Date', value: bagDate },
-              { label: 'Feedstock', value: 'will code this in' },
               { label: 'Weight (kg)', value: parsed?.weight },
               { label: 'Batch ID', value: parsed?.batch_id }
             ].map((field, idx) => (
@@ -118,7 +117,7 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
 
           {/* Fault Messages */}
           <Module name="Fault Messages" spanColumn={4} spanRow={2}>
-            <FaultMessages2 messages={['example messages', 'plant was not producing biochar between 12:00 and 4:00']} />
+            <FaultMessages2 messages={['example messages', 'plant was not producing biochar between 12:00 and 4:00']}/>
           </Module>
 
           {/* EBC Status History */}

@@ -27,7 +27,7 @@ const INDEX_OPTIONS = [
 ];
 
 const DEFAULT_FIELDS_BY_INDEX = {
-  bags: ["charcode", "bagging_date", "status", "site", "weight", "ebc_status"],
+  bags: ["charcode", "bagging_date", "status", "site", "weight", "ebc_status", "batch_id", "moisture_content"],
   orders: ["charcode", "bagging_date", "status", "order_id", "delivery_date"],
   deliveries: ["charcode", "bagging_date", "status", "delivery_id", "delivery_date"],
   batches: ["batch_id","charcode", "bagging_date", "status", "site", "weight", "ebc_status"],
@@ -49,6 +49,8 @@ const FIELD_LABELS = {
   ebc_status: "EBC Status",
   application_date: "Application Date",
   user: "User",
+  applied_to: "Applied To",
+  internal_temperature: "Internal Temp (°C)",
 };
 
 const ALL_FIELDS = [
@@ -66,6 +68,8 @@ const ALL_FIELDS = [
   "pickup_date",
   "application_date",
   "user",
+  "applied_to",
+  "internal_temperature",
 ];
 
 const labelize = (key) =>
@@ -94,43 +98,17 @@ const HeaderTotalsOverlay = ({ open, onClose, title, lines }) => {
       aria-modal="true"
       aria-label={`${title} totals`}
       onClick={onClose}
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.45)",
-        zIndex: 1000,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "16px",
-      }}
+      className={styles.totalOverlay}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        style={{
-          width: "min(720px, 92vw)",
-          maxHeight: "82vh",
-          overflow: "auto",
-          background: "#fff",
-          borderRadius: "16px",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
-          padding: "20px 20px 12px 20px",
-        }}
+        className={styles.totalOverlayCard}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-          <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>{title}</h3>
+        <div className={styles.totalOverlayHeader}>
+          <h3 className={styles.totalOverlayTitle}>{title}</h3>
           <button
             onClick={onClose}
-            style={{
-              border: "1px solid #e5e7eb",
-              borderRadius: 10,
-              background: "#fff",
-              height: 36,
-              minWidth: 36,
-              padding: "0 10px",
-              cursor: "pointer",
-              fontWeight: 700,
-            }}
+            className={styles.totalOverlayClose}
           >
             ✕
           </button>
@@ -142,18 +120,7 @@ const HeaderTotalsOverlay = ({ open, onClose, title, lines }) => {
           ) : (
             <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
               {lines.map((line, i) => (
-                <li
-                  key={i}
-                  style={{
-                    padding: "10px 12px",
-                    border: "1px solid #edf0f2",
-                    borderRadius: 10,
-                    marginBottom: 8,
-                    whiteSpace: "pre-wrap",
-                    fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-                    fontSize: 13,
-                  }}
-                >
+                <li key={i} className={styles.totalOverlayItem}>
                   {line}
                 </li>
               ))}
@@ -524,20 +491,7 @@ const DbSearch = () => {
             onClick={() => buildHeaderOverlay(field)}
             title={`Show ${labelize(field)} totals`}
             aria-label={`Show ${labelize(field)} totals`}
-            style={{
-              marginLeft: 8,
-              fontFamily: "TruenoRg",
-              height: 24,
-              minWidth: 24,
-              padding: "0 8px",
-              borderRadius: 999,
-              color: "Black",
-              border: "3px solid #000000ff",
-              background: "#fff",
-              cursor: "pointer",
-              lineHeight: 1,
-              fontWeight: 800,
-            }}
+            className={styles.totalIcon}
           >
             i
           </button>

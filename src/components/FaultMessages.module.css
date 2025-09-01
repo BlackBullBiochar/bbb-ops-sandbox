@@ -1,10 +1,8 @@
 .tableWrapper1 {
-  max-height: 100px;
   overflow-y: auto;
 }
 
 .tableWrapper2 {
-  max-height: 250px;
   overflow-y: auto;
 }
 
