@@ -16,24 +16,22 @@ import { FilterProvider } from "../../contexts/FilterContext";
 
 // ---------- LOGGING HELPERS ----------
 const NS = "DbSearch";
-const log = (...args) =>
-  console.log(`[%c${NS}%c]`, "color:#34B61F;font-weight:bold", "color:inherit", ...args);
-const warn = (...args) =>
-  console.warn(`[%c${NS}%c]`, "color:#B0E000;font-weight:bold", "color:inherit", ...args);
-const err = (...args) =>
-  console.error(`[%c${NS}%c]`, "color:#ff5555;font-weight:bold", "color:inherit", ...args);
 
 // ---------- CONSTS ----------
 const INDEX_OPTIONS = [
   { value: "bags", label: "Bags" },
   { value: "orders", label: "Orders" },
   { value: "deliveries", label: "Deliveries" },
+  { value: "batches", label: "Batches" },
+  { value: "users", label: "Users" },
 ];
 
 const DEFAULT_FIELDS_BY_INDEX = {
   bags: ["charcode", "bagging_date", "status", "site", "weight", "ebc_status"],
   orders: ["charcode", "bagging_date", "status", "order_id", "delivery_date"],
   deliveries: ["charcode", "bagging_date", "status", "delivery_id", "delivery_date"],
+  batches: ["batch_id","charcode", "bagging_date", "status", "site", "weight", "ebc_status"],
+  users: ["user", "charcode", "bagging_date", "status", "site", "weight", "ebc_status"],
 };
 
 const FIELD_LABELS = {
@@ -43,12 +41,14 @@ const FIELD_LABELS = {
   moisture_content: "Moisture (%)",
   status: "Bag Status",
   site: "Site",
+  batch_id: "Batch ID",
   order_id: "Order ID",
   delivery_id: "Delivery ID",
   delivery_date: "Delivery date",
   pickup_date: "Pickup date",
   ebc_status: "EBC Status",
   application_date: "Application Date",
+  user: "User",
 };
 
 const ALL_FIELDS = [
@@ -58,12 +58,14 @@ const ALL_FIELDS = [
   "weight",
   "status",
   "site",
+  "batch_id",
   "moisture_content",
   "order_id",
   "delivery_id",
   "delivery_date",
   "pickup_date",
   "application_date",
+  "user",
 ];
 
 const labelize = (key) =>
@@ -82,14 +84,6 @@ const mapSiteToCodeAndId = (siteLike) => {
   if (raw === "ARA" || raw === "JNR") return { siteCode: raw, siteId: null };
   return { siteCode: null, siteId: raw || null };
 };
-
-const fmtCounts = (obj) =>
-  Object.entries(obj)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([k, v]) => `${k} — ${v}`)
-    .join("\n");
-
-const plural = (n, s) => `${n} ${s}${n === 1 ? "" : "s"}`;
 
 // ---------- LIGHTWEIGHT OVERLAY (header totals) ----------
 const HeaderTotalsOverlay = ({ open, onClose, title, lines }) => {
@@ -177,7 +171,6 @@ const DbSearch = () => {
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
-    log("Mounted");
   }, []);
 
   const [selectedIndex, setSelectedIndex] = useState("bags");
@@ -218,26 +211,15 @@ const DbSearch = () => {
     return true;
   };
 
-  // DEBUG effects
-  useEffect(() => { log("selectedIndex:", selectedIndex); }, [selectedIndex]);
-  useEffect(() => { log("selectedFields:", selectedFields); }, [selectedFields]);
-  useEffect(() => { log("query:", query); }, [query]);
-  useEffect(() => { log("filters:", { statusFilters, ebcStatusFilters, siteFilters }); }, [statusFilters, ebcStatusFilters, siteFilters]);
-  useEffect(() => { log("date:", { isRange, singleDate, fromDate, toDate }); }, [isRange, singleDate, fromDate, toDate]);
-  useEffect(() => { log("loading:", loading, "error:", error); }, [loading, error]);
-  useEffect(() => { log("rows length:", rows?.length ?? 0); }, [rows]);
-
   // adjust defaults when index changes
   useEffect(() => {
     const next = DEFAULT_FIELDS_BY_INDEX[selectedIndex] || ALL_FIELDS.slice(0, 5);
-    log("Index changed, setting default fields:", next);
     setSelectedFields(next);
   }, [selectedIndex]);
 
   // whether date filtering is active
   const isDateActive = useMemo(() => {
     const active = isRange ? Boolean(fromDate && toDate) : Boolean(singleDate);
-    log("isDateActive recompute:", active);
     return active;
   }, [isRange, singleDate, fromDate, toDate]);
 
@@ -248,6 +230,8 @@ const DbSearch = () => {
     const bySite = {};
     const byOrderId = {};
     const byDeliveryId = {};
+    const byBatchId = {};
+    const byUser = {};
 
     for (const r of rows) {
       const s = (r.status ?? "").toString().trim();
@@ -266,6 +250,9 @@ const DbSearch = () => {
 
       const did = r.delivery_id ?? null;
       if (did) byDeliveryId[did] = (byDeliveryId[did] || 0) + 1;
+      
+      const bid = (r.batch_id ?? "").toString().trim();
+      if (bid) byBatchId[bid] = (byBatchId[bid] || 0) + 1;
     }
 
     return {
@@ -275,43 +262,49 @@ const DbSearch = () => {
       bySite,
       byOrderId,
       byDeliveryId,
+      byBatchId,
+      byUser,
+      distinctBatchIds: Object.keys(byBatchId).length,
+      distinctUsers: Object.keys(byUser).length,
       distinctOrderIds: Object.keys(byOrderId).length,
       distinctDeliveryIds: Object.keys(byDeliveryId).length,
     };
   }, [rows]);
 
   const handleFieldToggle = (field) => {
-    log("Toggle field:", field);
     setSelectedFields((prev) =>
       prev.includes(field) ? prev.filter((f) => f !== field) : [...prev, field]
     );
   };
 
   const handleToggleRange = () => {
-    log("Toggle range before:", isRange);
     setIsRange((v) => !v);
   };
 
   const handleDateChange = (type, value) => {
-    log("Date change:", type, value);
     if (type === "single") setSingleDate(value);
     if (type === "from") setFromDate(value);
     if (type === "to") setToDate(value);
   };
 
   const handleSearch = async () => {
+    const trimmed = (query || "").trim();
+    if (selectedIndex === "users" && !trimmed) {
+      console.warn("[DbSearch] Skipping fetch: Users index requires a query (q/email/first/last).");
+      return;
+    }
     const requiredForOverlay = [
       "_id",
       "charcode",
       "bagging_date",
       "_site",
       "site",
+      "batch_id",
       "site_id",
       "siteId",
       "weight",
       "status",
       "batch_id",
-      "batchId",
       "ebc_status",
       "ebc_status_history",
       "ebc_status_reason",
@@ -340,15 +333,9 @@ const DbSearch = () => {
       limit: TABLE_LIMIT,   // <-- add this
     };
 
-    console.groupCollapsed("[DbSearch] handleSearch payload");
-    console.table(payload);
-    console.groupEnd();
-
     try {
       await fetchInventory(payload);
-      console.log("[DbSearch] fetchInventory OK");
     } catch (e) {
-      console.error("[DbSearch] fetchInventory error:", e);
     }
   };
 
@@ -360,19 +347,18 @@ const DbSearch = () => {
     const hasQuery = query.trim() !== "";
     const fieldCountChanged = selectedFields.length !== initialFieldCount.current;
 
-    log("search effect →", { hasQuery, fieldCountChanged, isFirstRun: isFirstRun.current });
-
     if (isFirstRun.current) {
       isFirstRun.current = false;
       if (!fieldCountChanged && !hasQuery) {
-        warn("First run, no query and no field-count change → skip search");
         return;
       }
+    }
+    if (selectedIndex === "users" && !hasQuery) {
+     return;
     }
     if (fieldCountChanged || hasQuery) {
       handleSearch().then(() => {
         initialFieldCount.current = selectedFields.length;
-        log("Search done; updated initialFieldCount:", initialFieldCount.current);
       });
     }
   }, [
@@ -390,9 +376,6 @@ const DbSearch = () => {
 
   // Open per-row overlay
   const openOverlay = (item) => {
-    console.groupCollapsed(`[${NS}] openOverlay raw item`);
-    console.log(item);
-    console.groupEnd();
 
     const siteLike = item._site ?? item.site ?? item.site_id ?? item.siteId ?? null;
     const { siteCode, siteId } = mapSiteToCodeAndId(siteLike);
@@ -413,17 +396,11 @@ const DbSearch = () => {
       status: item.status ?? "",
     };
 
-    console.groupCollapsed(`[${NS}] parsed for overlay`);
-    console.table(parsed);
-    console.groupEnd();
-
     setSelectedBag(parsed);
     setOverlayOpen(true);
-    log("Overlay open → true");
   };
 
   const closeOverlay = () => {
-    log("Closing overlay");
     setOverlayOpen(false);
     setSelectedBag(null);
   };
@@ -497,6 +474,22 @@ const DbSearch = () => {
         break;
       }
 
+      case "batch_id": {
+        const any = Object.keys(aggregates.byBatchId).length > 0;
+        lines.push(`Distinct ${readable}s — ${aggregates.distinctBatchIds}`);
+        if (any) {
+          lines.push(`By ${readable}:`);
+          // sort by count desc, then batch_id asc; cap to top 50 for safety
+          const entries = Object.entries(aggregates.byBatchId)
+            .sort((a, b) => b[1] - a[1] || String(a[0]).localeCompare(String(b[0])));
+          for (const [k, v] of entries.slice(0, 50)) {
+            lines.push(`• ${k}: ${v}`);
+          }
+          if (entries.length > 50) lines.push(`… +${entries.length - 50} more`);
+        }
+        break;
+      }
+
       // explicitly no totals
       case "bagging_date":
       default:
@@ -517,6 +510,7 @@ const DbSearch = () => {
       field === "site" ||
       field === "ebc_status" ||
       field === "order_id" ||
+      field === "batch_id" ||
       field === "delivery_id";
 
     return (
@@ -566,19 +560,16 @@ const DbSearch = () => {
                 onToggle={handleToggleRange}
                 onChange={handleDateChange}
                 onFetch={() => {
-                  log("IndexSearch onFetch");
                   handleSearch();
                 }}
                 selectedIndex={selectedIndex}
                 indexOptions={INDEX_OPTIONS}
                 onIndexChange={(v) => {
-                  log("Index change:", v);
                   setSelectedIndex(v);
                 }}
                 onKeyDown={handleSearch}
                 searchQuery={query}
                 onSearchChange={(v) => {
-                  log("Search change:", v);
                   setQuery(v);
                 }}
               />
@@ -593,7 +584,6 @@ const DbSearch = () => {
                   headers={selectedFields.map((f) => ({ label: labelize(f), key: f }))}
                   filename={`${selectedIndex}-inventory-export.csv`}
                   className={styles.downloadButton}
-                  onClick={() => log("CSV export click")}
                 >
                   <img src={iconCSV} className={styles.iconCSV} />
                 </CSVLink>
@@ -615,7 +605,6 @@ const DbSearch = () => {
                 ]}
                 values={statusFilters}
                 onChange={(v) => {
-                  log("Status filter:", v);
                   setStatusFilters(v);
                 }}
               />
@@ -633,7 +622,6 @@ const DbSearch = () => {
                 ]}
                 values={ebcStatusFilters}
                 onChange={(v) => {
-                  log("EBC filter:", v);
                   setEbcStatusFilters(v);
                 }}
               />
@@ -648,7 +636,6 @@ const DbSearch = () => {
                 ]}
                 values={siteFilters}
                 onChange={(v) => {
-                  log("Site filter:", v);
                   setSiteFilters(v);
                 }}
               />
@@ -711,14 +698,12 @@ const DbSearch = () => {
                             key={idx}
                             className={`${styles.tableRow} ${clickable ? styles.clickableRow : ""}`}
                             onClick={(e) => {
-                              log("Row click idx:", idx, "clickable:", clickable);
                               if (clickable && !isInteractive(e.target, e.currentTarget)) openOverlay(item);
                             }}
                             onKeyDown={(e) => {
                               if (!clickable) return;
                               if (!isInteractive(e.target, e.currentTarget) && (e.key === "Enter" || e.key === " ")) {
                                 e.preventDefault();
-                                log("Row keydown open idx:", idx);
                                 openOverlay(item);
                               }
                             }}

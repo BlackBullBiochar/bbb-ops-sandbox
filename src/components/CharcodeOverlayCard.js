@@ -14,15 +14,11 @@ import { useSingleTempChart } from '../hooks/useSingleTempChart';
 
 // ---------- LOGGING HELPERS ----------
 const NS = "CharcodeOverlay";
-const log = (...args) => console.log(`[%c${NS}%c]`, "color:#34B61F;font-weight:bold", "color:inherit", ...args);
-const warn = (...args) => console.warn(`[%c${NS}%c]`, "color:#B0E000;font-weight:bold", "color:inherit", ...args);
-const err = (...args) => console.error(`[%c${NS}%c]`, "color:#ff5555;font-weight:bold", "color:inherit", ...args);
 
 const CharcodeOverlayCard = ({ parsed, onClose }) => {
   const dispatch = useFilterDispatch();
   const [shouldFetch, setShouldFetch] = useState(false);
 
-  log("mount props:", parsed);
 
   // --- Basics
   const bagDate = parsed?.bagging_date ? parsed.bagging_date.slice(0, 10) : "";
@@ -42,19 +38,15 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
     siteName === "JNR" ? JNR_ID :
     parsed?._site || null;
 
-  log("derived:", { bagDate, siteName, siteObjectId, explicitCode });
-
   // --- EBC history
   const [ebcHistory, setEbcHistory] = useState(parsed?.ebcStatuses || []);
   useEffect(() => {
-    log("ebcHistory set from props:", parsed?.ebcStatuses?.length || 0);
     setEbcHistory(parsed?.ebcStatuses || []);
   }, [parsed?.ebcStatuses]);
 
   // --- Kick the FilterContext fetch for the chosen site/date
   useEffect(() => {
     const validSite = siteName === "ARA" || siteName === "JNR";
-    log("kick fetch?", { bagDate, siteName, validSite });
     if (!bagDate || !validSite) return;
 
     dispatch({ type: ACTIONS.SET_SITE, payload: siteName });
@@ -69,7 +61,6 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
 
   // --- Temp data + charts
   const tempRows = useTempDataRows(siteName, shouldFetch);
-  useEffect(() => { log("tempRows length:", tempRows?.length ?? 0); }, [tempRows]);
 
   const araR1 = useSingleTempChart(tempRows, 'r1_temp');
   const araR2 = useSingleTempChart(tempRows, 'r2_temp');
@@ -83,21 +74,13 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
     ({ labels: r1Labels, data: r1Data } = jnrT5);
     ({ labels: r2Labels, data: r2Data } = jnrT5);
   }
-  useEffect(() => {
-    log("chart series sizes:", {
-      r1Labels: r1Labels.length, r1Data: r1Data.length,
-      r2Labels: r2Labels.length, r2Data: r2Data.length
-    });
-  }, [r1Labels, r1Data, r2Labels, r2Data]);
 
   // --- Stats
   const average = (arr) => arr.length ? arr.reduce((s, x) => s + x, 0) / arr.length : null;
   const avgR1 = average(r1Data.filter(v => v != null));
   const avgR2 = average(r2Data.filter(v => v != null));
-  useEffect(() => { log("averages:", { avgR1, avgR2 }); }, [avgR1, avgR2]);
 
   const handleEntryDeleted = (delDate, delTime) => {
-    log("delete EBC entry:", delDate, delTime);
     setEbcHistory(current =>
       current.filter(e =>
         !(e.created_date.startsWith(delDate) && e.time === delTime)
@@ -108,7 +91,7 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
   return (
     <div className={styles.overlay}>
       <div className={styles.overlayCard}>
-        <button className={styles.closeBtn} onClick={() => { log("close click"); onClose(); }}>×</button>
+        <button className={styles.closeBtn} onClick={() => {onClose(); }}>×</button>
         <div className={styles.contentGrid}>
 
           {/* Charcode Info */}
@@ -189,7 +172,6 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
               currentStatus={parsed?.ebcCertStatus}
               currentReason={parsed?.ebcStatusReason}
               onSaved={(newStatus) => {
-                log("EBC onSaved:", newStatus);
                 setEbcHistory(h => [newStatus, ...h]);
               }}
             />
