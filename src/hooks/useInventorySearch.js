@@ -57,15 +57,19 @@ const buildQueryParams = ({
   // Map query by source
   if (source === "orders" && trimmed) {
     params.set("order_id", trimmed);
+    params.set("enrich.delivery", "true");
     if (orderLike) params.set("like", "true");
   } else if (source === "deliveries" && trimmed) {
     params.set("delivery_id", trimmed);
     if (deliveryLike) params.set("like", "true");
+    params.set("mode", "delivery_to_bags");
   } else if (source === "bags" && trimmed) {
     params.set("charcode", trimmed);
+    params.set("enrich.delivery", "true");
     if (charcodeLike) params.set("like", "true");
   } else if (source === "batches" && trimmed) {
     params.set("batch_id", trimmed);
+    params.set("enrich.delivery", "true");
     if (batchLike) params.set("like", "true");
   } else if (source === "users" && trimmed) {
     // Support fielded prefix (optional): "email: foo", "first: ali", "last: smith"
@@ -78,12 +82,16 @@ const buildQueryParams = ({
     } else {
       params.set("q", trimmed);
     }
+    params.set("enrich.delivery", "true");
     if (userLike) params.set("like", "true");
   }
 
   // Fields
   if (Array.isArray(selectedFields) && selectedFields.length) {
-    params.set("fields", selectedFields.join(","));
+    const base = new Set(selectedFields);
+    base.add("order_id");
+    base.add("delivery_id");
+    params.set("fields", Array.from(base).join(","));
   }
 
   // Sort / paging

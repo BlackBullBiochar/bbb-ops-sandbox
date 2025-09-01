@@ -310,6 +310,8 @@ const DbSearch = () => {
       "ebc_status_reason",
       "ebcStatusReason",
       "faultMessages",
+      "order_id",
+      "delivery_id",
     ];
 
     const fieldsForFetch = Array.from(new Set([...selectedFields, ...requiredForOverlay]));
