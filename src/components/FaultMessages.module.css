@@ -1,9 +1,11 @@
 .tableWrapper1 {
-  overflow-y: auto;
+  overflow-y: scroll;
+  height: 150px;
 }
 
 .tableWrapper2 {
-  overflow-y: auto;
+  overflow-y: scroll;
+  height: 375px;
 }
 
 .table {
@@ -11,6 +13,7 @@
     font-family: "RobotoCondensed";
     font-size: 0.95rem;
     border-collapse: collapse;
+    overflow-y: scroll;
   }
   
   .table th {

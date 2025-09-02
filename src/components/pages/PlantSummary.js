@@ -9,7 +9,7 @@ import Figure2 from "../Figure2";
 import Figure from "../Figure";
 import ChartMod from "../ChartMod";
 import EditableFigure from "../EditableFigure.js";
-import EditableParagraph from "../EditableParagraph";
+import FaultMessageListContainer from "../FaultMessageListContainer.js";
 import { useFilterDispatch, useFilters, ACTIONS } from '../../contexts/FilterContext';
 import { useTempDataRows } from '../../hooks/useTempDataRows';
 import { useBagDataRows } from '../../hooks/useBagDataRows';
@@ -156,10 +156,7 @@ const PlantSummaryView = () => {
 
       <div className={styles.contentGrid}>
         <Module name="Plant Updates" spanColumn={9} spanRow={2}>
-          <EditableParagraph
-            initialText="Plant operating smoothly."
-            onSave={newText =>  newText}
-          />
+          <FaultMessageListContainer siteCode={selectedSite} variant="editable" showDate showSite />
         </Module>
 
         <Module name="Running Hours" spanColumn={5} spanRow={1}>

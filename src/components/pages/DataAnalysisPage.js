@@ -7,7 +7,7 @@ import ChartMod from '../ChartMod.js';
 import Figure from '../Figure.js';
 import DateSelector from '../DateSelector.js';
 import CharcodesList from '../CharcodesList.js';
-import FaultMessages from '../FaultMessages';
+import FaultMessagesContainer from '../FaultMessagesContainer.js';
 import { useRangeHours } from '../../hooks/useRangeHours.js';
 import { useHeatTotal } from '../../hooks/useHeatTotal.js';
 import { useFilterDispatch, useFilters, ACTIONS } from '../../contexts/FilterContext';
@@ -174,7 +174,7 @@ const DataAnalysisPage = () => {
             />
           </Module>
           <Module name="Fault Messages" spanColumn={8} spanRow={2}>
-            <FaultMessages messages={faultMessagesARA} wrapperSize="full" />
+            <FaultMessagesContainer  wrapperSize="lol" siteCode="ARA" />
           </Module>
 
           <Module name="Avg. Biomass MC" spanColumn={4} spanRow={2}>

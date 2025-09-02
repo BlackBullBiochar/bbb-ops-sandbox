@@ -7,7 +7,7 @@ import ChartMod from '../ChartMod.js';
 import Figure from '../Figure.js';
 import DateSelector from '../DateSelector.js';
 import CharcodesList from '../CharcodesList.js';
-import FaultMessages from '../FaultMessages';
+import FaultMessagesContainer from '../FaultMessagesContainer.js';
 import { useFilterDispatch, useFilters, ACTIONS } from '../../contexts/FilterContext';
 import { useSiteNames } from '../../hooks/useSiteNames';
 import { useTempDataRows } from '../../hooks/useTempDataRows'
@@ -118,11 +118,11 @@ const DataAnalysisPageJNR = () => {
           </Module>
 
           <Module name="Fault Messages" spanColumn={8} spanRow={4}>
-            <FaultMessages messages={faultMessagesARA} wrapperSize="full" />
+            <FaultMessagesContainer wrapperSize="full" siteCode="JNR" />
           </Module>
           
           <Module name="Avg. Biomass MC" spanColumn={4} spanRow={2}>
-            <Figure value={bagAvgMC} unit="" />
+            <Figure value={bagAvgMC} variant="2" unit="" />
           </Module>
         </div>
       </ModuleMain>
