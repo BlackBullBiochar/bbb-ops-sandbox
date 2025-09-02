@@ -503,7 +503,7 @@ const DbSearch = () => {
   return (
     <FilterProvider>
       <div className={styles.mainWhiteContainer}>
-        <ScreenHeader name={"Inventory"} />
+        <ScreenHeader name={"Search the Database"} />
         <ModuleMain>
           <div className={styles.container}>
             {/* Top search + date */}
