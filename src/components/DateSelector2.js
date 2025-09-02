@@ -1,6 +1,6 @@
 import React from "react";
 import ToggleSwitch from "./ToggleSwitch";
-import styles from "./DateSelector.module.css";
+import styles from "./DateSelector2.module.css";
 
 const DateSelector2 = ({
   isWeek,

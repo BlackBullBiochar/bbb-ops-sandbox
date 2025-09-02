@@ -1,10 +1,10 @@
 // pages/CharcodeSummary.jsx
 import React, { useState } from "react";
-import styles from "./DataAnalysisPage.module.css";
+import styles from "./CharcodeSummary.module.css";
 import ScreenHeader from "../ScreenHeader.js";
 import ModuleMain from "../ModuleMain.js";
 import Module from "../Module.js";
-import DateSelector2 from "../DateSelector2.js";
+import DateSelector2 from "../DateSelector2";
 import Figure2 from "../Figure2.js"
 import PieChart from '../PieChart';  
 import { ACTIONS, useFilterDispatch } from "../../contexts/FilterContext.js";

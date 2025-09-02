@@ -448,4 +448,14 @@ overflow: visible;
   padding: 20px;
   z-index: 10;
 }
+.topRow{
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.dateInput{
+  margin-top:0rem !important
+}
 
