@@ -71,7 +71,13 @@ const DataAnalysisPageJNR = () => {
           singleDate={singleDate}
           fromDate={fromDate}
           toDate={toDate}
-          onToggle={() => setIsRange(prev => !prev)}
+          onToggle={() => {
+            if (isRange) {
+              window.location.reload();       // was range → reload page
+            } else {
+              setIsRange(true);               // was single → go to range (no reload)
+            }
+          }}
           onChange={(type, value) => {
             if (type === 'single') setSingleDate(value);
             if (type === 'from') setFromDate(value);
