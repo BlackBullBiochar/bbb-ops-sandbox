@@ -121,7 +121,6 @@ const PlantSummaryView = () => {
      dispatch({ type: ACTIONS.SET_FROM_DATE, payload: fromDate });
      dispatch({ type: ACTIONS.SET_TO_DATE,   payload: toDate });
     }
-    setTimeout(() => { dispatch({ type: ACTIONS.RESET_FILTERS }); }, 10);
 
     // toggle to re-trigger data hooks
     setFetchToggle(true);

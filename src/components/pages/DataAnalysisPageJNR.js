@@ -34,17 +34,11 @@ const DataAnalysisPageJNR = () => {
   const [avg1, avg2, avg5, bagAvgWeight, bagAvgMC, bagTotalWeight] = useAvgTemps(tempRows, bagRows);
   const { labels: r1SingleLabels, data: r1SingleData } = useSingleTempChart(tempRows, 't5_temp');
   const { labels: r1RangeLabels, data: r1RangeData } = useRangeTempChart(tempRows, 't5_temp');
-  const { labels: r2SingleLabels, data: r2SingleData } = useSingleTempChart(tempRows, 't5_temp');
-  const { labels: r2RangeLabels, data: r2RangeData } = useRangeTempChart(tempRows, 't5_temp');
-
-  // placeholders—replace or move into context as needed
-  const charcodesARA = [];
-  const dailyHeatGenARA = 23;
-  const faultMessagesARA = [];
-  const totalWeightARA = 23;
-  const avgMCARA = 23;
 
   const mode = isRange ? 'range' : 'single';
+
+  const faultMessagesJNR = [];
+
 
   const handleFetch = () => {
     if (mode === 'single' && !singleDate) return alert('Pick a date');
@@ -54,7 +48,6 @@ const DataAnalysisPageJNR = () => {
     dispatch({ type: ACTIONS.SET_SINGLE_DATE, payload: singleDate });
     dispatch({ type: ACTIONS.SET_FROM_DATE, payload: fromDate });
     dispatch({ type: ACTIONS.SET_TO_DATE, payload: toDate });
-    setTimeout(() => { dispatch({ type: ACTIONS.RESET_FILTERS }); }, 10);
 
     // toggle to re-trigger data hooks
     setFetchToggle(true);
@@ -124,7 +117,7 @@ const DataAnalysisPageJNR = () => {
           </Module>
 
           <Module name="Fault Messages" spanColumn={8} spanRow={4}>
-            <FaultMessagesContainer wrapperSize="full" siteCode="JNR" />
+            <FaultMessagesContainer  wrapperSize="lol" siteCode="JNR" />
           </Module>
           
           <Module name="Avg. Biomass MC" spanColumn={4} spanRow={2}>
