@@ -124,7 +124,13 @@ const CharcodeSummaryView = () => {
               week={week}
               fromDate={fromDate}
               toDate={toDate}
-              onToggle={() => setIsWeek(prev => !prev)}
+              onToggle={() => {
+                if (isRange) {
+                  window.location.reload();       // was range → reload page
+                } else {
+                  setIsRange(true);               // was single → go to range (no reload)
+                }
+              }}
               onChange={(type, value) => {
                 if (type === 'week') setWeek(value);
                 if (type === 'from') setFromDate(value);
