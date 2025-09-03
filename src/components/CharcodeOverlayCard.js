@@ -7,7 +7,7 @@ import Figure from './Figure';
 import ChartMod from './ChartMod';
 import FaultMessages2 from './FaultMessages2';
 import EbcStatusList from './EBCStatusList';
-import EbcStatusEditor from './EBCStatusEditorARA';
+import EbcStatusEditor from './EbcStatusEditorARA';
 import { useFilterDispatch, ACTIONS } from '../contexts/FilterContext';
 import { useTempDataRows } from '../hooks/useTempDataRows';
 import { useSingleTempChart } from '../hooks/useSingleTempChart';
