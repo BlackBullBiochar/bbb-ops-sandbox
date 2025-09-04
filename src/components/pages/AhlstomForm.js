@@ -23,7 +23,8 @@ const AhlstromForm = () => {
     { name: 'r1_temperature', label: 'Reactor 1 Temperature (600 - 700°C)', type: 'text', required: true },
     { name: 'r1_pressure', label: 'Reactor 1 Pressure (40Pa)', type: 'text', required: true },
     { name: 'r1_exhaust_temperature', label: 'Reactor 1 Exhaust Temperature (Max 750°C)', type: 'text', required: true },
-    { name: 'r2_drive_pulse_temperature', label: 'Reactor 2 Drive Pulse Time (0.1 - 5.9sec)', type: 'text', required: true },
+    { name: 'r1_drive_pulse_time', label: 'Reactor 1 Drive Pulse Time (0.1 - 5.9sec)', type: 'text', required: true },
+    { name: 'r2_drive_pulse_time', label: 'Reactor 2 Drive Pulse Time (0.1 - 5.9sec)', type: 'text', required: true },
     { name: 'r2_temperature', label: 'Reactor 2 Temperature (600 - 700°C)', type: 'text', required: true },
     { name: 'r2_pressure', label: 'Reactor 2 Pressure (40Pa)', type: 'text', required: true },
     { name: 'r2_exhaust_temperature', label: 'Reactor 2 Exhaust Temperature (Max 750°C)', type: 'text', required: true },
@@ -39,12 +40,13 @@ const AhlstromForm = () => {
     { name: 'HG_cyclone_temperature', label: 'HG Cyclone Temperature (Max. 1050°C)', type: 'text', required: true },
     { name: 'PG_cyclone_temperature', label: 'PG Cyclone Temperature (°C)', type: 'text', required: true },
     { name: 'quench_spraying_time', label: 'Quench Spraying Time (sec)', type: 'text', required: true },
+    { name: 'biochar_post_quench_temperature', label: 'Post Quench Temperature (°C)', type: 'text', required: true },
     { name: 'biomass_bin_in_service', label: 'Biomass Bin in Service', type: 'radio', options: ['1', '2'], required: true },
     { name: 'biomassBinChanged', label: 'Biomass bin changed?', type: 'radio+compound', options: ['No', 'Yes'], required: true, compound: { showIf: 'Yes',
     fields: [
       {name: 'biomass_bin_changed_time', label: 'Date', type: 'datetime-local', defaultValue: new Date().toISOString().slice(0, 16), required: true},
-      { name: 'biomass_bin_changeover_time', label: 'Time (00:00)', type: 'text', required: true},
-      { name: 'biomass_bin_moisture_content', label: 'Biomass MC (%)', type: 'text', required: true}
+      { name: 'biomass_bin_changeover_time', label: 'Time (00:00)', type: 'text'},
+      { name: 'biomass_bin_moisture_content', label: 'Biomass MC (%)', type: 'text'}
     ]}}
     ];
 
