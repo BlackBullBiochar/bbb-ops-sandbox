@@ -126,9 +126,9 @@ const CharcodeSummaryView = () => {
               toDate={toDate}
               onToggle={() => {
                 if (isRange) {
-                  window.location.reload();       // was range → reload page
+                  window.location.reload();
                 } else {
-                  setIsRange(true);               // was single → go to range (no reload)
+                  setIsRange(true);
                 }
               }}
               onChange={(type, value) => {
@@ -141,7 +141,16 @@ const CharcodeSummaryView = () => {
           </div>
           <div className={styles.contentGrid}>
                     <Module name="Ahlstrom Bagging Performance" spanColumn={12} spanRow={1}>
-                      <Figure2 title="ARA" value={ARAcount} unit="" blurb="Bags logged more than 3 days after production"/>
+                      <Figure2
+                        title="ARA"
+                        value={ARAcount === "" ? 0 : ARAcount === 0 ? "" : ARAcount}
+                        unit=""
+                        blurb={
+                          ARAcount === 0
+                            ? "No bags were late being logged"
+                            : "Bags logged more than 3 days after production"
+                        }
+                      />
                     </Module>
                     <Module name="Ahlstrom Bags" spanColumn={6} spanRow={3}>
                       <PieChart data={ARAData} labels={labels}/>
