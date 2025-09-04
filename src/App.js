@@ -134,15 +134,11 @@ const App = () => {
     <FilterProvider>
       <DataAnalysisProvider>
         {!user.authed ? (
-          window.location.pathname === '/Ahlstrom-Form' ? (
-            <AhlstromForm />
-          ) : (
             <LoginScreen
               onLogin={handleLogin}
               setUserDetails={setUserDetails}
               setAdminDetails={setAdminDetails}
             />
-          )
         ) : window.location.pathname === '/Ahlstrom-Form' ? (
           <AhlstromForm />
         ) : window.location.pathname === '/Jenkinson-Form' ? (
