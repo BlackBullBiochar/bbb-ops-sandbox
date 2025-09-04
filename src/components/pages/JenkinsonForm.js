@@ -32,7 +32,7 @@ const JenkinsonForm = () => {
     { name: 't8_reading', label: 'T8 Reading (80°C)', type: 'text', required: true },
     { name: 't9_reading', label: 'T9 Reading (°C)', type: 'text', required: true },
     { name: 't10_reading', label: 'T10 Reading (°C)', type: 'text', required: true },
-    { name: 't11Reading', label: 'T11 Reading (°C)', type: 'text', required: true },
+    { name: 't11_reading', label: 'T11 Reading (°C)', type: 'text', required: true },
     { name: 't12_reading', label: 'T12 Reading (°C)', type: 'text', required: true },
     { name: 'mixing_valve_percentage', label: 'Mixing Valve Percentage (%)', type: 'text', required: true },
     { name: 'vacuum_fan_percentage', label: 'Vacuum Fan Percentage (%)', type: 'text', required: true },
