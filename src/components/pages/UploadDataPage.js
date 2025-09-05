@@ -87,14 +87,16 @@ const UploadDataPage = () => {
           onClick={() => hook.toggleBucket(bucketId)}
         >
           <div className={styles.titleBig}>{makeTitle(summary)}</div>
-          <button
-            className={styles.deleteButton}
-            onClick={e => { e.stopPropagation(); hook.deleteBucket(bucketId); }}
-          >
-            Delete
-          </button>
-        </div>
 
+          {variant === 'temp' && (
+            <button
+              className={styles.deleteButton}
+              onClick={e => { e.stopPropagation(); hook.deleteBucket(bucketId); }}
+            >
+              Delete
+            </button>
+          )}
+        </div>
         {isOpen && (
           variant === 'temp' ? (
             <table className={styles.table}>

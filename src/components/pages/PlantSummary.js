@@ -135,10 +135,10 @@ const PlantSummaryView = () => {
           fromDate={fromDate}
           toDate={toDate}
           onToggle={() => {
-            if (isRange) {
-              window.location.reload();       // was range → reload page
+            if (!isWeek) {
+              window.location.reload();
             } else {
-              setIsRange(true);               // was single → go to range (no reload)
+              setIsWeek(false);
             }
           }}
           onChange={(type, value) => {

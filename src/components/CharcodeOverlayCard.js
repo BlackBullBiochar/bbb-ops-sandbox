@@ -5,7 +5,7 @@ import styles from './CharcodeOverlayCard.module.css';
 import Module from './Module';
 import Figure from './Figure';
 import ChartMod from './ChartMod';
-import FaultMessages2 from './FaultMessages2';
+import FaultMessagesContainer from './FaultMessagesContainer';
 import EbcStatusList from './EBCStatusList';
 import EbcStatusEditor from './EbcStatusEditorARA';
 import { useFilterDispatch, ACTIONS } from '../contexts/FilterContext';
@@ -117,7 +117,7 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
 
           {/* Fault Messages */}
           <Module name="Fault Messages" spanColumn={4} spanRow={2}>
-            <FaultMessages2 messages={['example messages', 'plant was not producing biochar between 12:00 and 4:00']}/>
+            <FaultMessagesContainer  wrapperSize="full" siteCode={siteName} />
           </Module>
 
           {/* EBC Status History */}

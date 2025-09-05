@@ -117,7 +117,7 @@ const DataAnalysisPageJNR = () => {
           </Module>
 
           <Module name="Fault Messages" spanColumn={8} spanRow={4}>
-            <FaultMessagesContainer  wrapperSize="lol" siteCode="JNR" />
+            <FaultMessagesContainer  wrapperSize="full" siteCode="JNR" />
           </Module>
           
           <Module name="Avg. Biomass MC" spanColumn={4} spanRow={2}>
