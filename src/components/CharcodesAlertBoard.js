@@ -43,6 +43,7 @@ const CharcodesAlertBoard = ({ charcodes = [] }) => {
     const norm = status.toLowerCase();
 
     const item = { ...c, _index: idx, ebcCertStatus: status };
+    console.log("Charcode", c.charcode, "status:", status);
     switch (norm) {
       case 'approved':
         grouped.approved.push(item);

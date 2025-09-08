@@ -166,7 +166,7 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
             <EbcStatusEditor
               bagId={parsed?._id}
               siteId={siteObjectId}
-              charcode={parsed?.charcode}
+              charcodeId={parsed?.charcode}
               baggingDate={bagDate}
               currentStatus={parsed?.ebcCertStatus}
               currentReason={parsed?.ebcStatusReason}
