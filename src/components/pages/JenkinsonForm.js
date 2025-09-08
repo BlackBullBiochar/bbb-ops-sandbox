@@ -49,9 +49,14 @@ const JenkinsonForm = () => {
     ];
 
   const handleSubmit = async (formData) => {
-    const response = await submitForm(formData);
-    if (response) {
-      alert('Form submitted!');
+    console.log('Submitting form data:', formData);
+    const rsp = await submitForm(formData);
+    if (rsp.ok) {
+      alert('Form submitted');
+    } else if (rsp.status === 401) {
+      alert(rsp.error || 'Invalid PIN');
+    } else {
+      alert('Error submitting form - please try again.');
     }
   };
 
