@@ -8,7 +8,7 @@ const getAPI = () => {
 
   if (isLocalhost) return "http://localhost:4000";
   if (isNgrok) return "https://relevant-feline-equal.ngrok-free.app";
-  if (isStaging) return "https://2qv2hncw.uks1.devtunnels.ms:4000";
+  if (isStaging) return "https://bbb-staging-ae2bb81703e0.herokuapp.com";
 
   return "https://api.blackbullbiochar.com";
 };
