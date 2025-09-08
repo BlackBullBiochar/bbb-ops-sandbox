@@ -52,8 +52,8 @@ const AhlstromForm = () => {
     ];
 
   const handleSubmit = async (formData) => {
+    console.log('Submitting form data:', formData);
     const rsp = await submitForm(formData);
-
     if (rsp.ok) {
       alert('Form submitted');
     } else if (rsp.status === 401) {

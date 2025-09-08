@@ -20,13 +20,16 @@ export const useSubmitForm = () => {
         },
         body: JSON.stringify(payload)
       });
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
-      return await res.json();
+
+      let body = {};
+      try { body = await res.json(); } catch (_) {}
+
+      // Always return something the caller can read
+      return { status: res.status, ...body }; // e.g. { status: 401, ok:false, error:'Invalid PIN' }
     } catch (err) {
       console.error('❌ submitForm error:', err);
       setError('Failed to submit form');
-    } finally {
-      setLoading(false);
+      return { status: 0, ok: false, error: err.message || 'Network error' };
     }
   };
 
