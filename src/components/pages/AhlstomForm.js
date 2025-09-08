@@ -12,6 +12,7 @@ const todayWithTime = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now
 const AhlstromForm = () => {
   const { submitForm, loading, error } = useSubmitForm();
   const fields = [
+    { name: 'login_pin', label: 'Login Pin', type: 'text', required: true },
     { name: 'P500_heat_meter_total', label: 'P500 Heat Meter Total (m³)', type: 'text', required: true },
     { name: 'P500_heat_meter_flow_rate', label: 'P500 Heat Meter Flow Rate (°C)', type: 'text', required: true },
     { name: 'P500_heat_meter_supply_temperature', label: 'P500 Heat Meter Supply Temp (°C)', type: 'text', required: true },

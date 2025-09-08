@@ -9,6 +9,7 @@ const pad = (n) => n.toString().padStart(2, '0');
 const JenkinsonForm = () => {
   const { submitForm, loading, error } = useSubmitForm();
   const fields = [
+    { name: 'login_pin', label: 'Login Pin', type: 'text', required: true },
     { name: 'C500_fault_messages', label: 'C500 fault messages', type: 'radio+text', options: ['No'], required: true},
     { name: 'C500_heat_meter_reading', label: 'C500-I Heat Meter Reading (kWh conversion - INCLUDE DECIMALS)', type: 'text', required: true },
     { name: 'running_hours_total', label: 'Running Hours Total (Hrs)', type: 'text', required: true },
