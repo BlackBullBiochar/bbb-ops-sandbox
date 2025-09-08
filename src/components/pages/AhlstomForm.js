@@ -53,10 +53,14 @@ const AhlstromForm = () => {
 
   const handleSubmit = async (formData) => {
     const response = await submitForm(formData);
-    if (response) {
-      alert('Form submitted!');
-    }
-  };
+      if (response.ok) {
+        alert('Form submitted');
+      } else if (response.status === 401) {
+        alert('Invalid PIN');
+      } else {
+        alert('Error submitting form - please try again.');
+      }
+  }; 
 
   return (
     <div className={styles.page}>
