@@ -134,11 +134,18 @@ const App = () => {
     <FilterProvider>
       <DataAnalysisProvider>
         {!user.authed ? (
+          window.location.pathname === '/Ahlstrom-Form' ? (
+            
+            <AhlstromForm />
+          ) : window.location.pathname === '/Jenkinson-Form' ? (
+          <JenkinsonForm />
+          ) : (
             <LoginScreen
               onLogin={handleLogin}
               setUserDetails={setUserDetails}
               setAdminDetails={setAdminDetails}
             />
+          )
         ) : window.location.pathname === '/Ahlstrom-Form' ? (
           <AhlstromForm />
         ) : window.location.pathname === '/Jenkinson-Form' ? (
@@ -165,5 +172,5 @@ const App = () => {
   </UserContext.Provider>
 );
 };
-
+//lolololololol
 export default App;
