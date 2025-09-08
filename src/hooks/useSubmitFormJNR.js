@@ -16,15 +16,23 @@ export const useSubmitForm = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.token}`
+          Authorization: `Bearer ${user.token}`,
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
-      return await res.json();
+
+      // try to parse JSON safely
+      let body = {};
+      try {
+        body = await res.json();
+      } catch (_) {}
+
+      // always return shape with status + body
+      return { status: res.status, ...body };
     } catch (err) {
       console.error('❌ submitForm error:', err);
       setError('Failed to submit form');
+      return { status: 0, ok: false, error: err.message || 'Network error' };
     } finally {
       setLoading(false);
     }
