@@ -26,8 +26,19 @@ const FaultMessageList = ({
   useEffect(() => setJoined(initialJoined), [initialJoined]);
 
   if (!items.length) {
-    return <div className={styles.empty}>No Fault Messages</div>;
-  }
+    return (    
+    <div className={styles.box}>
+      {variant === "editable" ? (
+        <EditableParagraph
+          initialText={"No Fault Messages"}
+          onSave={(next) => setJoined(next)} // local only
+        />
+      ) : (
+        <pre className={styles.readOnlyText}>{initialJoined}</pre>
+      )}
+    </div>
+    );
+  };
 
   return (
     <div className={styles.box}>

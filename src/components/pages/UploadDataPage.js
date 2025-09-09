@@ -6,6 +6,7 @@ import DateSelector from '../DateSelector';
 import { useUploadedFiles } from '../../hooks/useUploadedFiles';
 import { useSiteNames } from '../../hooks/useSiteNames';
 import { useFilterDispatch, ACTIONS } from '../../contexts/FilterContext';
+import SiteSelector from '../SiteSelector';
 
 const META_KEYS = new Set([
   '_id', '__v', '_site', 'site_code', 'form_type',
@@ -16,11 +17,14 @@ const labelise = (key) =>
   key
     .replace(/_/g, ' ')
     .replace(/\b([a-z])/g, (m, c) => c.toUpperCase())
-    .replace(/\b(P|C)\s?(\d+)/gi, (m, a, b) => `${a.toUpperCase()}${b}`) // P500, C500 tidy
+    .replace(/\b(P|C)\s?(\d+)/gi, (m, a, b) => `${a.toUpperCase()}${b}`)
     .replace(/\s{2,}/g, ' ')
     .trim();
 
 const UploadDataPage = () => {
+  // ✅ Use the actual keys used below; both selected by default
+  const [selectedSites, setSelectedSites] = useState(['Temp', 'Form']);
+
   const dispatch = useFilterDispatch();
   const siteNames = useSiteNames();
 
@@ -48,6 +52,13 @@ const UploadDataPage = () => {
     setFetchTriggered(true);
   };
 
+  // ✅ Toggle handler for SiteSelector
+  const handleToggleSection = (key) => {
+    setSelectedSites(prev =>
+      prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+    );
+  };
+
   const makeTitle = (summary) => {
     const siteName = siteNames[summary._site] || summary.site_code || summary._site || 'Unknown site';
     const dateObj  = summary.submitted_at || summary.date;
@@ -56,27 +67,22 @@ const UploadDataPage = () => {
     return `${siteName} — ${dateStr}`;
   };
 
-  // NEW: variant = 'temp' | 'form'
   const renderTable = (bucketId, summary, hook, variant = 'temp') => {
     const isOpen = hook.expanded.includes(bucketId);
     const rows   = hook.rowsCache[bucketId] || [];
 
-    // TEMP: same layout as before (headers from first row)
     const tempHeaders = rows.length > 0
       ? Object.keys(rows[0]).filter(h => h !== '_id')
       : [];
 
-    // FORMS: we expect a single object in rows[0]
     const formObj = variant === 'form' && rows.length > 0 && rows[0] && typeof rows[0] === 'object'
       ? rows[0]
       : null;
 
-    // Build rows for the two-column table, excluding meta keys
     const formPairs = formObj
       ? Object.keys(formObj)
           .filter(k => !META_KEYS.has(k))
           .map(k => [labelise(k), formObj[k]])
-          // Optional: stable alphabetical ordering by label
           .sort((a, b) => a[0].localeCompare(b[0]))
       : [];
 
@@ -158,20 +164,42 @@ const UploadDataPage = () => {
           onFetch={handleFetch}
         />
 
-        <div className={styles.titleBigger}>Temp Data Uploads</div>
-        {fetchTriggered && (
-          Object.entries(dataHook.buckets).length > 0
-            ? Object.entries(dataHook.buckets).map(([id, doc]) =>
-                renderTable(id, doc, dataHook, 'temp'))
-            : <p>No data uploads found.</p>
+        {/* ✅ This now toggles visibility without re-fetching */}
+        <SiteSelector
+          selected={selectedSites}
+          onToggle={handleToggleSection}
+          options={[
+            { key: 'Temp', label: 'Temperature Data' },
+            { key: 'Form', label: 'Forms Data' }
+          ]}
+        />
+
+        {selectedSites.includes('Temp') && (
+          <>
+            <div className={styles.titleBigger}>Temp Data Uploads</div>
+            {fetchTriggered ? (
+              Object.entries(dataHook.buckets).length > 0
+                ? Object.entries(dataHook.buckets).map(([id, doc]) =>
+                    renderTable(id, doc, dataHook, 'temp'))
+                : <p>No data uploads found.</p>
+            ) : (
+              <p>Select a date and fetch to view uploads.</p>
+            )}
+          </>
         )}
 
-        <div className={styles.titleBigger}>Daily Forms</div>
-        {fetchTriggered && (
-          Object.entries(formsHook.buckets).length > 0
-            ? Object.entries(formsHook.buckets).map(([id, doc]) =>
-                renderTable(id, doc, formsHook, 'form'))
-            : <p>No form uploads found.</p>
+        {selectedSites.includes('Form') && (
+          <>
+            <div className={styles.titleBigger}>Daily Forms</div>
+            {fetchTriggered ? (
+              Object.entries(formsHook.buckets).length > 0
+                ? Object.entries(formsHook.buckets).map(([id, doc]) =>
+                    renderTable(id, doc, formsHook, 'form'))
+                : <p>No form uploads found.</p>
+            ) : (
+              <p>Select a date and fetch to view forms.</p>
+            )}
+          </>
         )}
       </ModuleMain>
     </div>

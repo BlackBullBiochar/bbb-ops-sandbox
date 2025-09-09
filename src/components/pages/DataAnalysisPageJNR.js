@@ -80,8 +80,8 @@ const DataAnalysisPageJNR = () => {
         />
 
         <div className={styles.contentGrid}>
-          <Module name="T5 Avg. Temp" spanColumn={3} spanRow={1}>
-            <Figure title="T5 Avg. Temp" value={avg5} unit="°C" />
+          <Module name="T5 Avg. Temp (°C)" spanColumn={3} spanRow={1}>
+            <Figure value={avg5} unit="" />
           </Module>
 
           <CharcodesList
@@ -90,8 +90,8 @@ const DataAnalysisPageJNR = () => {
             onToggle={() => setExpanded(prev => !prev)}
           />
 
-          <Module name="T5 Avg. Temp" spanColumn={3} spanRow={1}>
-            <Figure title="T5 Avg. Temp" value={avg5} unit="°C" />
+          <Module name="T5 Avg. Temp (°C)" spanColumn={3} spanRow={1}>
+            <Figure value={avg5} unit="" />
           </Module>
 
           <Module name="T5 Temp" spanColumn={12} spanRow={4}>
@@ -104,7 +104,7 @@ const DataAnalysisPageJNR = () => {
               dataPoints={mode === 'single'
                 ? r1SingleLabels.map((t, i) => ({ x: `${singleDate}T${t}`, y: r1SingleData[i] }))
                 : r1RangeLabels.map((d, i) => ({ x: d, y: r1RangeData[i] }))}
-              unit="°C"
+              unit="Temperature °C"
               extraLines={[
                 { label: 'Upper Bound', value: specHigh },
                 { label: 'Lower Bound', value: specLow }
@@ -113,14 +113,14 @@ const DataAnalysisPageJNR = () => {
           </Module>
 
           <Module name="Com. Biochar Produced (kg)" spanColumn={4} spanRow={2}>
-            <Figure value={bagTotalWeight} variant="2" unit="kg" decimals={0} />
+            <Figure value={bagTotalWeight} variant="2" unit="" decimals={0} />
           </Module>
 
           <Module name="Fault Messages" spanColumn={8} spanRow={4}>
             <FaultMessagesContainer  wrapperSize="full" siteCode="JNR" />
           </Module>
           
-          <Module name="Avg. Biomass MC" spanColumn={4} spanRow={2}>
+          <Module name="Avg. Biomass MC (%)" spanColumn={4} spanRow={2}>
             <Figure value={bagAvgMC} variant="2" unit="" />
           </Module>
         </div>

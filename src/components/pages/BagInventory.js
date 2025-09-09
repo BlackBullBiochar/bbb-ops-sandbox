@@ -66,7 +66,7 @@ const BagInventory = () => {
 
   return (
     <div className={styles.mainWhiteContainer}>
-      <ScreenHeader name="Bag Inventory"/>
+      <ScreenHeader name="Bag Inventory (Not Accurate)"/>
       <ModuleMain>
             <div className={styles.contentGrid}>
               <Table spanColumn = {24} columns={columns} data={data} />

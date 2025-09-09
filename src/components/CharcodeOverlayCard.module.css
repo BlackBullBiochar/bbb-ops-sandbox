@@ -45,7 +45,7 @@
 }
 
 .overlayCard {
-  width: 130vh;
+  width: 95vw;
   height: 80vh;
   overflow-y: auto;
   position: relative;

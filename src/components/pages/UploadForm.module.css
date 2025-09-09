@@ -468,10 +468,11 @@ overflow: visible;
 
 .title {
   font-family: "Roboto";
-  font-size: 1rem;
+  font-size: 2rem;
   color: var(--leafDark);
   margin-bottom: 0.5rem;
   font-weight: 600;
+  margin-left: 1rem;
 }
 
 .contentGrid {
@@ -485,7 +486,7 @@ margin-bottom: 1rem;
 overflow: visible;
 }
 .bbbLogo {
-    margin-top: 8%;
-    max-width: 20rem;
+    margin-top: 0;
+    max-width: calc(100% - 2rem);
 }
 

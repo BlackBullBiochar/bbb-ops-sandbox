@@ -169,16 +169,16 @@ const PlantSummaryView = () => {
         </Module>
 
         {selectedSite === "ARA" && (
-        <Module name="Heat Output" spanColumn={5} spanRow={1}>
-          <Figure variant='3' value={meterDelta} unit="MWh"/>
+        <Module name="Heat Output (MWh)" spanColumn={5} spanRow={1}>
+          <Figure variant='3' value={meterDelta} unit=""/>
         </Module>
         )}
 
         {selectedSite === "JNR" && (
-        <Module name="Heat Usage (*Not Stored)" spanColumn={5} spanRow={1}>
+        <Module name="Heat Usage (kWh) *Not Stored" spanColumn={5} spanRow={1}>
           <EditableFigure
-            initialValue={0}
-            unit="kWh"
+            initialValue={'0.00'}
+            unit=""
             variant="3"
             decimals={1}
           />
@@ -186,21 +186,21 @@ const PlantSummaryView = () => {
         )}
 
         <Module name="Biochar Produced (t)" spanColumn={5} spanRow={1}>
-          <Figure variant='3' value={totalWeight/1000} unit="t" />
+          <Figure variant='3' value={totalWeight/1000} unit="" />
         </Module>
 
-        <Module name="Equivalent CO₂ removed (t)" spanColumn={5} spanRow={1}>
-          <Figure variant='3' value={parseFloat(totalCO2)} unit="t" />
+        <Module name="Estimated CO₂ removed (t)" spanColumn={5} spanRow={1}>
+          <Figure variant='3' value={parseFloat(totalCO2)} unit="" />
         </Module>
 
         <Module name="Bags Produced" spanColumn={5} spanRow={1}>
-          <Figure variant='3' value={bagCount} unit=""/>
+          <Figure variant='3' value={bagCount} unit="" decimals = '0' />
         </Module>
 
-        <Module name="Biomass Delivered (*Not Stored)" spanColumn={5} spanRow={1}>
+        <Module name="Biomass Delivered (t) *Not Stored" spanColumn={5} spanRow={1}>
           <EditableFigure
-            initialValue={0}
-            unit="t"
+            initialValue={'0.00'}
+            unit=""
             variant="3"
             decimals={1}
           />
@@ -217,7 +217,7 @@ const PlantSummaryView = () => {
                 x: d,
                 y: (isWeek ? r1WeekData : r1RangeData)[i],
               }))}
-              unit="°C"
+              unit="Temperature °C"
               extraLines={[
                 { label: 'High', value: specHigh },
                 { label: 'Low',  value: specLow }
@@ -249,7 +249,7 @@ const PlantSummaryView = () => {
                 y: (isWeek ? r2WeekData : r2RangeData)[i],
               }))
             }
-            unit="°C"
+            unit="Temperature °C"
             extraLines={[
               { label: 'High', value: specHigh },
               { label: 'Low',  value: specLow }
@@ -279,7 +279,7 @@ const PlantSummaryView = () => {
                     x: d,
                     y: powerData[i],
                   }))}
-              unit="MW"
+              unit="Power Output MW"
             />
           </Module>
         )}

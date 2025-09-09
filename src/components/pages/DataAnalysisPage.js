@@ -97,8 +97,8 @@ const DataAnalysisPage = () => {
         />
 
         <div className={styles.contentGrid}>
-          <Module name="Reactor 1 Avg. Temp" spanColumn={3} spanRow={1}>
-            <Figure title="Reactor 1 Avg. Temp" value={avg1} unit="°C" />
+          <Module name="Reactor 1 Avg. Temp (°C)" spanColumn={3} spanRow={1}>
+            <Figure value={avg1} unit="" />
           </Module>
 
           <CharcodesList
@@ -107,8 +107,8 @@ const DataAnalysisPage = () => {
             onToggle={() => setExpanded(prev => !prev)}
           />
 
-          <Module name="Reactor 2 Avg. Temp" spanColumn={3} spanRow={1}>
-            <Figure title="Reactor 2 Avg. Temp" value={avg2} unit="°C" />
+          <Module name="Reactor 2 Avg. Temp (°C)" spanColumn={3} spanRow={1}>
+            <Figure value={avg2} unit="" />
           </Module>
 
           <Module name="Reactor 1 Temp" spanColumn={12} spanRow={4}>
@@ -121,7 +121,7 @@ const DataAnalysisPage = () => {
               dataPoints={mode === 'single'
                 ? r1SingleLabels.map((t, i) => ({ x:`${singleDate}T${t}`, y: r1SingleData[i] }))
                 : r1RangeLabels.map((d, i) => ({ x: d, y: r1RangeData[i] }))}
-              unit="°C"
+              unit="Temperature °C"
               extraLines={[
                 { label: 'Upper Bound', value: specHigh },
                 { label: 'Lower Bound', value: specLow }
@@ -139,7 +139,7 @@ const DataAnalysisPage = () => {
               dataPoints={mode === 'single'
                 ? r2SingleLabels.map((t, i) => ({ x:`${singleDate}T${t}`, y: r2SingleData[i] }))
                 : r2RangeLabels.map((d, i) => ({ x: d, y: r2RangeData[i] }))}
-              unit="°C"
+              unit="Temperature °C"
               extraLines={[
                 { label: 'Upper Bound', value: specHigh },
                 { label: 'Lower Bound', value: specLow }
@@ -147,16 +147,16 @@ const DataAnalysisPage = () => {
             />
           </Module>
 
-          <Module name="Com. Biochar Produced (kg)" spanColumn={4} spanRow={2}>
-            <Figure value={totalWeight} variant="2" unit="kg" decimals={0} />
+          <Module name="Total Biochar Produced (kg)" spanColumn={4} spanRow={2}>
+            <Figure value={totalWeight} variant="2" unit="" decimals={0} />
           </Module>
 
-          <Module name="Avg. Heat Generated (per hour)" spanColumn={4} spanRow={2}>
-            <Figure value={avgHeatGenerated} variant="2" unit="MWh" />
+          <Module name="Avg. Energy Generated (MWh)" spanColumn={4} spanRow={2}>
+            <Figure value={avgHeatGenerated} variant="2" unit="" />
           </Module>
 
-          <Module name="Heat Generated (total)" spanColumn={4} spanRow={2}>
-            <Figure value={meterDelta} variant="2" unit="MWh" />
+          <Module name="Total Heat Generated (MWh)" spanColumn={4} spanRow={2}>
+            <Figure value={meterDelta} variant="2" unit="" />
           </Module>
           <Module name="Heat Monitor" spanColumn={12} spanRow={4}>
             <ChartMod
@@ -170,20 +170,20 @@ const DataAnalysisPage = () => {
               dataPoints={mode === 'single'
                 ? powerLabels.map((timestamp, i) => ({
                     x: new Date(timestamp),
-                    y: powerData[i],
+                    y: 1000*(powerData[i]),
                   })).reverse()
                 : powerLabels.map((d, i) => ({
                     x: d,
-                    y: powerData[i],
+                    y: 1000*(powerData[i]),
                   }))}
-              unit="MW"
+              unit="Power Output (kW)"
             />
           </Module>
           <Module name="Fault Messages" spanColumn={8} spanRow={2}>
             <FaultMessagesContainer  wrapperSize="lol" siteCode="ARA" />
           </Module>
 
-          <Module name="Avg. Biomass MC" spanColumn={4} spanRow={2}>
+          <Module name="Avg. Biomass MC (%)" spanColumn={4} spanRow={2}>
             <Figure value={bagAvgMC} variant="2" unit="" />
           </Module>
         </div>
