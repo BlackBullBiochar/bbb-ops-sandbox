@@ -136,12 +136,12 @@ const CharcodeSummaryView = () => {
 
   // Empty-state blurbs driven by `searched`
   const ARAcountBlurb =
-    searched && (ARAcount || 0) === 0
+    searched && (ARAcount || 0) === 0 && ARAPercent === ""
       ? "No bags were logged this week"
       : "Bags logged more than 3 days after production";
 
   const JNRcountBlurb =
-    searched && (JNRcount || 0) === 0
+    searched && (JNRcount || 0) === 0 && JNRPercent === ""
       ? "No bags were logged this week"
       : "Bags logged more than 3 days after production";
 
