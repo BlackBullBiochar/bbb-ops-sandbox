@@ -173,7 +173,7 @@ const CharcodeSummaryView = () => {
       ? "No bags were scheduled for shipping this week"
       : "Bags scheduled for shipping were picked up";
   
-  const scheduledPlaceholder = searched && sheduledBags === 0 ? "" : sheduledBags;
+  const scheduledPlaceholder = searched && sheduledBags === 0 ? "" : scheduledPecent;
 
   const scheduledUnit =
     searched && (sheduledBags || 0) === 0
