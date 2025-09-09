@@ -70,12 +70,12 @@ const CharcodeSummaryView = () => {
   const ARAPercent =
     (araCounts?.bagging || 0) > 0
       ? (((ARAcount || 0) / (araCounts.bagging || 1)) * 100).toFixed(1)
-      : "0.0";
+      : "";
 
   const JNRPercent =
     (jnrCounts?.bagging || 0) > 0
       ? (((JNRcount || 0) / (jnrCounts.bagging || 1)) * 100).toFixed(1)
-      : "0.0";
+      : "";
 
   const appliedBags = (araCounts?.application || 0) + (jnrCounts?.application || 0);
   const appUsers = (ARAUserCount || 0) + (JNRUserCount || 0);
@@ -155,10 +155,30 @@ const CharcodeSummaryView = () => {
       ? "No bags were logged this week"
       : "of bags were late";
 
+  const ARAPercentUnit =
+    searched && (araCounts?.bagging || 0) === 0
+      ? ""
+      : "%";
+
+  const JNRPercentUnit =
+    searched && (jnrCounts?.bagging || 0) === 0
+      ? ""
+      : "%";
+
   const scheduledBlurb =
     searched && (sheduledBags || 0) === 0
       ? "No bags were scheduled for shipping this week"
       : "Bags scheduled for shipping were picked up";
+
+  const scheduledUnit =
+    searched && (sheduledBags || 0) === 0
+      ? ""
+      : "%";
+
+  const sameDayUnit =
+    searched && (pickupTotal || 0) === 0
+      ? ""
+      : "%";
 
   const sameDayBlurb =
     searched && (pickupTotal || 0) === 0
@@ -194,29 +214,29 @@ const CharcodeSummaryView = () => {
 
           <div className={styles.contentGrid}>
             <Module name="Ahlstrom Bagging Performance" spanColumn={12} spanRow={1}>
-              <Figure2 title="ARA" value={ARAcount || 0} unit="" blurb={ARAcountBlurb} />
+              <Figure2 title="ARA" value={ARAcount || ""} unit="" blurb={ARAcountBlurb} />
             </Module>
 
             <Module name="Ahlstrom Bags" spanColumn={6} spanRow={3}>
               <PieChart data={ARAData} labels={labels} />
-              <Figure2 title="ARA" value={ARAPercent} unit="%" blurb={ARAPercentBlurb} />
+              <Figure2 title="ARA" value={ARAPercent} unit={ARAPercentUnit} blurb={ARAPercentBlurb} />
             </Module>
 
             <Module name="Jenkinson Bags" spanColumn={6} spanRow={3}>
               <PieChart data={JNRData} labels={labels} />
-              <Figure2 title="ARA" value={JNRPercent} unit="%" blurb={JNRPercentBlurb} />
+              <Figure2 title="ARA" value={JNRPercent} unit={JNRPercentUnit} blurb={JNRPercentBlurb} />
             </Module>
 
             <Module name="Jenkinson Bagging Performance" spanColumn={12} spanRow={1}>
-              <Figure2 title="ARA" value={JNRcount || 0} unit="" blurb={JNRcountBlurb} />
+              <Figure2 title="ARA" value={JNRcount || ""} unit="" blurb={JNRcountBlurb} />
             </Module>
 
             <Module name="Scheduled Delivery Performance" spanColumn={12}>
-              <Figure2 title="ARA" value={scheduledPecent} unit="%" blurb={scheduledBlurb} />
+              <Figure2 title="ARA" value={scheduledPecent} unit={scheduledUnit} blurb={scheduledBlurb} />
             </Module>
 
             <Module name="Shipping Performance" spanColumn={12}>
-              <Figure2 title="ARA" value={SameDayPercentage} unit="%" blurb={sameDayBlurb} />
+              <Figure2 title="ARA" value={SameDayPercentage} unit={sameDayUnit} blurb={sameDayBlurb} />
             </Module>
 
             <Module name="Applied Bags" spanColumn={12}>
