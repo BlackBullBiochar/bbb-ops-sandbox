@@ -145,6 +145,9 @@ const CharcodeSummaryView = () => {
       ? "No bags were logged this week"
       : "Bags logged more than 3 days after production";
 
+  const JNRCountPlaceholder = searched && JNRcount === 0 ? "" : JNRcount;
+  const ARACountPlaceholder = searched && ARAcount === 0 ? "" : ARAcount;
+
   const ARAPercentBlurb =
     searched && (araCounts?.bagging || 0) === 0
       ? "No bags were logged this week"
@@ -169,6 +172,8 @@ const CharcodeSummaryView = () => {
     searched && (sheduledBags || 0) === 0
       ? "No bags were scheduled for shipping this week"
       : "Bags scheduled for shipping were picked up";
+  
+  const scheduledPlaceholder = searched && sheduledBags === 0 ? "" : sheduledBags;
 
   const scheduledUnit =
     searched && (sheduledBags || 0) === 0
@@ -184,6 +189,8 @@ const CharcodeSummaryView = () => {
     searched && (pickupTotal || 0) === 0
       ? "No bags were picked up this week"
       : "Picked-up bags were delivered on the same day";
+  
+  const sameDayPlaceholder = searched && pickupTotal === 0 ? "" : pickupTotal;
 
   return (
     <div className={styles.mainWhiteContainer}>
@@ -214,7 +221,7 @@ const CharcodeSummaryView = () => {
 
           <div className={styles.contentGrid}>
             <Module name="Ahlstrom Bagging Performance" spanColumn={12} spanRow={1}>
-              <Figure2 title="ARA" value={ARAcount || ""} unit="" blurb={ARAcountBlurb} />
+              <Figure2 title="ARA" value={ARACountPlaceholder} unit="" blurb={ARAcountBlurb} />
             </Module>
 
             <Module name="Ahlstrom Bags" spanColumn={6} spanRow={3}>
@@ -228,15 +235,15 @@ const CharcodeSummaryView = () => {
             </Module>
 
             <Module name="Jenkinson Bagging Performance" spanColumn={12} spanRow={1}>
-              <Figure2 title="ARA" value={JNRcount || ""} unit="" blurb={JNRcountBlurb} />
+              <Figure2 title="ARA" value={JNRCountPlaceholder} unit="" blurb={JNRcountBlurb} />
             </Module>
 
             <Module name="Scheduled Delivery Performance" spanColumn={12}>
-              <Figure2 title="ARA" value={scheduledPecent || ""} unit={scheduledUnit} blurb={scheduledBlurb} />
+              <Figure2 title="ARA" value={scheduledPlaceholder} unit={scheduledUnit} blurb={scheduledBlurb} />
             </Module>
 
             <Module name="Shipping Performance" spanColumn={12}>
-              <Figure2 title="ARA" value={SameDayPercentage || ""} unit={sameDayUnit} blurb={sameDayBlurb} />
+              <Figure2 title="ARA" value={sameDayPlaceholder} unit={sameDayUnit} blurb={sameDayBlurb} />
             </Module>
 
             <Module name="Applied Bags" spanColumn={12}>
