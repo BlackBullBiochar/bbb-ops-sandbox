@@ -232,11 +232,11 @@ const CharcodeSummaryView = () => {
             </Module>
 
             <Module name="Scheduled Delivery Performance" spanColumn={12}>
-              <Figure2 title="ARA" value={scheduledPecent} unit={scheduledUnit} blurb={scheduledBlurb} />
+              <Figure2 title="ARA" value={scheduledPecent || ""} unit={scheduledUnit} blurb={scheduledBlurb} />
             </Module>
 
             <Module name="Shipping Performance" spanColumn={12}>
-              <Figure2 title="ARA" value={SameDayPercentage} unit={sameDayUnit} blurb={sameDayBlurb} />
+              <Figure2 title="ARA" value={SameDayPercentage || ""} unit={sameDayUnit} blurb={sameDayBlurb} />
             </Module>
 
             <Module name="Applied Bags" spanColumn={12}>
