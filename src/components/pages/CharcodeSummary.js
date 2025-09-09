@@ -145,8 +145,8 @@ const CharcodeSummaryView = () => {
       ? "No bags were logged this week"
       : "Bags logged more than 3 days after production";
 
-  const JNRCountPlaceholder = searched && JNRcount === 0 ? "" : JNRcount;
-  const ARACountPlaceholder = searched && ARAcount === 0 ? "" : ARAcount;
+  const JNRCountPlaceholder = searched && JNRcount === 0 && ARAPercent === "" ? "" : JNRcount;
+  const ARACountPlaceholder = searched && ARAcount === 0 && JNRPercent === ""? "" : ARAcount;
 
   const ARAPercentBlurb =
     searched && (araCounts?.bagging || 0) === 0
