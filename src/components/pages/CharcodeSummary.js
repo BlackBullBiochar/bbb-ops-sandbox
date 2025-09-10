@@ -85,13 +85,6 @@ const CharcodeSummaryView = () => {
     jnrCounts || {}
   );
 
-  const safeNumbers = [ +SameDayPercentage, +scheduledPecent, +ARAPercent, +JNRPercent ]
-    .filter((n) => !isNaN(n));
-
-  const TotalSuccessPercent = safeNumbers > 0
-    ? (safeNumbers.reduce((a, b) => a + b, 0) / safeNumbers.length).toFixed(1)
-    : "";
-
   
   const mode = isWeek ? "week" : "range";
 
@@ -186,20 +179,32 @@ const CharcodeSummaryView = () => {
       ? ""
       : "%";
 
-  const sucessUnit =
-    searched && TotalSuccessPercent === ""
-      ? ""
-      : "%";
-
   const sameDayBlurb =
     searched && (pickupTotal || 0) === 0
       ? "No bags were picked up this week"
       : "Picked-up bags were delivered on the same day";
   
-  const successBlurb = 
+  const safeNumbers = [
+    +SameDayPercentage,
+    +scheduledPecent,
+    +ARAPercent,
+    +JNRPercent
+  ].filter((n) => !isNaN(n));
+
+  const TotalSuccessPercent = safeNumbers.length > 0
+    ? (safeNumbers.reduce((a, b) => a + b, 0) / safeNumbers.length).toFixed(1)
+    : "";
+
+  // Blurb and unit based on TotalSuccessPercent
+  const successBlurb =
     searched && TotalSuccessPercent === ""
       ? "No charcode usage this week"
       : "of Charcodes were Successful";
+
+  const successUnit =
+    searched && TotalSuccessPercent === ""
+      ? ""
+      : "%";
   
   const sameDayPlaceholder = searched && pickupTotal === 0 ? "" : pickupTotal;
 
