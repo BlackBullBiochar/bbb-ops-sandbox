@@ -184,16 +184,38 @@ const CharcodeSummaryView = () => {
       ? "No bags were picked up this week"
       : "Picked-up bags were delivered on the same day";
   
-  const safeNumbers = [
-    +SameDayPercentage,
-    +scheduledPecent,
-    +ARAPercent,
-    +JNRPercent
-  ].filter((n) => !isNaN(n));
+  const candidates = [];
 
-  const TotalSuccessPercent = safeNumbers.length > 0
-    ? (safeNumbers.reduce((a, b) => a + b, 0) / safeNumbers.length).toFixed(1)
-    : "";
+  // Always push SameDayPercentage if valid
+  if (SameDayPercentage !== "" && SameDayPercentage != null) {
+    candidates.push(+SameDayPercentage);
+  }
+
+  // Always push scheduledPecent if valid
+  if (scheduledPecent !== "" && scheduledPecent != null) {
+    candidates.push(+scheduledPecent);
+  }
+
+  // Only push 100 - ARAPercent if ARAPercent itself is valid
+  if (ARAPercent !== "" && ARAPercent != null) {
+    candidates.push(100 - +ARAPercent);
+  }
+
+  // Only push 100 - JNRPercent if JNRPercent itself is valid
+  if (JNRPercent !== "" && JNRPercent != null) {
+    candidates.push(100 - +JNRPercent);
+  }
+
+  const safeNumbers = candidates.filter(n => !isNaN(n));
+
+  const TotalSuccessPercent =
+    searched && safeNumbers.length > 0
+      ? (safeNumbers.reduce((a, b) => a + b, 0) / safeNumbers.length).toFixed(1)
+      : "";
+
+  console.log({ safeNumbers, TotalSuccessPercent });
+  console.log({ ARAPercent, JNRPercent, scheduledPecent, SameDayPercentage });
+
 
   // Blurb and unit based on TotalSuccessPercent
   const successBlurb =
@@ -206,7 +228,7 @@ const CharcodeSummaryView = () => {
       ? ""
       : "%";
   
-  const sameDayPlaceholder = searched && pickupTotal === 0 ? "" : pickupTotal;
+  const sameDayPlaceholder = searched && pickupTotal === 0 ? "" : SameDayPercentage;
 
   return (
     <div className={styles.mainWhiteContainer}>
