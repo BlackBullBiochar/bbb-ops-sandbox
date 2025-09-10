@@ -197,7 +197,7 @@ const CharcodeSummaryView = () => {
       : "Picked-up bags were delivered on the same day";
   
   const successBlurb = 
-    searched && (TotalSuccessPercent) === ""
+    searched && TotalSuccessPercent === ""
       ? "No charcode usage this week"
       : "of Charcodes were Successful";
   
