@@ -271,7 +271,7 @@ const CharcodeSummaryView = () => {
             </Module>
 
             <Module name="Total Success" spanColumn={12}>
-              <Figure2 title="All" value={TotalSuccessPercent} unit={sucessUnit} blurb={successBlurb} />
+              <Figure2 title="All" value={TotalSuccessPercent} unit={successUnit} blurb={successBlurb} />
             </Module>
           </div>
         </div>
