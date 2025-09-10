@@ -85,12 +85,12 @@ const CharcodeSummaryView = () => {
     jnrCounts || {}
   );
 
-  const safeNumbers = [ +SameDayPercentage, +scheduledPecent, +ARAPercent, +JNRPercent ]
+  const safeNumbers = [ +SameDayPercentage, +scheduledPecent, +(100-ARAPercent), +(100-JNRPercent) ]
     .filter((n) => !isNaN(n));
 
   const TotalSuccessPercent = safeNumbers.length
     ? (safeNumbers.reduce((a, b) => a + b, 0) / safeNumbers.length).toFixed(1)
-    : "0.00";
+    : "";
 
   const mode = isWeek ? "week" : "range";
 
@@ -185,10 +185,20 @@ const CharcodeSummaryView = () => {
       ? ""
       : "%";
 
+  const sucessUnit =
+    searched && (TotalSuccessPercent || 0) === 0
+      ? ""
+      : "%";
+
   const sameDayBlurb =
     searched && (pickupTotal || 0) === 0
       ? "No bags were picked up this week"
       : "Picked-up bags were delivered on the same day";
+  
+  const successBlurb = 
+    searched && (TotalSuccessPercent) === ""
+      ? "No charcode usage this week"
+      : "of Charcodes were Successful";
   
   const sameDayPlaceholder = searched && pickupTotal === 0 ? "" : pickupTotal;
 
@@ -255,7 +265,7 @@ const CharcodeSummaryView = () => {
             </Module>
 
             <Module name="Total Success" spanColumn={12}>
-              <Figure2 title="All" value={TotalSuccessPercent} unit="%" blurb="of Charcodes were Successful" />
+              <Figure2 title="All" value={TotalSuccessPercent} unit={sucessUnit} blurb={successBlurb} />
             </Module>
           </div>
         </div>
