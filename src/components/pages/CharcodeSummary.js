@@ -85,7 +85,7 @@ const CharcodeSummaryView = () => {
     jnrCounts || {}
   );
 
-  const safeNumbers = [ +SameDayPercentage, +scheduledPecent, +(100-ARAPercent), +(100-JNRPercent) ]
+  const safeNumbers = [ +SameDayPercentage, +scheduledPecent, +ARAPercent, +JNRPercent ]
     .filter((n) => !isNaN(n));
 
   const TotalSuccessPercent = safeNumbers.length
