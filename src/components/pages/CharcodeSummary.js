@@ -187,7 +187,7 @@ const CharcodeSummaryView = () => {
       : "%";
 
   const sucessUnit =
-    searched && (TotalSuccessPercent || 0) === 0
+    searched && TotalSuccessPercent === ""
       ? ""
       : "%";
 
