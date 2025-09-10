@@ -88,10 +88,11 @@ const CharcodeSummaryView = () => {
   const safeNumbers = [ +SameDayPercentage, +scheduledPecent, +ARAPercent, +JNRPercent ]
     .filter((n) => !isNaN(n));
 
-  const TotalSuccessPercent = safeNumbers?.length > 0
+  const TotalSuccessPercent = safeNumbers > 0
     ? (safeNumbers.reduce((a, b) => a + b, 0) / safeNumbers.length).toFixed(1)
     : "";
 
+  
   const mode = isWeek ? "week" : "range";
 
   const isoWeekToDateRange = (iso) => {
