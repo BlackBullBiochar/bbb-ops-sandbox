@@ -110,28 +110,34 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
             ))}
           </Module>
 
-          {/* Average Temperatures */}
+          {siteName === 'ARA' ? (
           <Module name="Reactor 1 Avg Temp" spanColumn={4} spanRow={1}>
             <Figure title="R1 Avg Temp" value={avgR1} unit="°C" />
           </Module>
+          ):(
+          <Module name="Reactor 1 Avg Temp" spanColumn={4} spanRow={2}>
+            <Figure title="R1 Avg Temp" variant="2" value={avgR1} unit="°C" />
+          </Module>
+          )}
 
           {/* Fault Messages */}
-          <Module name="Fault Messages" spanColumn={4} spanRow={2}>
+          <Module name="Fault Messages" spanColumn={6} spanRow={2}>
             <FaultMessagesContainer  wrapperSize="full" siteCode={siteName} />
           </Module>
 
           {/* EBC Status History */}
-          <Module name="EBC Cert History" spanColumn={12} spanRow={2}>
+          <Module name="EBC Cert History" spanColumn={10} spanRow={2}>
             <EbcStatusList
               charcodeId={parsed?.charcode}
               ebcEntries={ebcHistory}
               onDeleted={handleEntryDeleted}
             />
           </Module>
-
+          {siteName === 'ARA' ? (
           <Module name="Reactor 2 Avg Temp" spanColumn={4} spanRow={1}>
             <Figure title="R2 Avg Temp" value={avgR2} unit="°C" />
           </Module>
+          ) : null}
 
           {/* Time-series Charts */}
           <Module name="Reactor 1 Temp" spanColumn={12} spanRow={4}>
@@ -147,6 +153,7 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
               extraLines={[{ label: 'High', value: 780 }, { label: 'Low', value: 520 }]}
             />
           </Module>
+          {siteName === 'ARA' ? (
           <Module name="Reactor 2 Temp" spanColumn={12} spanRow={4}>
             <ChartMod
               isTimeAxis={true}
@@ -160,8 +167,10 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
               extraLines={[{ label: 'High', value: 780 }, { label: 'Low', value: 520 }]}
             />
           </Module>
+          ) : null}
 
           {/* EBC Status Editor */}
+          {siteName === 'ARA' ? (
           <Module name="Update EBC Status" spanColumn={24} spanRow={3}>
             <EbcStatusEditor
               bagId={parsed?._id}
@@ -175,6 +184,21 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
               }}
             />
           </Module>
+          ) : (
+         <Module name="Update EBC Status" spanColumn={12} spanRow={4}>
+            <EbcStatusEditor
+              bagId={parsed?._id}
+              siteId={siteObjectId}
+              charcodeId={parsed?.charcode}
+              baggingDate={bagDate}
+              currentStatus={parsed?.ebcCertStatus}
+              currentReason={parsed?.ebcStatusReason}
+              onSaved={(newStatus) => {
+                setEbcHistory(h => [newStatus, ...h]);
+              }}
+            />
+          </Module>   
+          )}
 
         </div>
       </div>
