@@ -12,8 +12,11 @@ export function useBagPerformanceCount(siteCode, shouldFetch = false) {
   const [pickupBags, setPickupBags] = useState([]);
   const [delivery, setDelivery] = useState([]);
   const [application, setApplication] = useState([]);
+  const [users, setUsers] = useState(0);
   const [sameDayCount, setSameDayCount] = useState(0);
   const [sameDayRate, setSameDayRate] = useState(0);
+  const [lateBags, setLateBags] = useState([]);
+  const [orderIds, setOrderIds] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -43,13 +46,24 @@ export function useBagPerformanceCount(siteCode, shouldFetch = false) {
 
         const b = json.data?.bagging || [];
         const p = json.data?.pickup || [];
-        const d = json.data?.delivery || [];
         const a = json.data?.application || [];
+        const u = Number(json.data?.uniqueAppliedUsersCount) || 0;
 
         setBagging(b);
         setPickup(p);
-        setDelivery(d);
         setApplication(a);
+        setUsers(u);
+
+        const late = b.filter(bag => {
+          const bagged = new Date(bag.bagging_date);
+          const logged = new Date(bag.locations?.bagging?.time);
+          const isValid = !isNaN(bagged) && !isNaN(logged);
+          const diffDays = isValid ? (logged - bagged) / (1000 * 60 * 60 * 24) : null;
+
+          // Always log both dates, even if invalid
+        return isValid && diffDays > 3;
+        });
+        setLateBags(late);
 
         const filtered = p.filter(bag =>
           bag?.pickup_date && bag?.delivery_date
@@ -89,21 +103,17 @@ export function useBagPerformanceCount(siteCode, shouldFetch = false) {
     toDate,
     shouldFetch
   ]);
-
   return {
     counts: {
       bagging: bagging.length,
       pickup: pickup.length,
-      delivery: delivery.length,
       application: application.length,
       sameDayCount,
-      sameDayRate: sameDayRate.toFixed(2)
+      sameDayRate: sameDayRate.toFixed(2),
+      lateCount: lateBags.length,
     },
-    rows: {
-      bagging,
-      pickup,
-      delivery,
-      application
+    meta: {
+      users
     },
     loading,
     error

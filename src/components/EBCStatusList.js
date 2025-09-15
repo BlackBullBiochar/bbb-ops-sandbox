@@ -27,7 +27,7 @@ const EbcStatusList = ({ charcodeId, ebcEntries = [], onDeleted }) => {
           </tr>
         </thead>
         <tbody>
-          {ebcEntries.slice().reverse().map((entry) => (
+          {ebcEntries.slice().map((entry) => (
             <tr key={`${entry.date}-${entry.time}-${entry.status}`}> 
               <td>{entry.status}</td>
               <td>{entry.reason}</td>

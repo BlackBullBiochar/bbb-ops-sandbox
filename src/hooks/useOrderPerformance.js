@@ -8,7 +8,6 @@ export function useOrderPerformance(shouldFetch = false) {
   const { user } = useContext(UserContext);
 
   const [orders, setOrders] = useState([]);
-  const [statusCounts, setStatusCounts] = useState({});
   const [totalAmount, setTotalAmount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -46,9 +45,12 @@ export function useOrderPerformance(shouldFetch = false) {
 
         const json = await res.json();
 
-        setOrders(json.orders || []);
-        setStatusCounts(json.data.statusCounts || {});
-        setTotalAmount(json.data.totalAmount || 0);
+        const list = Array.isArray(json?.data?.orders) ? json.data.orders : [];
+        setOrders(list);
+
+        // sum per-order totals
+        const grand = list.reduce((acc, o) => acc + (Number(o.totalAmount) || 0), 0);
+        setTotalAmount(grand);
       } catch (err) {
         console.error('❌ useOrderPerformance fetch error:', err);
         setError('Failed to fetch order performance');
@@ -66,10 +68,9 @@ export function useOrderPerformance(shouldFetch = false) {
     fromDate,
     toDate
   ]);
-
+  
   return {
     orders,
-    statusCounts,
     totalAmount,
     loading,
     error

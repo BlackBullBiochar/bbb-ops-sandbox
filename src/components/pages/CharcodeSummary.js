@@ -9,8 +9,7 @@ import Figure2 from "../Figure2.js";
 import PieChart from "../PieChart";
 import { ACTIONS, useFilterDispatch } from "../../contexts/FilterContext.js";
 import { useBagPerformanceCount } from "../../hooks/useBagPerformanceRows.js";
-import { useLateBags } from "../../hooks/useLateBags.js";
-import { useUniqueAppliedUsers } from "../../hooks/useUniqueAppliedUsers.js";
+import { useUniqueOrderUsers } from "../../hooks/useUniqueAppliedUsers.js";
 import { useOrderPerformance } from "../../hooks/useOrderPerformance.js";
 
 const CharcodeSummaryView = () => {
@@ -23,13 +22,7 @@ const CharcodeSummaryView = () => {
   const [week, setWeek] = useState("");
   const [searched, setSearched] = useState(false);
 
-  const { lateBags: ARAlateBags, count: ARAcount } = useLateBags("ARA", fetchToggle);
-  const { lateBags: JNRlateBags, count: JNRcount } = useLateBags("JNR", fetchToggle);
-
-  const { count: ARAUserCount } = useUniqueAppliedUsers("ARA", fetchToggle);
-  const { count: JNRUserCount } = useUniqueAppliedUsers("JNR", fetchToggle);
-
-  const { orders, statusCounts, totalAmount, loading, error } = useOrderPerformance(fetchToggle);
+  const { orders, totalAmount, loading, error } = useOrderPerformance(fetchToggle);
 
   const computeWeightedSameDayRate = (araCounts, jnrCounts) => {
     const araRate = Number(araCounts.sameDayRate);
@@ -49,8 +42,15 @@ const CharcodeSummaryView = () => {
 
   const labels = ["Good Bags", "Late Bags"];
 
-  const { counts: araCounts, rows: araRows } = useBagPerformanceCount("ARA", fetchToggle);
-  const { counts: jnrCounts, rows: jnrRows } = useBagPerformanceCount("JNR", fetchToggle);
+  const { counts: araCounts, meta: araMeta, loading: araBPLoading } =
+    useBagPerformanceCount("ARA", fetchToggle);
+
+  const { counts: jnrCounts, meta: jnrMeta, loading: jnrBPLoading } =
+    useBagPerformanceCount("JNR", fetchToggle);
+
+ const Users =
+  Number(araMeta?.users ?? 0) +
+  Number(jnrMeta?.users ?? 0);
 
   // Derived numbers with safety/empty handling
   const pickupTotal = ((araCounts?.pickup || 0) + (jnrCounts?.pickup || 0)) || 0;
@@ -59,26 +59,25 @@ const CharcodeSummaryView = () => {
     sheduledBags > 0 ? ((pickupTotal / sheduledBags) * 100).toFixed(1) : "0.0";
 
   const ARAData = [
-    Math.max((araCounts?.bagging || 0) - (ARAcount || 0), 0),
-    ARAcount || 0,
+    Math.max((araCounts?.bagging || 0) - (araCounts.lateCount || 0), 0),
+    araCounts.lateCount || 0,
   ];
   const JNRData = [
-    Math.max((jnrCounts?.bagging || 0) - (JNRcount || 0), 0),
-    JNRcount || 0,
+    Math.max((jnrCounts?.bagging || 0) - (jnrCounts.lateCount || 0), 0),
+    jnrCounts.lateCount || 0,
   ];
 
   const ARAPercent =
     (araCounts?.bagging || 0) > 0
-      ? (((ARAcount || 0) / (araCounts.bagging || 1)) * 100).toFixed(1)
+      ? (((araCounts.lateCount || 0) / (araCounts.bagging || 1)) * 100).toFixed(1)
       : "";
 
   const JNRPercent =
     (jnrCounts?.bagging || 0) > 0
-      ? (((JNRcount || 0) / (jnrCounts.bagging || 1)) * 100).toFixed(1)
+      ? (((jnrCounts.lateCount || 0) / (jnrCounts.bagging || 1)) * 100).toFixed(1)
       : "";
 
   const appliedBags = (araCounts?.application || 0) + (jnrCounts?.application || 0);
-  const appUsers = (ARAUserCount || 0) + (JNRUserCount || 0);
 
   const SameDayPercentage = computeWeightedSameDayRate(
     araCounts || {},
@@ -130,17 +129,17 @@ const CharcodeSummaryView = () => {
 
   // Empty-state blurbs driven by `searched`
   const ARAcountBlurb =
-    searched && (ARAcount || 0) === 0 && ARAPercent === ""
+    searched && (araCounts.lateCount || 0) === 0 && ARAPercent === ""
       ? "No bags were logged this week"
       : "Bags logged more than 3 days after production";
 
   const JNRcountBlurb =
-    searched && (JNRcount || 0) === 0 && JNRPercent === ""
+    searched && (jnrCounts.lateCount || 0) === 0 && JNRPercent === ""
       ? "No bags were logged this week"
       : "Bags logged more than 3 days after production";
 
-  const JNRCountPlaceholder = searched && JNRcount === 0 && JNRPercent === "" ? "" : JNRcount;
-  const ARACountPlaceholder = searched && ARAcount === 0 && ARAPercent === ""? "" : ARAcount;
+  const JNRCountPlaceholder = searched && jnrCounts.lateCount === 0 && JNRPercent === "" ? "" : jnrCounts.lateCount;
+  const ARACountPlaceholder = searched && araCounts.lateCount === 0 && ARAPercent === ""? "" : araCounts.lateCount;
 
   const ARAPercentBlurb =
     searched && (araCounts?.bagging || 0) === 0
@@ -212,9 +211,6 @@ const CharcodeSummaryView = () => {
     searched && safeNumbers.length > 0
       ? (safeNumbers.reduce((a, b) => a + b, 0) / safeNumbers.length).toFixed(1)
       : "";
-
-  console.log({ safeNumbers, TotalSuccessPercent });
-  console.log({ ARAPercent, JNRPercent, scheduledPecent, SameDayPercentage });
 
 
   // Blurb and unit based on TotalSuccessPercent
@@ -289,7 +285,7 @@ const CharcodeSummaryView = () => {
             </Module>
 
             <Module name="Form Users" spanColumn={12}>
-              <Figure2 title="ARA" value={appUsers || 0} unit="" blurb="Farmers submitted an 'applied' form" />
+              <Figure2 title="ARA" value={Users || 0} unit="" blurb="Farmers submitted an 'applied' form" />
             </Module>
 
             <Module name="Total Success" spanColumn={12}>

@@ -308,40 +308,6 @@ const DbSearch = () => {
     }
   };
 
-  // search gating
-  const isFirstRun = useRef(true);
-  const initialFieldCount = useRef(selectedFields.length);
-
-  useEffect(() => {
-    const hasQuery = query.trim() !== "";
-    const fieldCountChanged = selectedFields.length !== initialFieldCount.current;
-
-    if (isFirstRun.current) {
-      isFirstRun.current = false;
-      if (!fieldCountChanged && !hasQuery) {
-        return;
-      }
-    }
-    if (selectedIndex === "users" && !hasQuery) {
-     return;
-    }
-    if (fieldCountChanged || hasQuery) {
-      handleSearch().then(() => {
-        initialFieldCount.current = selectedFields.length;
-      });
-    }
-  }, [
-    selectedFields.length,
-    query,
-    selectedIndex,
-    isRange,
-    singleDate,
-    fromDate,
-    toDate,
-    statusFilters,
-    ebcStatusFilters,
-    siteFilters,
-  ]);
 
   // Open per-row overlay
   const openOverlay = (item) => {
@@ -523,7 +489,6 @@ const DbSearch = () => {
                 onIndexChange={(v) => {
                   setSelectedIndex(v);
                 }}
-                onKeyDown={handleSearch}
                 searchQuery={query}
                 onSearchChange={(v) => {
                   setQuery(v);
