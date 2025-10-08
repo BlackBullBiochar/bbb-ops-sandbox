@@ -1,4 +1,5 @@
 import React from 'react';
+import Button from './Button.js';
 
 const StockTable = ({ stocks = [], onDelete }) => (
   <table border="1" cellPadding="8">
@@ -24,7 +25,12 @@ const StockTable = ({ stocks = [], onDelete }) => (
             <td>{stock.price}</td>
             <td>{stock.quantity}</td>
             <td>
-              <button onClick={() => onDelete(stock.shorthand)}>Delete</button>
+              <Button
+                name="Delete"
+                onPress={() => onDelete(stock.shorthand)}
+                color="Coal"
+                size="small"
+              />
             </td>
           </tr>
         ))

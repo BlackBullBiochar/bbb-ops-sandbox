@@ -1,6 +1,7 @@
 import React from 'react';
 import ToggleSwitch from './ToggleSwitch';
 import styles from './DateSelector.module.css';
+import Button from './Button.js';
 
 const DateSelector = ({
   isRange,
@@ -39,8 +40,7 @@ const DateSelector = ({
         />
       )}
 
-      <button onClick={onFetch}>Fetch Data
-      </button>
+      <Button name="Fetch Data" onPress={onFetch} />
     </div>
   );
 };

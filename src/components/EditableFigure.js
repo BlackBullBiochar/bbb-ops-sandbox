@@ -1,13 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './Figure.module.css';
 
-const EditableFigure = ({
-  initialValue = 0,
-  unit = '',
-  variant = '1',
-  decimals = 0,
-  onChange = () => {}
-}) => {
+const EditableFigure = (props) => {
+  const { initialValue = 0, unit = '', variant = '1', decimals = 0, onChange = () => {}, color = 'inherit' } = props;
+
   const [value, setValue] = useState(initialValue);
   const inputRef = useRef(null);
 
@@ -47,13 +43,16 @@ const EditableFigure = ({
           background: 'transparent',
           border: 'none',
           outline: 'none',
-          textAlign: 'center',
-          width: `${String(value).length + 1}ch`,
+          textAlign: 'left',
+          width: '100%',
+          minWidth: '6ch',
           fontFamily: 'inherit',
-          fontSize: 'inherit',
-          color: 'inherit',
-          padding: 0,
+          fontSize: '3rem',
+          color: color,
+          padding: '0.5rem 0.8rem',
           margin: 0,
+          boxSizing: 'border-box',
+          lineHeight: '1.2',
         }}
       />
       <span className={styles.FigureInputUnit}>{unit}</span>

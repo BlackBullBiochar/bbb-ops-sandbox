@@ -1,0 +1,77 @@
+.darkCard {
+	height	: auto;
+	min-height: 160px;
+	background-color: #363636;
+	border: thin solid #999;
+	border-radius: 8px;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	grid-template-rows: repeat(2, 1fr);
+	padding: 1.2rem;
+	gap: 1rem;
+	font-family: 'RobotoCondensed', 'Arial', sans-serif;
+	color: white;
+}
+
+.kpiItem {
+	display: flex;
+	flex-direction: column;
+	row-gap: 0.4rem;
+	justify-content: flex-start;
+	align-items: flex-start;
+	text-align: left;
+	padding: 0.5rem;
+	position: relative;
+}
+
+.kpiLabel {
+	font-size: 1.6rem;
+	font-weight: 600;
+	color: white;
+	margin-bottom: 0.3rem;
+	font-family: 'RobotoCondensed', 'Arial', sans-serif;
+}
+
+.kpiValue {
+	font-size: 2.8rem;
+	font-weight: normal;
+	margin: 0;
+	padding-top: 0.3rem;
+	border-top: 1px solid white;
+	font-family: 'RobotoCondensed', 'Arial', sans-serif;
+	min-height: 2.5rem;
+	display: flex;
+	align-items: center;
+}
+
+.darkInput {
+	width: 100%;
+	border: none;
+	border-radius: 0;
+	padding: 0;
+}
+
+.darkInput input {
+	border: none;
+	background: transparent;
+	outline: none;
+	font-family: 'RobotoCondenses';
+	font-size: 2.8rem;
+	text-align: left;
+	font-weight: normal;
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	display: block;
+	color: inherit;
+}
+
+.topRow {
+	width: 100%;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	margin-bottom: 1rem;
+	gap: 1rem;
+	padding-top: 0.5rem;
+}

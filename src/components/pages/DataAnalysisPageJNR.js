@@ -80,7 +80,7 @@ const DataAnalysisPageJNR = () => {
         />
 
         <div className={styles.contentGrid}>
-          <Module name="T5 Avg. Temp (°C)" spanColumn={3} spanRow={1}>
+          <Module name="T5 Avg. Temp (°C)" spanColumn={3} spanRow={1} bannerHeader={true} bannerType="secondary">
             <Figure value={avg5} unit="" />
           </Module>
 
@@ -90,11 +90,11 @@ const DataAnalysisPageJNR = () => {
             onToggle={() => setExpanded(prev => !prev)}
           />
 
-          <Module name="T5 Avg. Temp (°C)" spanColumn={3} spanRow={1}>
+          <Module name="T5 Avg. Temp (°C)" spanColumn={3} spanRow={1} bannerHeader={true} bannerType="secondary">
             <Figure value={avg5} unit="" />
           </Module>
 
-          <Module name="T5 Temp" spanColumn={12} spanRow={4}>
+          <Module name="T5 Temp" spanColumn={12} spanRow={4} bannerHeader={true} bannerType="secondary">
             <ChartMod
               isTimeAxis={mode === 'single'}
               title={mode === 'single'
@@ -112,15 +112,15 @@ const DataAnalysisPageJNR = () => {
             />
           </Module>
 
-          <Module name="Com. Biochar Produced (kg)" spanColumn={4} spanRow={2}>
+          <Module name="Com. Biochar Produced (kg)" spanColumn={4} spanRow={2} bannerHeader={true} bannerType="secondary">
             <Figure value={bagTotalWeight} variant="2" unit="" decimals={0} />
           </Module>
 
-          <Module name="Fault Messages" spanColumn={8} spanRow={4}>
+          <Module name="Fault Messages" spanColumn={8} spanRow={4} bannerHeader={true} bannerType="secondary">
             <FaultMessagesContainer  wrapperSize="full" siteCode="JNR" />
           </Module>
           
-          <Module name="Avg. Biomass MC (%)" spanColumn={4} spanRow={2}>
+          <Module name="Avg. Biomass MC (%)" spanColumn={4} spanRow={2} bannerHeader={true} bannerType="secondary">
             <Figure value={bagAvgMC} variant="2" unit="" />
           </Module>
         </div>

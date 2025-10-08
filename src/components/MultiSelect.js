@@ -3,6 +3,8 @@ import styles from "./MultiSelect.module.css";
 import helpers from "../helpers.js";
 import arrowGrey from "../assets/images/selectArrowGrey.png";
 import arrowWhite from "../assets/images/selectArrowWhite.png";
+import Checkbox from "./Checkbox.js";
+import Button from "./Button.js";
 
 const MultiSelector = ({
   name = "SelectorName",
@@ -125,29 +127,29 @@ const MultiSelector = ({
                   role="option"
                   aria-selected={checked}
                 >
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     checked={checked}
-                    onChange={() => toggleValue(option.value)}
-                    className={styles.checkbox}
-                    onClick={(e) => e.stopPropagation()}
+                    onPress={() => toggleValue(option.value)}
+                    text={option.name}
+                    customStyle={{ margin: 0 }}
                   />
-                  <span className={styles.optionLabel}>{option.name}</span>
                 </div>
               );
             })}
 
             <div className={styles.footerRow}>
-              <button
-                type="button"
-                className={helpers.clx(styles.footerBtn, allSelected && styles.footerBtnActive)}
-                onClick={selectAll}
-              >
-                Select all
-              </button>
-              <button type="button" className={styles.footerBtn} onClick={clearAll}>
-                Clear
-              </button>
+              <Button
+                name="Select all"
+                onPress={selectAll}
+                size="small"
+                customStyle={{ width: '6.5rem' }}
+              />
+              <Button
+                name="Clear"
+                onPress={clearAll}
+                size="small"
+                customStyle={{ width: '6.5rem' }}
+              />
             </div>
           </div>
         )}

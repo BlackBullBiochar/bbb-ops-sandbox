@@ -1,5 +1,5 @@
 // pages/CharcodeSummary.jsx
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import styles from "./CharcodeSummary.module.css";
 import ScreenHeader from "../ScreenHeader.js";
 import ModuleMain from "../ModuleMain.js";
@@ -7,6 +7,7 @@ import Module from "../Module.js";
 import DateSelector2 from "../DateSelector2";
 import Figure2 from "../Figure2.js";
 import PieChart from "../PieChart";
+import PdfExporter from "../PdfExporter.js";
 import { ACTIONS, useFilterDispatch } from "../../contexts/FilterContext.js";
 import { useBagPerformanceCount } from "../../hooks/useBagPerformanceRows.js";
 import { useUniqueOrderUsers } from "../../hooks/useUniqueAppliedUsers.js";
@@ -14,6 +15,7 @@ import { useOrderPerformance } from "../../hooks/useOrderPerformance.js";
 
 const CharcodeSummaryView = () => {
   const dispatch = useFilterDispatch();
+  const contentRef = useRef(null);
 
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -251,44 +253,50 @@ const CharcodeSummaryView = () => {
               }}
               onFetch={handleFetch}
             />
+            <PdfExporter
+              elementRef={contentRef}
+              filename="Charcode_Performance_Summary"
+              title="Charcode Performance Summary"
+              subtitle={isWeek ? `Week ${week}` : `${fromDate} to ${toDate}`}
+            />
           </div>
 
-          <div className={styles.contentGrid}>
-            <Module name="Ahlstrom Bagging Performance" spanColumn={12} spanRow={1}>
+          <div ref={contentRef} className={styles.contentGrid}>
+            <Module name="Ahlstrom Bagging Performance" spanColumn={12} spanRow={1} bannerHeader={true}>
               <Figure2 title="ARA" value={ARACountPlaceholder} unit="" blurb={ARAcountBlurb} />
             </Module>
 
-            <Module name="Ahlstrom Bags" spanColumn={6} spanRow={3}>
+            <Module name="Ahlstrom Bags" spanColumn={6} spanRow={3} bannerHeader={true} bannerType="secondary">
               <PieChart data={ARAData} labels={labels} />
               <Figure2 title="ARA" value={ARAPercent} unit={ARAPercentUnit} blurb={ARAPercentBlurb} />
             </Module>
 
-            <Module name="Jenkinson Bags" spanColumn={6} spanRow={3}>
+            <Module name="Jenkinson Bags" spanColumn={6} spanRow={3} bannerHeader={true} bannerType="secondary">
               <PieChart data={JNRData} labels={labels} />
               <Figure2 title="ARA" value={JNRPercent} unit={JNRPercentUnit} blurb={JNRPercentBlurb} />
             </Module>
 
-            <Module name="Jenkinson Bagging Performance" spanColumn={12} spanRow={1}>
+            <Module name="Jenkinson Bagging Performance" spanColumn={12} spanRow={1} bannerHeader={true}>
               <Figure2 title="ARA" value={JNRCountPlaceholder} unit="" blurb={JNRcountBlurb} />
             </Module>
 
-            <Module name="Scheduled Delivery Performance" spanColumn={12}>
+            <Module name="Scheduled Delivery Performance" spanColumn={12} bannerHeader={true} bannerType="secondary">
               <Figure2 title="ARA" value={scheduledPlaceholder} unit={scheduledUnit} blurb={scheduledBlurb} />
             </Module>
 
-            <Module name="Shipping Performance" spanColumn={12}>
+            <Module name="Shipping Performance" spanColumn={12} bannerHeader={true} bannerType="secondary">
               <Figure2 title="ARA" value={sameDayPlaceholder} unit={sameDayUnit} blurb={sameDayBlurb} />
             </Module>
 
-            <Module name="Applied Bags" spanColumn={12}>
+            <Module name="Applied Bags" spanColumn={12} bannerHeader={true} bannerType="secondary">
               <Figure2 title="ARA" value={appliedBags || 0} unit="" blurb="Bags applied" />
             </Module>
 
-            <Module name="Form Users" spanColumn={12}>
+            <Module name="Form Users" spanColumn={12} bannerHeader={true} bannerType="secondary">
               <Figure2 title="ARA" value={Users || 0} unit="" blurb="Farmers submitted an 'applied' form" />
             </Module>
 
-            <Module name="Total Success" spanColumn={12}>
+            <Module name="Total Success" spanColumn={12} bannerHeader={true}>
               <Figure2 title="All" value={TotalSuccessPercent} unit={successUnit} blurb={successBlurb} />
             </Module>
           </div>

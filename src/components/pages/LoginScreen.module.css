@@ -32,7 +32,7 @@
 .bbbLogoText {
   font-family: "TruenoBd";
   font-weight: 700;
-  color: white;
+  color: var(--coal);
   font-size: 1.4rem;
   margin-left: 0.4rem;
   margin-bottom: 0.1rem;
@@ -62,19 +62,21 @@
   font-family: "TruenoSBd";
   font-weight: 600;
   font-size: 3rem;
-  color: var(--leaf);
-  text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.25), 3px 4px 4px rgba(0, 0, 0, 0.47);
+  color: var(--coalDark);
+  position: relative;
 }
 
+
 .welcomeText {
-  color: var(--grey);
+  color: var(--coalLight);
   font-size: 1.2rem;
   display: block;
 }
 
 .headerGreen {
-  color: var(--grass);
+  color: var(--leaf);
 }
+
 
 .textLink {
   text-decoration: underline;
@@ -221,7 +223,8 @@
   justify-content: space-between;
   display: flex;
   align-items: center;
-  justify-content: center;
+  font-size: 1rem;
+  margin-bottom: 1rem;
   box-sizing: border-box; 
 }
 
@@ -271,10 +274,8 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    background: linear-gradient(123.54deg, #131313 -1.2%, #676767 94.45%);
-    box-shadow: 3px 1px 84px 0px rgba(0, 0, 0, 1);
-    -webkit-box-shadow: 3px 1px 84px 0px rgba(0, 0, 0, 1);
-    -moz-box-shadow: 3px 1px 84px 0px rgba(0,0,0,1);
+    background: linear-gradient(354deg, rgba(247,247,247,1) 0%, rgba(223,223,223,1) 40%, rgba(255,255,255,1) 80%);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
     position: relative;
 }
 .blackContainerContentLogin {
@@ -300,7 +301,7 @@
   position: relative;
   background: linear-gradient(354deg, rgba(247,247,247,1) 0%, rgba(223,223,223,1) 40%, rgba(255,255,255,1) 80%);
   box-shadow: inset 1 0 20px #959687;
-  box-shadow: 0px 3px 17px #000000;
+  box-shadow: 0px 3px 17px #00000051;
   align-items: center;
   justify-content: center;
 }

@@ -1,8 +1,65 @@
 .box {
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 16px;
+  background: #fafafa;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.entriesList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.entry {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   padding: 12px;
-  background: #fff;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #f0f0f0;
+  transition: all 0.2s ease;
+}
+
+.entry:hover {
+  border-color: #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.dateSection {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.date {
+  font-family: 'RobotoCondensed', monospace;
+  color: #333;
+}
+
+.site {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.message {
+  font-size: 1rem;
+  color: #333;
+  line-height: 1.4;
+}
+
+.emptyMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+  font-size: 1rem;
 }
 
 .readOnlyText {

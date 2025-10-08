@@ -13,6 +13,8 @@ const Button = React.memo(({
   onPress = () => {},
   customStyle = {},
   iconName = '',
+  icon = '',              // Character/emoji icon
+  iconPosition = 'left',  // 'left' or 'right'
 }) => {
   console.log('render Button');
 
@@ -31,13 +33,34 @@ const Button = React.memo(({
     selectedClass
   );
 
+  const renderContent = () => {
+    const displayName = selected ? nameSelected : name;
+    const iconElement = icon ? <span className={styles.buttonIcon}>{icon}</span> : null;
+    
+    if (iconPosition === 'right') {
+      return (
+        <>
+          {displayName}
+          {iconElement}
+        </>
+      );
+    } else {
+      return (
+        <>
+          {iconElement}
+          {displayName}
+        </>
+      );
+    }
+  };
+
   return (
     <div className={styles.ButtonContainer} style={customStyle}>
       <div
         className={className}
         onClick={!disabled ? onPress : null}
       >
-        {selected ? nameSelected : name}
+        {renderContent()}
       </div>
     </div>
   );

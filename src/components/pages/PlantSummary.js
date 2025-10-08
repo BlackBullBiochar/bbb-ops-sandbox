@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useRef } from "react";
 import styles from "./DataAnalysisPage.module.css";
 import ScreenHeader from "../ScreenHeader";
 import ModuleMain from "../ModuleMain";
@@ -9,7 +9,10 @@ import Figure2 from "../Figure2";
 import Figure from "../Figure";
 import ChartMod from "../ChartMod";
 import EditableFigure from "../EditableFigure.js";
+import kpiStyles from "./PlantSummary.module.css";
 import FaultMessageListContainer from "../FaultMessageListContainer.js";
+import PdfExporter from "../PdfExporter.js";
+import Button from "../Button.js";
 import { useFilterDispatch, useFilters, ACTIONS } from '../../contexts/FilterContext';
 import { useTempDataRows } from '../../hooks/useTempDataRows';
 import { useBagDataRows } from '../../hooks/useBagDataRows';
@@ -24,20 +27,44 @@ import usePowerFromSensorRows from '../../hooks/usePowerFromSensorRows.js'
 
 const PlantSummaryView = () => {
   const dispatch = useFilterDispatch();
+  const contentRef = useRef(null);
   const [expanded, setExpanded] = useState(false);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [fetchToggle, setFetchToggle] = useState(false)
   const [isWeek, setIsWeek]     = useState(true);
-  const [week, setWeek]         = useState("");  
+  const [week, setWeek]         = useState("2025-W34");  
   const [specHigh, setSpecHigh] = useState(780); 
   const [specLow, setSpecLow] = useState(520);
 
   
   const [selectedSite, setSelectedSite] = useState('ARA');
 
+  // editable KPIs (persist to localStorage)
+  const [runningHoursInput, setRunningHoursInput] = useState(() => {
+    try { return parseFloat(localStorage.getItem('ps_runningHours') || '0'); } catch { return 0; }
+  });
+  const [heatOutputInput, setHeatOutputInput] = useState(() => {
+    const k = `ps_heatOutput_${selectedSite}`;
+    try { return parseFloat(localStorage.getItem(k) || '0'); } catch { return 0; }
+  });
+  const [co2RemovedInput, setCo2RemovedInput] = useState(() => {
+    try { return parseFloat(localStorage.getItem('ps_co2removed') || '0'); } catch { return 0; }
+  });
+  const [biocharInput, setBiocharInput] = useState(() => {
+    try { return parseFloat(localStorage.getItem('ps_biochar') || '0'); } catch { return 0; }
+  });
+
   const handleToggleSite = (site) => {
+    const k = `ps_heatOutput_${selectedSite}`;
+    try { localStorage.setItem(k, String(heatOutputInput)); } catch {}
     setSelectedSite(site);
+  };
+
+  // persist on blur
+  const handleKpiBlur = (key, val, setter) => {
+    setter(val);
+    try { localStorage.setItem(`ps_${key}`, String(val)); } catch {}
   };
   
   const ARAbagRows = useBagDataRows(
@@ -65,18 +92,77 @@ const PlantSummaryView = () => {
   // flatten the object-of-arrays into a single array for charting
   const rawTempRows = selectedSite === 'ARA' ? ARAtempRows : JNRtempRows;
   const rawBagRows = selectedSite === 'ARA' ? ARAbagRows : JNRbagRows;
+  
   // flatten the bagRows for stats
   const chartRows    = Object.values(rawTempRows).flat();
   const sensorRows    = Object.values(rawSensoreReadings).flat();
 
   const meterDelta = useHeatTotal(sensorRows, 'energy');
   const { totalWeight, bagCount } = useBagStats(rawBagRows);
+  
+  // Calculate biochar produced (sum of weights of bags in time period)
+  const biocharProduced = totalWeight / 1000; // Convert kg to tonnes
+  
+  
+  // Calculate CO2 removed using correct formula
+  const calculateCO2Removed = (bagRows, siteCode) => {
+    if (!Array.isArray(bagRows) || bagRows.length === 0) {
+      console.log('No bag rows available for CO2 calculation');
+      return 0;
+    }
+    
+    console.log('Bag rows for CO2 calculation:', bagRows.length, 'rows');
+    console.log('Sample bag data:', bagRows[0]);
+    
+    const CORC_FACTORS = {
+      'ARA': 2.466, // tCO2/dry t biochar
+      'JNR': 3.02   // tCO2/dry t biochar
+    };
+    
+    const totalDryWeight = bagRows.reduce((sum, bag) => {
+      const bagWeight = parseFloat(bag.weight) || 0; // in kg
+      const bagMC = parseFloat(bag.moisture_content) || 0; // moisture content %
+      
+      // bagDryWeight (in tonnes) = bagWeight*(1-bagMC/100)/1000
+      const bagDryWeight = bagWeight * (1 - bagMC / 100) / 1000;
+      
+      console.log(`Bag: weight=${bagWeight}kg, MC=${bagMC}%, dryWeight=${bagDryWeight}t`);
+      
+      return sum + bagDryWeight;
+    }, 0);
+    
+    const corcFactor = CORC_FACTORS[siteCode] || 0;
+    const co2Removed = totalDryWeight * corcFactor;
+    
+    console.log(`Total dry weight: ${totalDryWeight}t, CORC factor: ${corcFactor}, CO2 removed: ${co2Removed}t`);
+    
+    return co2Removed;
+  };
+  
+  const totalCO2 = calculateCO2Removed(rawBagRows, selectedSite);
+  
+  // Fallback to manual input if no data is available
+  const displayCO2 = rawBagRows.length > 0 ? totalCO2 : co2RemovedInput;
+  
+  // Fallback values when no data is fetched
+  const displayBiochar = rawBagRows.length > 0 ? biocharProduced : biocharInput;
+  const displayHeat = rawBagRows.length > 0 ? (meterDelta / 1000) : heatOutputInput;
+  
   const { hours: ARArunningHours } = useRunningHours(rawTempRows, 520, 720, ['r1_temp','r2_temp']);
   const { hours: JNRrunningHours } = useRunningHours(rawTempRows, 520, 720, ['t5_temp']);
-  const CO2perBag = 2.5003; // CO₂ removed per bag in tonnes
-  const totalCO2 = (totalWeight/1000 * CO2perBag*0.7).toFixed(2);
 
   const runningHours = selectedSite === 'ARA' ? ARArunningHours : JNRrunningHours;
+
+  // Debug logs after all variables are initialized
+  console.log('Debug - Selected site:', selectedSite);
+  console.log('Debug - Fetch toggle:', fetchToggle);
+  console.log('Debug - Raw bag rows:', rawBagRows);
+  console.log('Debug - ARA bag rows:', ARAbagRows);
+  console.log('Debug - JNR bag rows:', JNRbagRows);
+  console.log('Debug - Meter delta (heat):', meterDelta);
+  console.log('Debug - Total weight (kg):', totalWeight);
+  console.log('Debug - Biochar produced (t):', biocharProduced);
+  console.log('Debug - Running hours:', runningHours);
 
   // for week mode we need full timestamps; build two series of {x:Date,y:number}
   // for week‐mode we use our new hook:
@@ -128,7 +214,7 @@ const PlantSummaryView = () => {
   };
   return (
     <div>
-      <div className={styles.topRow}>
+      <div className={kpiStyles.topRow}>
         <DateSelector2
           isWeek={isWeek}
           week={week}
@@ -146,7 +232,6 @@ const PlantSummaryView = () => {
             if (type === 'from') setFromDate(value);
             if (type === 'to') setToDate(value);
           }}
-          onFetch={handleFetch}
         />
         <SiteSelector
           selected={[selectedSite]}
@@ -157,111 +242,148 @@ const PlantSummaryView = () => {
           ]}
           singleSelect
         />
+        <Button name="Fetch Data" onPress={handleFetch} />
+        <PdfExporter
+          elementRef={contentRef}
+          filename="Plant_Summary"
+          title="Plant Summary"
+          subtitle={`${selectedSite} - ${isWeek ? `Week ${week}` : `${fromDate} to ${toDate}`}`}
+          buttonText="Export"
+        />
       </div>
 
-      <div className={styles.contentGrid}>
-        <Module name="Plant Updates" spanColumn={9} spanRow={2}>
+      <div ref={contentRef} className={styles.contentGrid}>
+        <Module name="Plant Updates" spanColumn={12} spanRow={2} bannerHeader={true}>
           <FaultMessageListContainer siteCode={selectedSite} variant="editable" showDate showSite />
         </Module>
 
-        <Module name="Running Hours" spanColumn={5} spanRow={1}>
-          <Figure variant='3' value={runningHours} unit="" />
-        </Module>
+        {/* Dark KPIs container */}
+        <div className={kpiStyles.darkCard} style={{ gridColumn: '13 / -1', gridRow: '1 / 3' }}>
+          {/* Running Hours */}
+          <div className={kpiStyles.kpiItem}>
+            <div className={kpiStyles.kpiLabel}>Running Hours</div>
+            <div className={kpiStyles.kpiValue}>
+              {selectedSite === "ARA" ? (
+                <EditableFigure initialValue={runningHoursInput} onChange={(v) => handleKpiBlur('runningHours', v, setRunningHoursInput)} color="#fff" />
+              ) : (
+                <span style={{ color: '#fff', fontSize: '2.8rem', fontFamily: 'RobotoCondensed, Arial, sans-serif' }}>
+                  {runningHours.toFixed(1)}
+                </span>
+              )}
+            </div>
+          </div>
+          
+          {/* Heat Output */}
+          <div className={kpiStyles.kpiItem}>
+            <div className={kpiStyles.kpiLabel}>
+              {selectedSite === "ARA" ? "Heat Output (MWh)" : "Heat Usage (kWh)"}
+            </div>
+            <div className={kpiStyles.kpiValue}>
+              {selectedSite === "ARA" ? (
+                <span style={{ color: '#F06F53', fontSize: '2.8rem', fontFamily: 'RobotoCondensed, Arial, sans-serif' }}>
+                  {displayHeat.toFixed(1)}
+                </span>
+              ) : (
+                <EditableFigure initialValue={heatOutputInput} decimals={1} onChange={(v) => handleKpiBlur(`heatOutput_${selectedSite}`, v, setHeatOutputInput)} color="#F06F53" />
+              )}
+            </div>
+          </div>
+          
+          {/* CO2 Removed - Always calculated */}
+          <div className={kpiStyles.kpiItem}>
+            <div className={kpiStyles.kpiLabel}>Estimated CO₂ removed (t)</div>
+            <div className={kpiStyles.kpiValue}>
+              <span style={{ color: '#B0E000', fontSize: '2.8rem', fontFamily: 'RobotoCondensed, Arial, sans-serif' }}>
+                {displayCO2.toFixed(1)}
+              </span>
+            </div>
+          </div>
+          
+          {/* Biochar Produced - Always calculated */}
+          <div className={kpiStyles.kpiItem}>
+            <div className={kpiStyles.kpiLabel}>Biochar Produced (t)</div>
+            <div className={kpiStyles.kpiValue}>
+              <span style={{ color: '#34B61F', fontSize: '2.8rem', fontFamily: 'RobotoCondensed, Arial, sans-serif' }}>
+                {displayBiochar.toFixed(1)}
+              </span>
+            </div>
+          </div>
+        </div>
 
+        {/* Combined Reactor Temps for Ahlstrom */}
         {selectedSite === "ARA" && (
-        <Module name="Heat Output (MWh)" spanColumn={5} spanRow={1}>
-          <Figure variant='3' value={meterDelta} unit=""/>
-        </Module>
-        )}
-
-        {selectedSite === "JNR" && (
-        <Module name="Heat Usage (kWh) *Not Stored" spanColumn={5} spanRow={1}>
-          <EditableFigure
-            initialValue={'0.00'}
-            unit=""
-            variant="3"
-            decimals={1}
-          />
-        </Module>
-        )}
-
-        <Module name="Biochar Produced (t)" spanColumn={5} spanRow={1}>
-          <Figure variant='3' value={totalWeight/1000} unit="" />
-        </Module>
-
-        <Module name="Estimated CO₂ removed (t)" spanColumn={5} spanRow={1}>
-          <Figure variant='3' value={parseFloat(totalCO2)} unit="" />
-        </Module>
-
-        <Module name="Bags Produced" spanColumn={5} spanRow={1}>
-          <Figure variant='3' value={bagCount} unit="" decimals = '0' />
-        </Module>
-
-        <Module name="Biomass Delivered (t) *Not Stored" spanColumn={5} spanRow={1}>
-          <EditableFigure
-            initialValue={'0.00'}
-            unit=""
-            variant="3"
-            decimals={1}
-          />
-        </Module>
-
-        {/* Reactor 1 Temps */}
-        {selectedSite === "ARA" && (
-          <Module name="Reactor 1 Temp" spanColumn={12} spanRow={4}>
+          <Module name="Reactor Temperatures" spanColumn={12} spanRow={4} bannerHeader={true}>
             <ChartMod
               isTimeAxis={false}
-              title={isWeek ? 'R1 Temps Over Week' : 'Avg R1 Temp by Day'}
+              title={
+                isWeek 
+                  ? 'Reactor Temps Over Week' 
+                  : 'Avg Reactor Temp by Day'
+              }
               labels={isWeek ? r1WeekLabels : r1RangeLabels}
-              dataPoints={(isWeek ? r1WeekLabels : r1RangeLabels).map((d,i)=>({
-                x: d,
-                y: (isWeek ? r1WeekData : r1RangeData)[i],
-              }))}
               unit="Temperature °C"
               extraLines={[
-                { label: 'High', value: specHigh },
-                { label: 'Low',  value: specLow }
+                { label: 'High', value: specHigh, borderWidth: 1 },
+                { label: 'Low',  value: specLow, color: '#FF8C00' }
               ]}
               tickFormat={iso => iso.split('T')[0]}
+              isWeekMode={isWeek}
+              multipleDatasets={[
+                {
+                  label: 'Avg R1 Temp by Day',
+                  dataPoints: (isWeek ? r1WeekLabels : r1RangeLabels).map((d, i) => ({
+                    x: d,
+                    y: (isWeek ? r1WeekData : r1RangeData)[i],
+                  }))
+                },
+                {
+                  label: 'Avg R2 Temp by Day',
+                  dataPoints: (isWeek ? r2WeekLabels : r2RangeLabels).map((d, i) => ({
+                    x: d,
+                    y: (isWeek ? r2WeekData : r2RangeData)[i],
+                  }))
+                }
+              ]}
             />
           </Module>
         )}
-
         
-        {/* Reactor 2 or T5 Temps */}
-        <Module name={selectedSite === 'ARA' ? 'Reactor 2 Temp' : 'T5 Temp'} spanColumn={12} spanRow={4}>
-          <ChartMod
-            // always use category axis
-            isTimeAxis={false}
-            title={
-              isWeek
-                ? selectedSite === 'ARA'
-                  ? 'R2 Temps Over Week'
-                  : 'T5 Temps Over Week'
-                : selectedSite === 'ARA'
-                ? 'Avg R2 Temp by Day'
-                : 'Avg T5 Temp by Day'
-            }
-            labels={isWeek ? r2WeekLabels : r2RangeLabels}
-            dataPoints={
-              (isWeek ? r2WeekLabels : r2RangeLabels).map((d, i) => ({
-                x: d,
-                y: (isWeek ? r2WeekData : r2RangeData)[i],
-              }))
-            }
-            unit="Temperature °C"
-            extraLines={[
-              { label: 'High', value: specHigh },
-              { label: 'Low',  value: specLow }
-            ]}
-            // if you need to override default tickFormat:
-            tickFormat={(iso) => iso.split('T')[0]}
-          />
-        </Module>
-        <Module name="Photo of the Week" spanColumn={12} spanRow={4} />
-
+        {/* T5 Temps for Jenkinson */}
+        {selectedSite === "JNR" && (
+          <Module name="T5 Temp" spanColumn={12} spanRow={4} bannerHeader={true}>
+            <ChartMod
+              // always use category axis
+              isTimeAxis={false}
+              title={
+                isWeek
+                  ? 'T5 Temps Over Week'
+                  : 'Avg T5 Temp by Day'
+              }
+              labels={isWeek ? r2WeekLabels : r2RangeLabels}
+              dataPoints={
+                (isWeek ? r2WeekLabels : r2RangeLabels).map((d, i) => ({
+                  x: d,
+                  y: (isWeek ? r2WeekData : r2RangeData)[i],
+                }))
+              }
+              unit="Temperature °C"
+              extraLines={[
+                { label: 'High', value: specHigh, borderWidth: 1 },
+                { label: 'Low',  value: specLow, color: '#FF8C00' }
+              ]}
+              // if you need to override default tickFormat:
+              tickFormat={(iso) => iso.split('T')[0]}
+            />
+          </Module>
+        )}
+        
+        {/* Photo of the Week - only for Jenkinson */}
+        {selectedSite === "JNR" && (
+          <Module name="Photo of the Week" spanColumn={12} spanRow={4} bannerHeader={true} bannerType="secondary" />
+        )}
+        
         {selectedSite === "ARA" && (
-          <Module name="Heat Monitor" spanColumn={12} spanRow={4}>
+          <Module name="Heat Monitor" spanColumn={12} spanRow={4} bannerHeader={true}>
             <ChartMod
               isTimeAxis={mode === 'single'}
               title={mode === 'single'

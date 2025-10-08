@@ -11,7 +11,9 @@ const Module = ({
     marginBottom = "",
     spanRow,
     spanColumn,
-    children
+    children,
+    bannerHeader = false,
+    bannerType = "primary" // "primary" or "secondary"
   }) => {
     const renderIcon = useCallback(() => {
       if (!icon) {
@@ -34,11 +36,15 @@ const Module = ({
           marginBottom: marginBottom || "",
         }}
       >
-        <h3 className={styles.header}>
+        <h3 className={
+          bannerHeader 
+            ? (bannerType === "secondary" ? styles.bannerHeaderSecondary : styles.bannerHeader)
+            : styles.header
+        }>
           {renderIcon()}
           {name}
         </h3>
-        {name !== "" ? <div className={styles.line} /> : null}
+        {name !== "" && !bannerHeader ? <div className={styles.line} /> : null}
         {children}
       </div>
     );

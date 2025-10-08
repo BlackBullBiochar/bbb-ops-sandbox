@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import styles from './CharcodeOverlayCard.module.css';
 import Module from './Module';
+import Button from './Button.js';
 import Figure from './Figure';
 import ChartMod from './ChartMod';
 import FaultMessagesContainer from './FaultMessagesContainer';
@@ -91,7 +92,13 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
   return (
     <div className={styles.overlay}>
       <div className={styles.overlayCard}>
-        <button className={styles.closeBtn} onClick={() => {onClose(); }}>×</button>
+        <Button
+          name="×"
+          onPress={() => {onClose(); }}
+          color="Coal"
+          size="small"
+          customStyle={{ position: 'absolute', top: '1rem', right: '1rem', zIndex: 10 }}
+        />
         <div className={styles.contentGrid}>
 
           {/* Charcode Info */}

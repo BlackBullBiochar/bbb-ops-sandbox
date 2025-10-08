@@ -1,4 +1,7 @@
 // DataAnalysisContext.js
+
+/// Acc. to george shouldn't be needed anymore.
+
 import React, { createContext, useState, useContext } from 'react';
 import { UserContext } from '../UserContext.js';
 import { API } from '../config/api.js';

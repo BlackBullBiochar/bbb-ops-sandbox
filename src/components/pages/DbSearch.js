@@ -13,6 +13,7 @@ import MultiSelector from "../MultiSelect";
 import iconCSV from "../../assets/images/iconCSV.png";
 import CharcodeOverlayCard from "../CharcodeOverlayCard";
 import { FilterProvider } from "../../contexts/FilterContext";
+import Button from "../Button.js";
 
 // ---------- LOGGING HELPERS ----------
 const NS = "DbSearch";
@@ -106,12 +107,13 @@ const HeaderTotalsOverlay = ({ open, onClose, title, lines }) => {
       >
         <div className={styles.totalOverlayHeader}>
           <h3 className={styles.totalOverlayTitle}>{title}</h3>
-          <button
-            onClick={onClose}
-            className={styles.totalOverlayClose}
-          >
-            ✕
-          </button>
+          <Button
+            name="✕"
+            onPress={onClose}
+            color="Coal"
+            size="small"
+            customStyle={{ minWidth: '36px', height: '36px' }}
+          />
         </div>
 
         <div style={{ marginTop: 12 }}>
@@ -308,6 +310,18 @@ const DbSearch = () => {
     }
   };
 
+  const handleReset = () => {
+    setQuery("");
+    setIsRange(false);
+    setSingleDate("");
+    setFromDate("");
+    setToDate("");
+    setStatusFilters([]);
+    setEbcStatusFilters([]);
+    setSiteFilters([]);
+    setSelectedFields(DEFAULT_FIELDS_BY_INDEX[selectedIndex] || []);
+  };
+
 
   // Open per-row overlay
   const openOverlay = (item) => {
@@ -452,15 +466,14 @@ const DbSearch = () => {
       <th key={field} style={{ whiteSpace: "nowrap" }}>
         <span>{labelize(field)}</span>
         {canHaveTotals && (
-          <button
-            type="button"
+          <span
             onClick={() => buildHeaderOverlay(field)}
             title={`Show ${labelize(field)} totals`}
             aria-label={`Show ${labelize(field)} totals`}
             className={styles.totalIcon}
           >
             i
-          </button>
+          </span>
         )}
       </th>
     );
@@ -472,7 +485,22 @@ const DbSearch = () => {
         <ScreenHeader name={"Search the Database"} />
         <ModuleMain>
           <div className={styles.container}>
-            {/* Top search + date */}
+            {/* CSV Export in upper right of module */}
+            {rows.length > 0 && (
+              <CSVLink
+                data={rows.map((row) => {
+                  const obj = {};
+                  selectedFields.forEach((f) => (obj[f] = row[f]));
+                  return obj;
+                })}
+                headers={selectedFields.map((f) => ({ label: labelize(f), key: f }))}
+                filename={`${selectedIndex}-inventory-export.csv`}
+                className={styles.csvExportTopRight}
+              >
+                <img src={iconCSV} className={styles.iconCSV} />
+              </CSVLink>
+            )}
+            {/* All filters in one row */}
             <div className={styles.topBar}>
               <IndexSearch
                 isRange={isRange}
@@ -494,25 +522,6 @@ const DbSearch = () => {
                   setQuery(v);
                 }}
               />
-
-              {rows.length > 0 && (
-                <CSVLink
-                  data={rows.map((row) => {
-                    const obj = {};
-                    selectedFields.forEach((f) => (obj[f] = row[f]));
-                    return obj;
-                  })}
-                  headers={selectedFields.map((f) => ({ label: labelize(f), key: f }))}
-                  filename={`${selectedIndex}-inventory-export.csv`}
-                  className={styles.downloadButton}
-                >
-                  <img src={iconCSV} className={styles.iconCSV} />
-                </CSVLink>
-              )}
-            </div>
-
-            {/* Filters */}
-            <div className={styles.filtersRow}>
               <MultiSelector
                 name="Status"
                 placeholder="All"
@@ -563,31 +572,30 @@ const DbSearch = () => {
             </div>
 
             {/* Field selector */}
-            <div className={styles.contentGrid}>
-              {fields.map((field) => {
-                const id = `field-${field}`;
-                return (
-                  <ModuleMain
-                    key={field}
-                    spanRow={1}
-                    spanColumn={2}
-                    height="4rem"
-                    alignItems="center"
-                    marginBottom="0rem"
-                  >
-                    <label className={styles.fieldLabel} htmlFor={id} title={field}>
-                      <input
-                        id={id}
-                        type="checkbox"
-                        checked={selectedFields.includes(field)}
-                        onChange={() => handleFieldToggle(field)}
-                        className={styles.cb}
-                      />
+            <div className={styles.fieldSelectorContainer}>
+              <label className={styles.fieldSelectorLabel}>Display Fields</label>
+              <div className={styles.contentGrid}>
+                {fields.map((field) => {
+                  return (
+                    <button
+                      key={field}
+                      type="button"
+                      className={`${styles.fieldTag} ${selectedFields.includes(field) ? styles.fieldTagSelected : ""}`}
+                      onClick={() => handleFieldToggle(field)}
+                      title={field}
+                    >
                       {labelize(field)}
-                    </label>
-                  </ModuleMain>
-                );
-              })}
+                    </button>
+                  );
+                })}
+                
+                <button
+                  className={styles.resetButton}
+                  onClick={handleReset}
+                >
+                  Reset Filters ↺
+                </button>
+              </div>
             </div>
 
             {/* Results table */}

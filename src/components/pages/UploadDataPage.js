@@ -3,6 +3,7 @@ import styles from './UploadDataPage.module.css';
 import ScreenHeader from '../ScreenHeader';
 import ModuleMain from '../ModuleMain';
 import DateSelector from '../DateSelector';
+import Button from '../Button.js';
 import { useUploadedFiles } from '../../hooks/useUploadedFiles';
 import { useSiteNames } from '../../hooks/useSiteNames';
 import { useFilterDispatch, ACTIONS } from '../../contexts/FilterContext';
@@ -12,6 +13,11 @@ const META_KEYS = new Set([
   '_id', '__v', '_site', 'site_code', 'form_type',
   'submitted_at', 'createdAt', 'updatedAt', 'date', 'year', 'month'
 ]);
+
+/*
+
+Maybe shift to 2 column view? Pgination?
+*/
 
 const labelise = (key) =>
   key
@@ -95,12 +101,12 @@ const UploadDataPage = () => {
           <div className={styles.titleBig}>{makeTitle(summary)}</div>
 
           {variant === 'temp' && (
-            <button
-              className={styles.deleteButton}
-              onClick={e => { e.stopPropagation(); hook.deleteBucket(bucketId); }}
-            >
-              Delete
-            </button>
+            <Button
+              name="Delete"
+              onPress={e => { e.stopPropagation(); hook.deleteBucket(bucketId); }}
+              color="Coal"
+              customStyle={{ marginLeft: '1rem' }}
+            />
           )}
         </div>
         {isOpen && (

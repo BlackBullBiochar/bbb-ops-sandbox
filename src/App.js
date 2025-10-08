@@ -1,6 +1,16 @@
 // App.jsx
+
+// TODO: 
+/*
+CHECK IF DATAANAYLSIS CONTEXT NEEDED ANYMORE
+URI STRINGS LOWERCASE
+MAKE SMALL ADJUSTMENTS TO LOGIN SCREEN
+POTENTIALLY MERGE ARA AND JNR DASHBOARD COMPONENTS
+
+
+*/
 import React, { useState, useEffect } from 'react';
-import {Routes, Route, Navigate, useNavigate} from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate, Outlet } from 'react-router-dom';
 import styles from './App.module.css';
 
 import Sidebar from './components/Sidebar';
@@ -119,6 +129,8 @@ const App = () => {
     return;
   };
 
+
+  //SCRAP
   const handleSignUp = (returnedToken) => {
     localStorage.setItem('token', returnedToken);
     setUser(prev => ({
@@ -133,40 +145,54 @@ const App = () => {
   <UserContext.Provider value={{ user, setUser }}>
     <FilterProvider>
       <DataAnalysisProvider>
-        {!user.authed ? (
-          window.location.pathname === '/Ahlstrom-Form' ? (
-            
-            <AhlstromForm />
-          ) : window.location.pathname === '/Jenkinson-Form' ? (
-          <JenkinsonForm />
-          ) : (
-            <LoginScreen
-              onLogin={handleLogin}
-              setUserDetails={setUserDetails}
-              setAdminDetails={setAdminDetails}
-            />
-          )
-        ) : window.location.pathname === '/Ahlstrom-Form' ? (
-          <AhlstromForm />
-        ) : window.location.pathname === '/Jenkinson-Form' ? (
-          <JenkinsonForm />
-        ) : (
-          <div className={styles.appContainer}>
-            <Sidebar />
-            <div className={styles.mainWhiteContainer}>
-              {window.location.pathname === '/upload' && <UploadForm />}
-              {window.location.pathname === '/view-uploads' && <UploadDataPage />}
-              {window.location.pathname === '/data-analysis' && <DataAnalysisPage />}
-              {window.location.pathname === '/data-analysis-jnr' && <DataAnalysisPageJNR />}
-              {window.location.pathname === '/AlertDashboard' && <AlertDashboard />}
-              {window.location.pathname === '/Bag-Inventory' && <BagInventory />}
-              {window.location.pathname === '/Charcode-Summary' && <CharcodeSummary />}
-              {window.location.pathname === '/Plant-Summary' && <PlantSummary />}
-              {window.location.pathname === '/Database' && <DBSearch />}
+        <Routes>
+          {/* Public routes */}
+          <Route
+            path="/"
+            element={
+              user.authed ? (
+                <Navigate to="/upload" replace />
+              ) : (
+                <LoginScreen
+                  onLogin={handleLogin}
+                  setUserDetails={setUserDetails}
+                  setAdminDetails={setAdminDetails}
+                />
+              )
+            }
+          />
+          <Route path="/ahlstrom-form" element={<AhlstromForm />} />
+          <Route path="/jenkinson-form" element={<JenkinsonForm />} />
 
-            </div>
-          </div>
-        )}
+          {/* Protected app layout */}
+          <Route
+            element={
+              user.authed ? (
+                <div className={styles.appContainer}>
+                  <Sidebar />
+                  <div className={styles.mainWhiteContainer}>
+                    <Outlet />
+                  </div>
+                </div>
+              ) : (
+                <Navigate to="/" replace />
+              )
+            }
+          >
+            <Route path="/upload" element={<UploadForm />} />
+            <Route path="/view-uploads" element={<UploadDataPage />} />
+            <Route path="/data-analysis" element={<DataAnalysisPage />} />
+            <Route path="/data-analysis-jnr" element={<DataAnalysisPageJNR />} />
+            <Route path="/alert-dashboard" element={<AlertDashboard />} />
+            <Route path="/bag-inventory" element={<BagInventory />} />
+            <Route path="/charcode-summary" element={<CharcodeSummary />} />
+            <Route path="/plant-summary" element={<PlantSummary />} />
+            <Route path="/database" element={<DBSearch />} />
+          </Route>
+
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to={user.authed ? '/upload' : '/'} replace />} />
+        </Routes>
       </DataAnalysisProvider>
     </FilterProvider>
   </UserContext.Provider>

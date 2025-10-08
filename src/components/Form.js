@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import styles from './Form.module.css';
+import Checkbox from './Checkbox.js';
+import Button from './Button.js';
 
 const Form = ({ fields = [], onSubmit }) => {
   const initialData = fields.reduce((acc, field) => {
@@ -144,16 +146,13 @@ const Form = ({ fields = [], onSubmit }) => {
           <fieldset key={name} className={styles.fieldset}>
             <legend>{label}</legend>
             {options.map(opt => (
-              <label key={opt} className={styles.checkboxOption}>
-                <input
-                  type="checkbox"
-                  name={name}
-                  value={opt}
-                  checked={formData[name]?.includes(opt)}
-                  onChange={() => handleCheckboxChange(name, opt)}
-                />
-                {opt}
-              </label>
+              <Checkbox
+                key={opt}
+                checked={formData[name]?.includes(opt)}
+                onPress={() => handleCheckboxChange(name, opt)}
+                text={opt}
+                customStyle={{ marginBottom: '0.5rem' }}
+              />
             ))}
           </fieldset>
         );
@@ -207,7 +206,7 @@ const Form = ({ fields = [], onSubmit }) => {
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       {fields.map(renderField)}
-      <button type="submit" className={styles.button}>Submit</button>
+      <Button name="Submit" onPress={handleSubmit} />
     </form>
   );
 };

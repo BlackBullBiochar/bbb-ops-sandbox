@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import styles from './EbcStatusEditor.module.css';
 import { UserContext } from '../UserContext.js';
 import { API } from '../config/api';
+import Button from './Button.js';
 
 const statusOptions = ['Flagged', 'Rejected', 'Post-Approved'];
 
@@ -87,9 +88,11 @@ const EbcStatusEditor = ({
       </label>
 
       <div className={styles.buttonRow}>
-        <button onClick={handleSave} disabled={saving}>
-          {saving ? 'Saving...' : 'Save Status'}
-        </button>
+        <Button
+          name={saving ? 'Saving...' : 'Save Status'}
+          onPress={handleSave}
+          disabled={saving}
+        />
         {error && <div className={styles.error}>❌ {error}</div>}
       </div>
     </div>

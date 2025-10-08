@@ -1,4 +1,5 @@
 import React from 'react';
+import Button from './Button.js';
 
 const ToDoList = ({ tasks, newTask, setNewTask, addTask, removeTask }) => {
   return (
@@ -37,7 +38,7 @@ const ToDoList = ({ tasks, newTask, setNewTask, addTask, removeTask }) => {
           <option value="high">High (Red)</option>
         </select>
 
-        <button onClick={addTask}>Add Task</button>
+        <Button name="Add Task" onPress={addTask} />
       </div>
 
       {/* Task Display Section */}
@@ -70,20 +71,12 @@ const ToDoList = ({ tasks, newTask, setNewTask, addTask, removeTask }) => {
             </div>
 
             {/* Done Button */}
-            <button
-              onClick={() => removeTask(i)}
-              style={{
-                marginLeft: 'auto',
-                backgroundColor: '#ff4d4d',
-                border: 'none',
-                color: 'white',
-                padding: '4px 10px',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              Done
-            </button>
+            <Button
+              name="Done"
+              onPress={() => removeTask(i)}
+              color="Coal"
+              customStyle={{ marginLeft: 'auto' }}
+            />
           </li>
         ))}
       </ul>

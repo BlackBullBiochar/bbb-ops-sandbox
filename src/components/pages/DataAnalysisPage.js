@@ -97,7 +97,7 @@ const DataAnalysisPage = () => {
         />
 
         <div className={styles.contentGrid}>
-          <Module name="Reactor 1 Avg. Temp (°C)" spanColumn={3} spanRow={1}>
+          <Module name="Reactor 1 Avg. Temp (°C)" spanColumn={3} spanRow={1} bannerHeader={true} bannerType="secondary">
             <Figure value={avg1} unit="" />
           </Module>
 
@@ -107,11 +107,11 @@ const DataAnalysisPage = () => {
             onToggle={() => setExpanded(prev => !prev)}
           />
 
-          <Module name="Reactor 2 Avg. Temp (°C)" spanColumn={3} spanRow={1}>
+          <Module name="Reactor 2 Avg. Temp (°C)" spanColumn={3} spanRow={1} bannerHeader={true} bannerType="secondary">
             <Figure value={avg2} unit="" />
           </Module>
 
-          <Module name="Reactor 1 Temp" spanColumn={12} spanRow={4}>
+          <Module name="Reactor 1 Temp" spanColumn={12} spanRow={4} bannerHeader={true}>
             <ChartMod
               isTimeAxis={mode === 'single'}
               title={mode === 'single'
@@ -129,7 +129,7 @@ const DataAnalysisPage = () => {
             />
           </Module>
 
-          <Module name="Reactor 2 Temp" spanColumn={12} spanRow={4}>
+          <Module name="Reactor 2 Temp" spanColumn={12} spanRow={4} bannerHeader={true}>
             <ChartMod
               isTimeAxis={mode === 'single'}
               title={mode === 'single'
@@ -147,18 +147,18 @@ const DataAnalysisPage = () => {
             />
           </Module>
 
-          <Module name="Total Biochar Produced (kg)" spanColumn={4} spanRow={2}>
+          <Module name="Total Biochar Produced (kg)" spanColumn={4} spanRow={2} bannerHeader={true} bannerType="secondary">
             <Figure value={totalWeight} variant="2" unit="" decimals={0} />
           </Module>
 
-          <Module name="Avg. Energy Generated (MWh)" spanColumn={4} spanRow={2}>
+          <Module name="Avg. Energy Generated (MWh)" spanColumn={4} spanRow={2} bannerHeader={true} bannerType="secondary">
             <Figure value={avgHeatGenerated} variant="2" unit="" />
           </Module>
 
-          <Module name="Total Heat Generated (MWh)" spanColumn={4} spanRow={2}>
+          <Module name="Total Heat Generated (MWh)" spanColumn={4} spanRow={2} bannerHeader={true} bannerType="secondary">
             <Figure value={meterDelta} variant="2" unit="" />
           </Module>
-          <Module name="Heat Monitor" spanColumn={12} spanRow={4}>
+          <Module name="Heat Monitor" spanColumn={12} spanRow={4} bannerHeader={true}>
             <ChartMod
               isTimeAxis={mode === 'single'}
               title={mode === 'single'
@@ -179,11 +179,11 @@ const DataAnalysisPage = () => {
               unit="Power Output (kW)"
             />
           </Module>
-          <Module name="Fault Messages" spanColumn={8} spanRow={2}>
+          <Module name="Fault Messages" spanColumn={8} spanRow={2} bannerHeader={true} bannerType="secondary">
             <FaultMessagesContainer  wrapperSize="lol" siteCode="ARA" />
           </Module>
 
-          <Module name="Avg. Biomass MC (%)" spanColumn={4} spanRow={2}>
+          <Module name="Avg. Biomass MC (%)" spanColumn={4} spanRow={2} bannerHeader={true} bannerType="secondary">
             <Figure value={bagAvgMC} variant="2" unit="" />
           </Module>
         </div>

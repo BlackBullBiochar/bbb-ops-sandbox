@@ -1,15 +1,36 @@
 .dateBar {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
+    justify-content: flex-end;
     gap: 2rem;
     margin: 0rem !important;
   }
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inputLabel {
+  font-family: "RobotoCondensedBold";
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--coal);
+  margin-bottom: 0.2rem;
+}
+
+.toggleDateContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
   
 .dateInput {
     font-family: "TruenoRg";
     font-size: 0.95rem;
     padding: 0rem;
-    border: 2px solid var(--coalDark);
+    border: 2px solid var(--grey) !important;
     border-radius: 0.4rem;
     background-color: #fff;
     color: var(--coalDark);
@@ -70,6 +91,10 @@
     height: 2.6rem;
     margin: 0.1rem;
     font-size: 1.5rem;
+    align-self: flex-end !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+    min-width: fit-content;
 }
 
 .customSelect {

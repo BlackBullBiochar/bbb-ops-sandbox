@@ -3,10 +3,11 @@ import React, { useContext, useState } from "react";
 import { UserContext } from "../../UserContext";
 import { useUpload }   from "../../hooks/useUpload";
 import styles from "./UploadForm.module.css";
+import Button from "../Button.js";
 import ScreenHeader from "../ScreenHeader.js";
 import ModuleMain from '../ModuleMain.js'
 import Module from '../Module.js';
-import JNRStaging from '../../assets/images/JNRStaging.png';
+import JNRStaging from '../../assets/images/JNRStaging.png'; // QR Codes
 import AHLStaging from '../../assets/images/AHLStaging.png';
 import JNRProduction from '../../assets/images/JNRProduction.png'
 import AHLProduction from '../../assets/images/AHLProduction.png'
@@ -60,7 +61,7 @@ const getQR = (site) => {
         <ScreenHeader name={"Upload Portal"}/>
         <ModuleMain>
           <div className={styles.contentGrid}>
-            <Module name="Upload TempData" spanColumn={12} spanRow={2}>
+            <Module name="Upload TempData" spanColumn={12} spanRow={2} bannerHeader={true}>
               <div className={styles.title}>Upload CSV or JSON File</div>
               <div className= {styles.formContainer}>
                 <input type="file" accept=".csv,.json" onChange={handleChange} />
@@ -68,12 +69,14 @@ const getQR = (site) => {
                     <option value="">-- select site --</option>
                       {SITECODE_OPTIONS.map(s => <option key={s} value={s}>{s.toUpperCase()}</option>)}
                     </select>
-                  <button onClick={handleUpload} disabled={loading}>
-                {loading ? "Uploading…" : "Upload"}
-                </button>
+                  <Button
+                    name={loading ? "Uploading…" : "Upload"}
+                    onPress={handleUpload}
+                    disabled={loading}
+                  />
               </div>
             </Module>
-            <Module name="Plant Forms" spanColumn={12} spanRow={2}>
+            <Module name="Plant Forms" spanColumn={12} spanRow={2} bannerHeader={true} bannerType="secondary">
               <div style={{ display: 'flex', flexDirection: 'row', gap: '1rem' }}>
                 <div>
                   <div className={styles.title}>Ahlstrom</div>

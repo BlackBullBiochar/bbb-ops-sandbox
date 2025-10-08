@@ -167,30 +167,19 @@ function LoginScreen(props) {
       <div className={styles.mainBlackContainerLogin}>
         <div className={styles.blackContainerContentLogin}>
           <div className={styles.bbbLogoWhiteContainer}>
-            <img src={bbbLogoWhite} className={styles.bbbLogoWhite} alt="White Logo" />
+            <img src={bbbLogo} className={styles.bbbLogoWhite} alt="White Logo" />
             <div className={styles.bbbLogoText}>BLACK BULL BIOCHAR</div>
           </div>
           <div className={styles.welcomeMessageContainer}>
-            <DottedLine color="grass" segmentNumber={5} segmentWidth="0.5rem" segmentHeight="1.7rem" />
+            <DottedLine color="grass" segmentNumber={4} segmentWidth="0.4rem" segmentHeight="1.4rem" />
             <div className={styles.welcomeMessageTextContainer}>
               <div className={styles.welcomeHeader}>
-                Hello!<span className={styles.headerGreen}>&nbsp;Welcome Back.</span>
+                Operations<span className={styles.headerGreen}>&nbsp;Dashboard</span>
               </div>
               <div className={styles.welcomeText}>
-                Do you not have an account?&nbsp;
-                <span className={styles.textLink} onClick={goToSignUp}>
-                  create a new account
-                </span>.
-                <br /><br />
-                Do you have a problem with our software?&nbsp;
-                <a
-                  href="https://www.blackbullbiochar.com/contact-us"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.textLink}
-                >
-                  Get in touch
-                </a> with our team and let them know it was Adrien's fault.
+                Sign in with your assigned credentials to access dashboard and logging tools.
+                If you need access, contact your shift lead or the systems administrator.
+                Safety first — never share your password.
               </div>
             </div>
           </div>
@@ -205,7 +194,7 @@ function LoginScreen(props) {
             <img src={greenCircles} className={styles.greenCircle2} alt="Green Circle" />
           </div>
           <div className={styles.loginContent}>
-            <h2 className={styles.loginHeader}>Account Login</h2>
+            <h2 className={styles.loginHeader}>Ops Login</h2>
             <TextInput
               name="Email"
               value={email}

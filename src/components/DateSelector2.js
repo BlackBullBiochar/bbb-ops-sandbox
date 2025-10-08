@@ -1,6 +1,7 @@
 import React from "react";
 import ToggleSwitch from "./ToggleSwitch";
 import styles from "./DateSelector2.module.css";
+import Button from "./Button.js";
 
 const DateSelector2 = ({
   isWeek,
@@ -41,7 +42,7 @@ const DateSelector2 = ({
         </div>
       )}
 
-      <button onClick={onFetch}>Fetch Data</button>
+      {onFetch && <Button name="Fetch Data" onPress={onFetch} />}
     </div>
   );
 };
