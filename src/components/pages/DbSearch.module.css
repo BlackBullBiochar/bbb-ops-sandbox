@@ -49,11 +49,17 @@
 
 .topBar {
   display: flex;
-  align-items: flex-start;
-  gap: 1rem;
+  align-items: flex-end;
+  gap: 2rem;
+  row-gap: 0.5rem;
   width: 100%;
   flex-wrap: wrap;
   justify-content: flex-start;
+}
+
+/* Ensure all items in topBar have consistent sizing and wrapping behavior */
+.topBar > * {
+  flex-shrink: 0;
 }
 
 .resetButton {
@@ -101,11 +107,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--leaf);
+  border: 1px solid #666;
   border-radius: 12px;
   padding: 0.6rem 1.2rem;
   background: #fff;
-  color: var(--leaf);
+  color: #666;
   font-family: "RobotoCondensedBold";
   font-size: 1.1rem;
   cursor: pointer;
@@ -115,18 +121,20 @@
   margin: 0.1rem;
 }
 .fieldTag:hover { 
-  background: #f7fbeb; 
+  background: #666 !important; 
+  color: #fff !important;
   transform: translateY(-1px); 
-  box-shadow: 0 4px 12px rgba(176, 224, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 .fieldTagSelected { 
-  background: var(--leaf); 
-  color: #fff; 
-  border-color: var(--leaf);
+  background: #333 !important; 
+  color: #fff !important; 
+  border-color: #333 !important;
 }
 .fieldTagSelected:hover {
-  background: var(--leafDark);
-  border-color: var(--leafDark);
+  background: #000 !important;
+  border-color: #000 !important;
+  color: #fff !important;
 }
 
 .cb:focus-visible {
@@ -173,7 +181,7 @@
 
 .orderTable {
   width: 100%;
-  border-spacing: 0 1.2rem;
+  border-spacing: 0 0.8rem;
   font-size: 1rem;
 }
 
@@ -328,16 +336,33 @@ th:first-child{
 }
 
 
+/* Bag Status Colors - Completion Order */
+.statusUnassigned {
+  color: #808080; /* Grey */
+  font-weight: 700;
+}
+
+.statusBagged {
+  color: #ffa500; /* Orange/Yellow */
+  font-weight: 700;
+}
+
+.statusPickedUp {
+  color: var(--grass); /* Grass Green */
+  font-weight: 700;
+}
+
 .statusDelivered {
-  color: var(--leaf);
+  color: var(--leaf); /* Leaf Green */
   font-weight: 700;
 }
 
 .statusApplied {
-  color: var(--leaf);
+  color: #006400; /* Dark Green */
   font-weight: 700;
 }
 
+/* Legacy status classes for EBC status */
 .statusUpcoming {
   color: var(--coal);
   font-weight: 700;
@@ -513,27 +538,184 @@ align-items: center;
   gap: 1rem !important;
 }
 
-/* Make MultiSelector components smaller and prevent wrapping */
-.topBar :global(.mainContainer) {
-  width: 12rem !important;
-}
-
-.topBar :global(.selectorContainer) {
-  width: 12rem !important;
-}
-
-.topBar :global(.selectorContainerCollapsed) {
-  width: 12rem !important;
-}
-
-.topBar :global(.footerRow) {
-  width: 12rem !important;
-}
-
-/* Prevent MultiSelector components from wrapping individually */
-.topBar > :global(.multiSelectShell) {
+/* MultiSelector wrapper to constrain width */
+.multiSelectorWrapper {
+  width: 15rem;
   flex-shrink: 0;
-  min-width: 12rem;
+  overflow: visible;
+  position: relative;
+}
+
+/* Fetch button wrapper for proper alignment */
+.fetchButtonWrapper {
+  display: flex;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+/* Force MultiSelector to respect wrapper width */
+.multiSelectorWrapper :global(.mainContainer) {
+  width: 100% !important;
+  max-width: 15rem !important;
+}
+
+.multiSelectorWrapper :global(.selectorContainer) {
+  width: 100% !important;
+  max-width: 15rem !important;
+}
+
+.multiSelectorWrapper :global(.selectorContainerCollapsed) {
+  width: 100% !important;
+  max-width: 15rem !important;
+}
+
+.multiSelectorWrapper :global(.optionsContainer) {
+  width: 100% !important;
+  max-width: 15rem !important;
+}
+
+.multiSelectorWrapper :global(.footerRow) {
+  width: 100% !important;
+  max-width: 15rem !important;
+}
+
+.multiSelectorWrapper :global(.optionRow) {
+  width: calc(100% - 2rem) !important;
+  max-width: 13rem !important;
+}
+
+/* Individual input group styles */
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.inputLabel {
+  font-family: "RobotoCondensedBold";
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--coal);
+  margin-bottom: 0.2rem;
+}
+
+.toggleDateContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: fit-content;
+}
+
+.dateInput {
+  font-family: "TruenoRg";
+  font-size: 0.95rem;
+  padding: 0rem;
+  border: 2px solid var(--grey) !important;
+  border-radius: 0.4rem;
+  background-color: #fff;
+  color: var(--coalDark);
+  width: fit-content;
+  height: 1.3rem;
+  margin: 0rem !important;
+}
+
+.dateRange {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.searchInput {
+  height: 2.5rem;
+  padding-left: 1rem;
+  font-family: "RobotoMed";
+  font-size: 1.2rem;
+  color: var(--coalVeryLight);
+  box-sizing: border-box;
+  width: 11rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0px 3.45713px 8.64283px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  border: 1px black;
+}
+
+.customSelect {
+  position: relative;
+  width: 11rem; /* match MultiSelector width */
+}
+
+.selectedOption {
+  font-family: "RobotoMed";
+  font-size: 1.2rem;
+  color: var(--coalVeryLight);
+  box-sizing: border-box;
+  width: 11rem;
+  padding: 0.5rem;
+  padding-left: 1rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0px 3.45713px 8.64283px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  height: 2.5rem;
+  margin-bottom: 0.1rem !important;
+}
+
+.selectedOptionOpen {
+  font-family: "RobotoMed";
+  font-size: 1.2rem;
+  color: var(--coalVeryLight);
+  box-sizing: border-box;
+  width: 11rem;
+  padding: 0.5rem;
+  padding-left: 1rem;
+  background: white;
+  border-radius: 1rem 1rem 0 0;
+  box-shadow: 0px 3.45713px 8.64283px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  height: 2.5rem;
+  margin-bottom: 0.1rem !important;
+}
+
+.arrow {
+  position: absolute;
+  max-width: 1.3rem;
+  right: 1.6rem;
+  top: 0.4rem;
+  z-index: 1;
+  transition: transform 0.2s ease;
+}
+
+.arrowReversed {
+  transform: scaleY(-1);
+  top: 0.8rem;
+}
+
+.selectedOptionPlaceholder {
+  color: var(--greyLight) !important;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: calc(100%);
+  left: 0;
+  width: 11rem;
+  background: white;
+  border-radius: 0 0 1rem 1rem;
+  z-index: 100;
+  font-family: "RobotoMed";
+  font-size: 1.2rem;
+  padding-top: 10px;
+}
+
+.dropdownItem {
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.dropdownItem:hover {
+  background: #f0f0f0;
 }
 
 

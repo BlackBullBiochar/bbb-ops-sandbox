@@ -10,22 +10,22 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  padding-top: 8px;
+  position: relative;
 }
 
 .entry {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 12px;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid #f0f0f0;
-  transition: all 0.2s ease;
+  align-items: flex-start;
+  position: relative;
 }
 
-.entry:hover {
-  border-color: #e0e0e0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+.entry:hover .fa-trash {
+  display: none;
+}
+
+.module:hover .addUpdate {
+  display: block;
 }
 
 .dateSection {
@@ -34,22 +34,31 @@
   font-size: 0.9rem;
   color: #666;
   font-weight: 500;
+  flex-shrink: 0;
+  min-width: 80px;
+  padding-right: 0px;
+  border-right: 1px solid #e0e0e0;
+  margin-right: 0.5rem;
+}
+
+.calendarIcon {
+  margin-right: 8px;
+  color: #b0b0b0;
 }
 
 .date {
-  font-family: 'RobotoCondensed', monospace;
-  color: #333;
+  font-weight: bold;
+  margin-right: 0.3rem;
+  color: #555;
 }
 
 .site {
-  color: #888;
-  font-size: 0.85rem;
+  color: #555;
 }
 
-.message {
-  font-size: 1rem;
-  color: #333;
-  line-height: 1.4;
+.placeholder {
+  color: #999;
+  font-style: italic;
 }
 
 .emptyMessage {
@@ -71,4 +80,55 @@
   padding: 12px;
   color: #666;
   font-style: italic;
+}
+
+.trashIcon {
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: none;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.entry:hover .trashIcon {
+  display: block;
+}
+
+.module:hover .addUpdate {
+  display: block;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+
+.addEntryButton {
+  opacity: 0;
+  position: absolute;
+  font-size: 1.2rem;
+  top: -2.3rem;
+  right: 0rem;
+  font-weight: bold;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  color: var(--grey);
+  cursor: pointer;
+  z-index: 10;
+}
+
+.addEntryButton:hover {
+  opacity: 1;
+  display: block;
+  color: var(--greyDark);
 }

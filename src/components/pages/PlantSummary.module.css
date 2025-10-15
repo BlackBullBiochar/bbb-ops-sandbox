@@ -75,3 +75,12 @@
 	gap: 1rem;
 	padding-top: 0.5rem;
 }
+
+.calendarIcon {
+  color: #b0b0b0;
+}
+
+.date {
+  font-weight: bold;
+  margin-right: 0.5rem;
+}

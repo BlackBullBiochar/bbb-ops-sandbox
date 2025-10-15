@@ -96,5 +96,27 @@ export function useUploadedFiles(type, shouldFetch) {
     [type, user.token]
   );
 
-  return { buckets, rowsCache, expanded, toggleBucket, deleteBucket };
+  const deleteRow = useCallback(
+    async (bucketId, rowIndex) => {
+      if (!window.confirm(`Delete this row?`)) return;
+      const path = type === 'data' ? 'temp/row' : 'forms/row';
+      const url = `${API}/${path}?bucketId=${bucketId}&rowIndex=${rowIndex}`;
+      try {
+        const res = await fetch(url, { method: 'DELETE', headers: { Authorization: `Bearer ${user.token}` } });
+        if (!res.ok) throw new Error(`Delete row failed: ${res.status}`);
+        setRowsCache(prev => {
+          const copy = { ...prev };
+          if (copy[bucketId]) {
+            copy[bucketId] = copy[bucketId].filter((_, idx) => idx !== rowIndex);
+          }
+          return copy;
+        });
+      } catch (err) {
+        console.error(`Delete row error (${type}):`, err);
+      }
+    },
+    [type, user.token]
+  );
+
+  return { buckets, rowsCache, expanded, toggleBucket, deleteBucket, deleteRow };
 }

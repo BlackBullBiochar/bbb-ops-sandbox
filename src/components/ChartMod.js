@@ -65,10 +65,10 @@ const ChartMod = ({
       data: dataPoints,
       borderColor: '#34B61F',
       backgroundColor: '#B0E000',
-      borderWidth: 2,
+      borderWidth: isWeekMode ? 1 : 2, // Thin lines for week mode
       tension: 0.3,
-      pointRadius: 3,
-      pointHoverRadius: 5
+      pointRadius: isWeekMode ? 2 : 3, // Smaller points for week mode
+      pointHoverRadius: isWeekMode ? 4 : 5
     });
   }
   
@@ -136,18 +136,42 @@ const ChartMod = ({
             minRotation: 0,
             font: { size: isWeekMode ? 10 : 12, family: 'RobotoCondensed' }, // Smaller font for week mode
             callback: (_tickValue, idx) => {
-              // labels[idx] is your original ISO string
-              const raw = labels[idx] || '';
-              const dateOnly = raw.split('T')[0]; // strip off time if present
-              
-              if (isWeekMode && dateOnly) {
-                // Convert YYYY-MM-DD to DD/MM/YY format for week mode
-                const [year, month, day] = dateOnly.split('-');
-                const shortYear = year.slice(-2); // Get last 2 digits of year
-                return `${day}/${month}/${shortYear}`;
+              // For week mode, we want to show 7 evenly distributed dates across the week
+              if (isWeekMode && labels.length > 0) {
+                // Get unique dates from all labels
+                const uniqueDates = [...new Set(labels.map(label => label.split('T')[0]))].sort();
+                
+                // If we have 7 or more unique dates, pick every nth date to get 7
+                if (uniqueDates.length >= 7) {
+                  const step = Math.floor(uniqueDates.length / 7);
+                  const dateIndex = Math.min(idx * step, uniqueDates.length - 1);
+                  const dateOnly = uniqueDates[dateIndex];
+                  
+                  if (dateOnly) {
+                    // Convert YYYY-MM-DD to DD/MM/YY format for week mode
+                    const [year, month, day] = dateOnly.split('-');
+                    const shortYear = year.slice(-2); // Get last 2 digits of year
+                    return `${day}/${month}/${shortYear}`;
+                  }
+                } else {
+                  // Fallback to original logic if we don't have enough unique dates
+                  const totalLabels = labels.length;
+                  const labelIndex = Math.floor((idx / 6) * (totalLabels - 1));
+                  const raw = labels[labelIndex] || '';
+                  const dateOnly = raw.split('T')[0];
+                  
+                  if (dateOnly) {
+                    const [year, month, day] = dateOnly.split('-');
+                    const shortYear = year.slice(-2);
+                    return `${day}/${month}/${shortYear}`;
+                  }
+                }
               }
               
-              return dateOnly; // Keep original format for range mode
+              // Fallback for range mode
+              const raw = labels[idx] || '';
+              const dateOnly = raw.split('T')[0];
+              return dateOnly;
             },
             // Better handling of duplicate dates in week mode
             sampleSize: isWeekMode ? 7 : undefined

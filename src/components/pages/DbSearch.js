@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 import { CSVLink } from "react-csv";
-import IndexSearch from "../IndexSearchbar";
 import { useInventorySearch } from "../../hooks/useInventorySearch";
 import styles from "./DbSearch.module.css";
 import ScreenHeader from "../ScreenHeader";
@@ -14,6 +13,9 @@ import iconCSV from "../../assets/images/iconCSV.png";
 import CharcodeOverlayCard from "../CharcodeOverlayCard";
 import { FilterProvider } from "../../contexts/FilterContext";
 import Button from "../Button.js";
+import ToggleSwitch from "../ToggleSwitch";
+import helpers from "../../helpers";
+import arrowGrey from "../../assets/images/selectArrowGrey.png";
 
 // ---------- LOGGING HELPERS ----------
 const NS = "DbSearch";
@@ -75,6 +77,56 @@ const ALL_FIELDS = [
 
 const labelize = (key) =>
   FIELD_LABELS[key] ?? key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+// Format bag status with proper capitalization and no underscores
+const formatBagStatus = (status) => {
+  if (!status) return "N/A";
+  
+  // Handle camelCase (like "pickedUp") and snake_case (like "delivered_to_storage")
+  const formatted = status
+    .replace(/([A-Z])/g, ' $1') // Add space before capital letters
+    .replace(/_/g, ' ') // Replace underscores with spaces
+    .trim()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+    
+  return formatted;
+};
+
+// Get color class for bag status based on completion order
+const getStatusColorClass = (status) => {
+  if (!status) return styles.statusUnassigned;
+  
+  const normalizedStatus = status.toLowerCase().replace(/_/g, '');
+  
+  switch (normalizedStatus) {
+    case 'unassigned':
+      return styles.statusUnassigned;
+    case 'bagged':
+      return styles.statusBagged;
+    case 'pickedup':
+      return styles.statusPickedUp;
+    case 'delivered':
+    case 'deliveredtostorage':
+      return styles.statusDelivered;
+    case 'applied':
+      return styles.statusApplied;
+    default:
+      return styles.statusUnassigned;
+  }
+};
+
+// Helper function for normalizing options
+const normalizeOptions = (options = []) =>
+  options.map((opt, i) => {
+    if (typeof opt === 'string') {
+      return { value: opt, label: opt, __i: i };
+    }
+    const value = String(opt?.value ?? '');
+    const label = String(opt?.label ?? value);
+    return { value, label, __i: i };
+  });
 
 // ---------- HELPERS ----------
 const mapSiteToCodeAndId = (siteLike) => {
@@ -170,6 +222,10 @@ const DbSearch = () => {
   const [headerOverlayTitle, setHeaderOverlayTitle] = useState("");
   const [headerOverlayLines, setHeaderOverlayLines] = useState([]);
 
+  // Index dropdown state
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
   // interactive guard (safe for text nodes)
   const isInteractive = (el, container) => {
     const node = el && el.nodeType === 1 ? el : el?.parentElement || null;
@@ -185,6 +241,17 @@ const DbSearch = () => {
     const next = DEFAULT_FIELDS_BY_INDEX[selectedIndex] || ALL_FIELDS.slice(0, 5);
     setSelectedFields(next);
   }, [selectedIndex]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // whether date filtering is active
   const isDateActive = useMemo(() => {
@@ -321,6 +388,17 @@ const DbSearch = () => {
     setSiteFilters([]);
     setSelectedFields(DEFAULT_FIELDS_BY_INDEX[selectedIndex] || []);
   };
+
+  // Helper functions for individual components
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSearch();
+    }
+  };
+
+  const options = normalizeOptions(INDEX_OPTIONS);
+  const selectedOption = options.find(opt => opt.value === selectedIndex);
 
 
   // Open per-row overlay
@@ -502,73 +580,150 @@ const DbSearch = () => {
             )}
             {/* All filters in one row */}
             <div className={styles.topBar}>
-              <IndexSearch
-                isRange={isRange}
-                singleDate={singleDate}
-                fromDate={fromDate}
-                toDate={toDate}
-                onToggle={handleToggleRange}
-                onChange={handleDateChange}
-                onFetch={() => {
-                  handleSearch();
-                }}
-                selectedIndex={selectedIndex}
-                indexOptions={INDEX_OPTIONS}
-                onIndexChange={(v) => {
-                  setSelectedIndex(v);
-                }}
-                searchQuery={query}
-                onSearchChange={(v) => {
-                  setQuery(v);
-                }}
-              />
-              <MultiSelector
-                name="Status"
-                placeholder="All"
-                labelStyle="top"
-                data={[
-                  { name: "Bagged", value: "bagged" },
-                  { name: "Picked Up", value: "pickedUp" },
-                  { name: "Delivered", value: "delivered" },
-                  { name: "Storage", value: "delivered_to_storage" },
-                  { name: "Applied", value: "applied" },
-                ]}
-                values={statusFilters}
-                onChange={(v) => {
-                  setStatusFilters(v);
-                }}
-              />
+              {/* Index dropdown */}
+              <div className={styles.inputGroup}>
+                <label className={styles.inputLabel}>Index</label>
+                <div className={styles.customSelect} ref={dropdownRef}>
+                  <div
+                    className={helpers.clx(
+                      styles.selectedOption,
+                      !selectedOption && styles.selectedOptionPlaceholder,
+                      isDropdownOpen && styles.selectedOptionOpen 
+                    )}
+                    onClick={() => setIsDropdownOpen(prev => !prev)}
+                  >
+                    <img
+                      src={arrowGrey}
+                      className={helpers.clx(styles.arrow, isDropdownOpen && styles.arrowReversed)}
+                      alt=""
+                    />
+                    {selectedOption ? selectedOption.label : 'Select Index'}
+                  </div>
+                  {isDropdownOpen && (
+                    <div className={styles.dropdownMenu}>
+                      {options.map(opt => (
+                        <div
+                          key={`${opt.value}__${opt.__i}`}
+                          className={styles.dropdownItem}
+                          onClick={() => {
+                            setSelectedIndex(opt.value);
+                            setIsDropdownOpen(false);
+                          }}
+                        >
+                          {opt.label}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
 
-              <MultiSelector
-                name="EBC Status"
-                placeholder="All"
-                labelStyle="top"
-                data={[
-                  { name: "Approved", value: "Approved" },
-                  { name: "Flagged", value: "Flagged" },
-                  { name: "Rejected", value: "Rejected" },
-                  { name: "Post-Approved", value: "Post-Approved" },
-                  { name: "Pending", value: "Pending" },
-                ]}
-                values={ebcStatusFilters}
-                onChange={(v) => {
-                  setEbcStatusFilters(v);
-                }}
-              />
+              {/* Search input */}
+              <div className={styles.inputGroup}>
+                <label className={styles.inputLabel}>Search</label>
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className={styles.searchInput}
+                />
+              </div>
 
-              <MultiSelector
-                name="Site"
-                placeholder="All"
-                labelStyle="top"
-                data={[
-                  { name: "Ahlstrom", value: "ARA" },
-                  { name: "Jenkinson", value: "JNR" },
-                ]}
-                values={siteFilters}
-                onChange={(v) => {
-                  setSiteFilters(v);
-                }}
-              />
+              {/* Date range */}
+              <div className={styles.inputGroup}>
+                <label className={styles.inputLabel}>Date Range</label>
+                <div className={styles.toggleDateContainer}>
+                  <ToggleSwitch toggled={isRange} onPress={handleToggleRange} />
+                  {isRange ? (
+                    <div className={styles.dateRange}>
+                      <input
+                        type="date"
+                        className={styles.dateInput}
+                        value={fromDate}
+                        onChange={e => handleDateChange('from', e.target.value)}
+                      />
+                      <input
+                        type="date"
+                        value={toDate}
+                        className={styles.dateInput}
+                        onChange={e => handleDateChange('to', e.target.value)}
+                      />
+                    </div>
+                  ) : (
+                    <input
+                      type="date"
+                      value={singleDate}
+                      className={styles.dateInput}
+                      onChange={e => handleDateChange('single', e.target.value)}
+                    />
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.multiSelectorWrapper}>
+                <MultiSelector
+                  name="Status"
+                  placeholder="All"
+                  labelStyle="top"
+                  data={[
+                    { name: "Bagged", value: "bagged" },
+                    { name: "Picked Up", value: "pickedUp" },
+                    { name: "Delivered", value: "delivered" },
+                    { name: "Storage", value: "delivered_to_storage" },
+                    { name: "Applied", value: "applied" },
+                  ]}
+                  values={statusFilters}
+                  onChange={(v) => {
+                    setStatusFilters(v);
+                  }}
+                />
+              </div>
+
+              <div className={styles.multiSelectorWrapper}>
+                <MultiSelector
+                  name="EBC Status"
+                  placeholder="All"
+                  labelStyle="top"
+                  data={[
+                    { name: "Approved", value: "Approved" },
+                    { name: "Flagged", value: "Flagged" },
+                    { name: "Rejected", value: "Rejected" },
+                    { name: "Post-Approved", value: "Post-Approved" },
+                    { name: "Pending", value: "Pending" },
+                  ]}
+                  values={ebcStatusFilters}
+                  onChange={(v) => {
+                    setEbcStatusFilters(v);
+                  }}
+                />
+              </div>
+
+              <div className={styles.multiSelectorWrapper}>
+                <MultiSelector
+                  name="Site"
+                  placeholder="All"
+                  labelStyle="top"
+                  data={[
+                    { name: "Ahlstrom", value: "ARA" },
+                    { name: "Jenkinson", value: "JNR" },
+                  ]}
+                  values={siteFilters}
+                  onChange={(v) => {
+                    setSiteFilters(v);
+                  }}
+                />
+              </div>
+
+              {/* Fetch Data button - last item */}
+              <div className={styles.fetchButtonWrapper}>
+                <Button 
+                  name="Fetch Data →"
+                  onPress={handleSearch}
+                  customStyle={{ height: '2.6rem', fontSize: '1.5rem' }}
+                />
+              </div>
             </div>
 
             {/* Field selector */}
@@ -656,20 +811,12 @@ const DbSearch = () => {
                               }
 
                               if (field === "status") {
-                                const cls =
-                                  raw === "delivered"
-                                    ? styles.statusDelivered
-                                    : raw === "upcoming"
-                                    ? styles.statusUpcoming
-                                    : raw === "applied"
-                                    ? styles.statusApplied
-                                    : raw === "cancelled"
-                                    ? styles.statusCancelled
-                                    : undefined;
+                                const formattedStatus = formatBagStatus(raw);
+                                const colorClass = getStatusColorClass(raw);
 
                                 return (
-                                  <td key={field} className={cls}>
-                                    {raw || "N/A"}
+                                  <td key={field} className={colorClass}>
+                                    {formattedStatus}
                                   </td>
                                 );
                               }

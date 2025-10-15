@@ -11,10 +11,19 @@
   text-align: center;
 }
 
-.titleBigger{
-  margin-left: 0.5rem;
+.titleWithIcons {
+  display: flex;
+  align-items: center;
   font-family: "TruenoRg";
-  font-size: 2rem;
+  font-size: 1.5rem;
+  font-weight: normal;
+  color: var(--coalLight);
+}
+
+.titleBigger{
+  margin-left: 0;
+  font-family: "TruenoRg";
+  font-size: 1.6rem;
   font-weight: normal;
   color: var(--coal);
   width: 100%;
@@ -32,9 +41,11 @@
 
 .bucketContainer {
   margin: 1rem 0;
-  border: 2px solid black;
-  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
   padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: white;
 }
 
 .bucketHeader {
@@ -44,24 +55,78 @@
 }
 
 .deleteButton {
-  background-color: red;
+  background-color: #dc3545;
   color: white;
   border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 4px;
+  padding: 0.5rem;
+  border-radius: 6px;
   cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.deleteButton:hover {
+  background-color: #c82333;
+}
+
+.deleteEntryButton {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.deleteEntryButton:hover {
+  background-color: #c82333;
+}
+
+.rowDeleteButton {
+  background: none;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.rowDeleteButton:hover {
+  color: #c82333;
 }
 
 .table {
   width: 100%;
   margin-top: 0.5rem;
   border-collapse: collapse;
-  border: 1px solid black;
+  border: 1px solid #e0e0e0;
   border-radius: 6px;
 }
 
 .table th,
 .table td {
   padding: 8px;
-  border: 1px solid black;
+  border: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+.table th {
+  font-weight: 600;
+}
+
+.table td:last-child {
+  text-align: center;
 }

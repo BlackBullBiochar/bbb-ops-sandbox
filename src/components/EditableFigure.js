@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import styles from './Figure.module.css';
 
 const EditableFigure = (props) => {
-  const { initialValue = 0, unit = '', variant = '1', decimals = 0, onChange = () => {}, color = 'inherit' } = props;
+  const { initialValue = 0, unit = '', variant = '1', decimals = 0, onChange = () => {}, color = 'inherit', placeholder = 'Enter Value' } = props;
 
   const [value, setValue] = useState(initialValue);
+  const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -12,6 +13,7 @@ const EditableFigure = (props) => {
   }, [initialValue]);
 
   const handleBlur = () => {
+    setIsFocused(false);
     const num = parseFloat(value);
     if (!Number.isNaN(num)) {
       setValue(num);
@@ -19,6 +21,10 @@ const EditableFigure = (props) => {
     } else {
       setValue(initialValue);
     }
+  };
+
+  const handleFocus = () => {
+    setIsFocused(true);
   };
 
   const handleChange = (e) => {
@@ -36,9 +42,11 @@ const EditableFigure = (props) => {
         ref={inputRef}
         type="number"
         step={Math.pow(10, -decimals)}
-        value={value}
+        value={value === 0 && !isFocused ? '' : value}
+        placeholder={value === 0 && !isFocused ? placeholder : ''}
         onChange={handleChange}
         onBlur={handleBlur}
+        onFocus={handleFocus}
         style={{
           background: 'transparent',
           border: 'none',
@@ -47,12 +55,14 @@ const EditableFigure = (props) => {
           width: '100%',
           minWidth: '6ch',
           fontFamily: 'inherit',
-          fontSize: '3rem',
+          fontSize: '2.8rem',
+          fontWeight: 'normal',
           color: color,
-          padding: '0.5rem 0.8rem',
+          padding: '0',
           margin: 0,
           boxSizing: 'border-box',
           lineHeight: '1.2',
+          height: 'auto',
         }}
       />
       <span className={styles.FigureInputUnit}>{unit}</span>

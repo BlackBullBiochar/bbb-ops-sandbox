@@ -9,6 +9,7 @@ import Figure2 from "../Figure2";
 import Figure from "../Figure";
 import ChartMod from "../ChartMod";
 import EditableFigure from "../EditableFigure.js";
+import PhotoOfTheWeek from "../PhotoOfTheWeek.js";
 import kpiStyles from "./PlantSummary.module.css";
 import FaultMessageListContainer from "../FaultMessageListContainer.js";
 import PdfExporter from "../PdfExporter.js";
@@ -22,38 +23,29 @@ import { useBagStats } from '../../hooks/useBagTotal.js';
 import { useRunningHours } from '../../hooks/useTempTotal.js';
 import { useSensorReadings } from '../../hooks/useSensorReadings';
 import { useHeatTotal } from '../../hooks/useHeatTotal.js';
-import usePowerFromSensorRows from '../../hooks/usePowerFromSensorRows.js'
 
 
 const PlantSummaryView = () => {
   const dispatch = useFilterDispatch();
+  const { shouldFetch } = useFilters();
   const contentRef = useRef(null);
   const [expanded, setExpanded] = useState(false);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
-  const [fetchToggle, setFetchToggle] = useState(false)
   const [isWeek, setIsWeek]     = useState(true);
-  const [week, setWeek]         = useState("2025-W34");  
+  const [week, setWeek]         = useState("");  
   const [specHigh, setSpecHigh] = useState(780); 
   const [specLow, setSpecLow] = useState(520);
+  const [localFetchTrigger, setLocalFetchTrigger] = useState(0);
 
   
   const [selectedSite, setSelectedSite] = useState('ARA');
 
-  // editable KPIs (persist to localStorage)
-  const [runningHoursInput, setRunningHoursInput] = useState(() => {
-    try { return parseFloat(localStorage.getItem('ps_runningHours') || '0'); } catch { return 0; }
-  });
-  const [heatOutputInput, setHeatOutputInput] = useState(() => {
-    const k = `ps_heatOutput_${selectedSite}`;
-    try { return parseFloat(localStorage.getItem(k) || '0'); } catch { return 0; }
-  });
-  const [co2RemovedInput, setCo2RemovedInput] = useState(() => {
-    try { return parseFloat(localStorage.getItem('ps_co2removed') || '0'); } catch { return 0; }
-  });
-  const [biocharInput, setBiocharInput] = useState(() => {
-    try { return parseFloat(localStorage.getItem('ps_biochar') || '0'); } catch { return 0; }
-  });
+  // editable KPIs (persist to localStorage) - reset to 0 for fresh start
+  const [runningHoursInput, setRunningHoursInput] = useState(0);
+  const [heatOutputInput, setHeatOutputInput] = useState(0);
+  const [co2RemovedInput, setCo2RemovedInput] = useState(0);
+  const [biocharInput, setBiocharInput] = useState(0);
 
   const handleToggleSite = (site) => {
     const k = `ps_heatOutput_${selectedSite}`;
@@ -69,33 +61,33 @@ const PlantSummaryView = () => {
   
   const ARAbagRows = useBagDataRows(
     'ARA',
-    fetchToggle && selectedSite.includes('ARA')
+    localFetchTrigger > 0 && selectedSite.includes('ARA')
   );
   const JNRbagRows = useBagDataRows(
     'JNR',
-    fetchToggle && selectedSite.includes('JNR')
+    localFetchTrigger > 0 && selectedSite.includes('JNR')
   );
 
   const ARAtempRows = useTempDataRows(
     'ARA',
-    fetchToggle && selectedSite.includes('ARA')
+    localFetchTrigger > 0 && selectedSite.includes('ARA')
   );
   const JNRtempRows = useTempDataRows(
     'JNR',
-    fetchToggle && selectedSite.includes('JNR')
+    localFetchTrigger > 0 && selectedSite.includes('JNR')
   );
 
   const rawSensoreReadings = useSensorReadings(
-  fetchToggle
+    localFetchTrigger > 0
   );
 
-  // flatten the object-of-arrays into a single array for charting
+  // Both hooks return flattened arrays already
   const rawTempRows = selectedSite === 'ARA' ? ARAtempRows : JNRtempRows;
   const rawBagRows = selectedSite === 'ARA' ? ARAbagRows : JNRbagRows;
   
-  // flatten the bagRows for stats
-  const chartRows    = Object.values(rawTempRows).flat();
-  const sensorRows    = Object.values(rawSensoreReadings).flat();
+  // Use the data directly since hooks already flatten them
+  const chartRows = rawTempRows;
+  const sensorRows = rawSensoreReadings;
 
   const meterDelta = useHeatTotal(sensorRows, 'energy');
   const { totalWeight, bagCount } = useBagStats(rawBagRows);
@@ -146,7 +138,7 @@ const PlantSummaryView = () => {
   
   // Fallback values when no data is fetched
   const displayBiochar = rawBagRows.length > 0 ? biocharProduced : biocharInput;
-  const displayHeat = rawBagRows.length > 0 ? (meterDelta / 1000) : heatOutputInput;
+  const displayHeat = rawBagRows.length > 0 && meterDelta !== null ? (meterDelta / 1000) : heatOutputInput;
   
   const { hours: ARArunningHours } = useRunningHours(rawTempRows, 520, 720, ['r1_temp','r2_temp']);
   const { hours: JNRrunningHours } = useRunningHours(rawTempRows, 520, 720, ['t5_temp']);
@@ -155,13 +147,20 @@ const PlantSummaryView = () => {
 
   // Debug logs after all variables are initialized
   console.log('Debug - Selected site:', selectedSite);
-  console.log('Debug - Fetch toggle:', fetchToggle);
-  console.log('Debug - Raw bag rows:', rawBagRows);
-  console.log('Debug - ARA bag rows:', ARAbagRows);
-  console.log('Debug - JNR bag rows:', JNRbagRows);
+  console.log('Debug - Local fetch trigger:', localFetchTrigger);
+  console.log('Debug - Raw bag rows length:', rawBagRows?.length);
+  console.log('Debug - Raw bag rows sample:', rawBagRows?.[0]);
+  console.log('Debug - ARA bag rows length:', ARAbagRows?.length);
+  console.log('Debug - JNR bag rows length:', JNRbagRows?.length);
+  console.log('Debug - Sensor rows length:', sensorRows?.length);
+  console.log('Debug - Sensor rows sample:', sensorRows?.[0]);
   console.log('Debug - Meter delta (heat):', meterDelta);
   console.log('Debug - Total weight (kg):', totalWeight);
   console.log('Debug - Biochar produced (t):', biocharProduced);
+  console.log('Debug - Total CO2 calculated:', totalCO2);
+  console.log('Debug - Display CO2:', displayCO2);
+  console.log('Debug - Display Biochar:', displayBiochar);
+  console.log('Debug - Display Heat:', displayHeat);
   console.log('Debug - Running hours:', runningHours);
 
   // for week mode we need full timestamps; build two series of {x:Date,y:number}
@@ -175,7 +174,6 @@ const PlantSummaryView = () => {
 
   const {labels: sensorWeekLabels, data: sensorWeekData} = useSingleRangeTempChart(sensorRows,'energy');
   const {labels: sensorRangeLabels, data: sensorRangeData} = useRangeTempChart(sensorRows,'energy');
-    const { powerData, powerLabels } = usePowerFromSensorRows(sensorRows);
 
   const mode = isWeek ? 'week' : 'range';
 
@@ -201,16 +199,20 @@ const PlantSummaryView = () => {
 
     if (mode === 'week') {
       const { fromDate: f, toDate: t } = isoWeekToDateRange(week);
+      // Add one day to toDate to include the last day (API treats toDate as exclusive)
+      const extendedToDate = new Date(new Date(t).getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      console.log(ACTIONS.SET_FROM_DATE, f);
+      console.log(ACTIONS.SET_TO_DATE, extendedToDate);
       dispatch({ type: ACTIONS.SET_FROM_DATE, payload: f });
-      dispatch({ type: ACTIONS.SET_TO_DATE,   payload: t });
+      dispatch({ type: ACTIONS.SET_TO_DATE, payload: extendedToDate });
     } else {
      dispatch({ type: ACTIONS.SET_FROM_DATE, payload: fromDate });
      dispatch({ type: ACTIONS.SET_TO_DATE,   payload: toDate });
     }
 
-    // toggle to re-trigger data hooks
-    setFetchToggle(true);
-    setTimeout(() => setFetchToggle(false), 10); 
+    // trigger data fetch using local trigger
+    console.log('Triggering data fetch with local trigger...');
+    setLocalFetchTrigger(prev => prev + 1);
   };
   return (
     <div>
@@ -264,7 +266,7 @@ const PlantSummaryView = () => {
             <div className={kpiStyles.kpiLabel}>Running Hours</div>
             <div className={kpiStyles.kpiValue}>
               {selectedSite === "ARA" ? (
-                <EditableFigure initialValue={runningHoursInput} onChange={(v) => handleKpiBlur('runningHours', v, setRunningHoursInput)} color="#fff" />
+                <EditableFigure initialValue={runningHoursInput} onChange={(v) => handleKpiBlur('runningHours', v, setRunningHoursInput)} color="#fff" placeholder="Enter Value" />
               ) : (
                 <span style={{ color: '#fff', fontSize: '2.8rem', fontFamily: 'RobotoCondensed, Arial, sans-serif' }}>
                   {runningHours.toFixed(1)}
@@ -284,7 +286,7 @@ const PlantSummaryView = () => {
                   {displayHeat.toFixed(1)}
                 </span>
               ) : (
-                <EditableFigure initialValue={heatOutputInput} decimals={1} onChange={(v) => handleKpiBlur(`heatOutput_${selectedSite}`, v, setHeatOutputInput)} color="#F06F53" />
+                <EditableFigure initialValue={heatOutputInput} decimals={1} onChange={(v) => handleKpiBlur(`heatOutput_${selectedSite}`, v, setHeatOutputInput)} color="#F06F53" placeholder="Enter Value" />
               )}
             </div>
           </div>
@@ -371,40 +373,15 @@ const PlantSummaryView = () => {
                 { label: 'High', value: specHigh, borderWidth: 1 },
                 { label: 'Low',  value: specLow, color: '#FF8C00' }
               ]}
-              // if you need to override default tickFormat:
-              tickFormat={(iso) => iso.split('T')[0]}
+              isWeekMode={isWeek}
             />
           </Module>
         )}
         
-        {/* Photo of the Week - only for Jenkinson */}
-        {selectedSite === "JNR" && (
-          <Module name="Photo of the Week" spanColumn={12} spanRow={4} bannerHeader={true} bannerType="secondary" />
-        )}
-        
-        {selectedSite === "ARA" && (
-          <Module name="Heat Monitor" spanColumn={12} spanRow={4} bannerHeader={true}>
-            <ChartMod
-              isTimeAxis={mode === 'single'}
-              title={mode === 'single'
-                ? 'Instantaneous Power Output'
-                : 'Instantaneous Power Output'}
-              labels={mode === 'single'
-                ? powerLabels.map(t => t.slice(0, 5)).reverse()
-                : powerLabels}
-              dataPoints={mode === 'single'
-                ? powerLabels.map((timestamp, i) => ({
-                    x: new Date(timestamp),
-                    y: powerData[i],
-                  })).reverse()
-                : powerLabels.map((d, i) => ({
-                    x: d,
-                    y: powerData[i],
-                  }))}
-              unit="Power Output MW"
-            />
-          </Module>
-        )}
+        {/* Photo of the Week - for both Jenkinson and Ahlstrom */}
+        <Module name="Photo of the Week" spanColumn={12} spanRow={4} bannerHeader={true} bannerType="secondary">
+          <PhotoOfTheWeek siteCode={selectedSite} />
+        </Module>
       </div>
     </div>
   );

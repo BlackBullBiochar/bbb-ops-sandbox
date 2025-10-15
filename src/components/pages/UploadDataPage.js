@@ -70,7 +70,14 @@ const UploadDataPage = () => {
     const dateObj  = summary.submitted_at || summary.date;
     const dateStr  = dateObj ? new Date(dateObj).toLocaleDateString() :
       `${summary.year}-${String(summary.month).padStart(2, '0')}`;
-    return `${siteName} — ${dateStr}`;
+    return (
+      <div className={styles.titleWithIcons}>
+        <i className="fa fa-map-marker-alt" style={{ color: '#999', marginRight: '0.5rem' }}></i>
+        <span>{siteName}</span>
+        <i className="fa fa-calendar-alt" style={{ color: '#999', marginLeft: '1.5rem', marginRight: '0.5rem' }}></i>
+        <span>{dateStr}</span>
+      </div>
+    );
   };
 
   const renderTable = (bucketId, summary, hook, variant = 'temp') => {
@@ -101,24 +108,58 @@ const UploadDataPage = () => {
           <div className={styles.titleBig}>{makeTitle(summary)}</div>
 
           {variant === 'temp' && (
-            <Button
-              name="Delete"
-              onPress={e => { e.stopPropagation(); hook.deleteBucket(bucketId); }}
-              color="Coal"
-              customStyle={{ marginLeft: '1rem' }}
-            />
+            <button
+              className={styles.deleteEntryButton}
+              onClick={e => { e.stopPropagation(); hook.deleteBucket(bucketId); }}
+            >
+              Delete Entry
+            </button>
           )}
         </div>
         {isOpen && (
           variant === 'temp' ? (
             <table className={styles.table}>
               <thead>
-                <tr>{tempHeaders.map(h => <th key={h}>{h}</th>)}</tr>
+                <tr>
+                  {tempHeaders.map(h => <th key={h}>{h}</th>)}
+                  <th>Actions</th>
+                </tr>
               </thead>
               <tbody>
                 {rows.map((row, idx) => (
                   <tr key={idx}>
-                    {tempHeaders.map(h => <td key={h}>{row[h]}</td>)}
+                    {tempHeaders.map(h => {
+                      let formattedValue = row[h];
+                      
+                      // Format timestamp to readable date/time
+                      if (h === 'timestamp' && row[h]) {
+                        const date = new Date(row[h]);
+                        formattedValue = date.toLocaleString('en-GB', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          second: '2-digit'
+                        });
+                      }
+                      
+                      // Format temperature values to 1 decimal place
+                      if ((h === 'r1_temp' || h === 'r2_temp') && typeof row[h] === 'number') {
+                        formattedValue = row[h].toFixed(1);
+                      }
+                      
+                      return <td key={h}>{formattedValue}</td>;
+                    })}
+                    <td>
+                      <button
+                        className={styles.rowDeleteButton}
+                        onClick={e => { e.stopPropagation(); hook.deleteRow(bucketId, idx); }}
+                        title="Delete Row"
+                      >
+                        <i className="fa fa-trash-alt"></i>
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -20,11 +20,15 @@
 }
 
 .editableParagraph[contenteditable="true"] {
-  outline: 2px dashed var(--leafDark);
+  outline: 1px dashed var(--greyLight);
+  border-radius: 4px;
+}
+
+.editableParagraph.empty {
+  color: #aaa;
+  font-style: italic;
 }
 
 .editableParagraph.empty::before {
-  content: "Click to edit...";
-  color: #aaa;
-  pointer-events: none;
+  content: "";
 }

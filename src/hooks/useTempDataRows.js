@@ -29,6 +29,7 @@ export function useTempDataRows(siteCode, shouldFetch) {
       .then(json => {
         // json.data is { "YYYY-MM-DD": [ { r1_temp, r2_temp, r5_temp, … }, … ], … }
         const byDate = json.data || {};
+        console.log('API returned dates:', Object.keys(byDate).sort());
         // flatten into one array:
         const flat = Object.values(byDate).flat();
         setRows(flat);

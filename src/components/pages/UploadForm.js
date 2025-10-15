@@ -5,8 +5,6 @@ import { useUpload }   from "../../hooks/useUpload";
 import styles from "./UploadForm.module.css";
 import Button from "../Button.js";
 import ScreenHeader from "../ScreenHeader.js";
-import ModuleMain from '../ModuleMain.js'
-import Module from '../Module.js';
 import JNRStaging from '../../assets/images/JNRStaging.png'; // QR Codes
 import AHLStaging from '../../assets/images/AHLStaging.png';
 import JNRProduction from '../../assets/images/JNRProduction.png'
@@ -59,12 +57,17 @@ const getQR = (site) => {
   return (
     <div className={styles.mainWhiteContainer}>
         <ScreenHeader name={"Upload Portal"}/>
-        <ModuleMain>
-          <div className={styles.contentGrid}>
-            <Module name="Upload TempData" spanColumn={12} spanRow={2} bannerHeader={true}>
-              <div className={styles.title}>Upload CSV or JSON File</div>
-              <div className= {styles.formContainer}>
-                <input type="file" accept=".csv,.json" onChange={handleChange} />
+        <div className={styles.uploadContainer}>
+          <div className={styles.cardsGrid}>
+            {/* Upload TempData Card */}
+            <div className={styles.uploadCard}>
+              <div className={styles.cardHeader}>
+                <h2 className={styles.cardTitle}>Upload TempData</h2>
+              </div>
+              <div className={styles.cardContent}>
+                <div className={styles.subtitle}>Upload CSV or JSON File</div>
+                <div className={styles.formContainer}>
+                  <input type="file" accept=".csv,.json" onChange={handleChange} />
                   <select value={siteCode} onChange={e => setSiteCode(e.target.value)}>
                     <option value="">-- select site --</option>
                       {SITECODE_OPTIONS.map(s => <option key={s} value={s}>{s.toUpperCase()}</option>)}
@@ -74,24 +77,33 @@ const getQR = (site) => {
                     onPress={handleUpload}
                     disabled={loading}
                   />
-              </div>
-            </Module>
-            <Module name="Plant Forms" spanColumn={12} spanRow={2} bannerHeader={true} bannerType="secondary">
-              <div style={{ display: 'flex', flexDirection: 'row', gap: '1rem' }}>
-                <div>
-                  <div className={styles.title}>Ahlstrom</div>
-                  <img src={getQR('AHL')} className={styles.bbbLogo} alt="Ahlstrom QR" />
-                </div>
-                <div>
-                  <div className={styles.title}>Jenkinson</div>
-                  <img src={getQR('JNR')} className={styles.bbbLogo} alt="Jenkinson QR" />
                 </div>
               </div>
-            </Module>
+            </div>
+
+            {/* Plant Forms Card */}
+            <div className={styles.plantFormsCard}>
+              <div className={styles.cardHeader}>
+                <h2 className={styles.cardTitle}>Plant Forms</h2>
+              </div>
+              <div className={styles.cardContent}>
+                <div className={styles.qrContainer}>
+                  <div className={styles.qrSection}>
+                    <div className={styles.siteName}>Ahlstrom</div>
+                    <img src={getQR('AHL')} className={styles.qrCode} alt="Ahlstrom QR" />
+                  </div>
+                  <div className={styles.qrSection}>
+                    <div className={styles.siteName}>Jenkinson</div>
+                    <img src={getQR('JNR')} className={styles.qrCode} alt="Jenkinson QR" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          {error && <p style={{ color: 'red' }}>Error: {error.message}</p>}
-          {data  && <pre style={{ background: '#f4f4f4', borderRadius: '1rem',  padding: 16 }}>{JSON.stringify(data, null, 2)}</pre>}
-        </ModuleMain>
+          
+          {error && <p className={styles.errorMessage}>Error: {error.message}</p>}
+          {data && <pre className={styles.dataOutput}>{JSON.stringify(data, null, 2)}</pre>}
+        </div>
     </div>
   );
 }
