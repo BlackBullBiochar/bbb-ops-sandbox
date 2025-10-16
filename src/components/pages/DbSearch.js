@@ -54,6 +54,9 @@ const FIELD_LABELS = {
   user: "User",
   applied_to: "Applied To",
   internal_temperature: "Internal Temp (°C)",
+  storage_order_id: "Storage Order ID",
+  storage_pickup_date: "Storage Pickup Date",
+  storage_delivery_date: "Storage Delivery Date",
 };
 
 const ALL_FIELDS = [
@@ -73,6 +76,9 @@ const ALL_FIELDS = [
   "user",
   "applied_to",
   "internal_temperature",
+  "storage_order_id",
+  "storage_pickup_date",
+  "storage_delivery_date",
 ];
 
 const labelize = (key) =>
@@ -578,7 +584,7 @@ const DbSearch = () => {
                 <img src={iconCSV} className={styles.iconCSV} />
               </CSVLink>
             )}
-            {/* All filters in one row */}
+            {/* First row: Index, Search, Date Range, Fetch Data */}
             <div className={styles.topBar}>
               {/* Index dropdown */}
               <div className={styles.inputGroup}>
@@ -662,6 +668,18 @@ const DbSearch = () => {
                 </div>
               </div>
 
+              {/* Fetch Data button */}
+              <div className={styles.fetchButtonWrapper}>
+                <Button 
+                  name="Fetch Data →"
+                  onPress={handleSearch}
+                  customStyle={{ height: '2.6rem', fontSize: '1.5rem' }}
+                />
+              </div>
+            </div>
+
+            {/* Second row: Status, EBC Status, Site */}
+            <div className={styles.secondRow}>
               <div className={styles.multiSelectorWrapper}>
                 <MultiSelector
                   name="Status"
@@ -713,15 +731,6 @@ const DbSearch = () => {
                   onChange={(v) => {
                     setSiteFilters(v);
                   }}
-                />
-              </div>
-
-              {/* Fetch Data button - last item */}
-              <div className={styles.fetchButtonWrapper}>
-                <Button 
-                  name="Fetch Data →"
-                  onPress={handleSearch}
-                  customStyle={{ height: '2.6rem', fontSize: '1.5rem' }}
                 />
               </div>
             </div>
@@ -796,15 +805,31 @@ const DbSearch = () => {
                             {selectedFields.map((field) => {
                               let raw;
                               try {
-                                raw =
-                                  field === "bagging_date" ||
-                                  field === "delivery_date" ||
-                                  field === "pickup_date" ||
-                                  field === "application_date"
-                                    ? item[field]?.split?.("T")[0] || ""
-                                    : typeof item[field] === "object"
+                                // Handle date fields
+                                if (field === "bagging_date" ||
+                                    field === "delivery_date" ||
+                                    field === "pickup_date" ||
+                                    field === "application_date" ||
+                                    field === "storage_pickup_date" ||
+                                    field === "storage_delivery_date") {
+                                  raw = item[field]?.split?.("T")[0] || "";
+                                }
+                                // Handle storage fields - check direct field first, then locations object
+                                else if (field === "storage_order_id") {
+                                  raw = item[field] || item?.locations?.storage_pickup?._order_to_storage || "";
+                                }
+                                else if (field === "storage_pickup_date") {
+                                  raw = item[field]?.split?.("T")[0] || item?.locations?.storage_pickup?.time?.split?.("T")[0] || "";
+                                }
+                                else if (field === "storage_delivery_date") {
+                                  raw = item[field]?.split?.("T")[0] || item?.locations?.storage_delivery?.time?.split?.("T")[0] || "";
+                                }
+                                // Handle other fields
+                                else {
+                                  raw = typeof item[field] === "object"
                                     ? JSON.stringify(item[field])
                                     : item[field] ?? "";
+                                }
                               } catch (e) {
                                 err("Cell render error:", { field, item, e });
                                 raw = "";

@@ -41,11 +41,11 @@
   
   button {
     align-self: flex-start;
-    padding: 0.5rem 1rem;
+    padding: 0.4rem 1rem;
     background-color: #34b61f;
     color: white;
     border: none;
-    border-radius: 0.5rem;
+    border-radius: 0.3rem;
     font-weight: 600;
     font-size: 0.95rem;
     cursor: pointer;

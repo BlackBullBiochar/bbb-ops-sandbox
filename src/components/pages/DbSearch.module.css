@@ -57,8 +57,20 @@
   justify-content: flex-start;
 }
 
-/* Ensure all items in topBar have consistent sizing and wrapping behavior */
-.topBar > * {
+.secondRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 2rem;
+  row-gap: 0.5rem;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-top: 1rem;
+}
+
+/* Ensure all items in topBar and secondRow have consistent sizing and wrapping behavior */
+.topBar > *,
+.secondRow > * {
   flex-shrink: 0;
 }
 
@@ -123,6 +135,7 @@
 .fieldTag:hover { 
   background: #666 !important; 
   color: #fff !important;
+  border-color: #666 !important;
   transform: translateY(-1px); 
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }

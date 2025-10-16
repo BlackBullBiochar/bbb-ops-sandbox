@@ -6,6 +6,7 @@ const EditableFigure = (props) => {
 
   const [value, setValue] = useState(initialValue);
   const [isFocused, setIsFocused] = useState(false);
+  const [hasUserInput, setHasUserInput] = useState(false);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -20,6 +21,7 @@ const EditableFigure = (props) => {
       onChange(num);
     } else {
       setValue(initialValue);
+      setHasUserInput(false);
     }
   };
 
@@ -29,6 +31,7 @@ const EditableFigure = (props) => {
 
   const handleChange = (e) => {
     setValue(e.target.value);
+    setHasUserInput(true);
   };
 
   let className;
@@ -42,8 +45,8 @@ const EditableFigure = (props) => {
         ref={inputRef}
         type="number"
         step={Math.pow(10, -decimals)}
-        value={value === 0 && !isFocused ? '' : value}
-        placeholder={value === 0 && !isFocused ? placeholder : ''}
+        value={hasUserInput ? value : ''}
+        placeholder={!hasUserInput ? placeholder : ''}
         onChange={handleChange}
         onBlur={handleBlur}
         onFocus={handleFocus}

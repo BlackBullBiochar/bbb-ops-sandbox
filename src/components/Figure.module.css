@@ -59,3 +59,9 @@
 .FigureInput:hover .FigureInputUnit {
   transform: translateX(0rem);
 }
+
+/* Style placeholder text to be smaller */
+.FigureInput input::placeholder {
+  font-size: 1.4rem !important;
+  opacity: 0.7;
+}

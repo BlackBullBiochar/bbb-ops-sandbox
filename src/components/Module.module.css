@@ -2,7 +2,7 @@
     background: linear-gradient(360deg, #FFFFFF 0%, #FFFFFF 0.01%, #F8F8F8 39.21%, #FFFFFF 83.5%, #FFFFFF 102.14%);
     border: 0.5px solid #DADADA;
     box-shadow: 0.2rem 0.2rem 0.5rem rgba(0, 0, 0, 0.1), 0px 4px 0.6rem rgba(0, 0, 0, 0.12);
-    border-radius: 1.3rem;
+    border-radius: 0.5rem;
     flex-direction: column;
     justify-content: flex-start;
     padding-left: 1rem;
@@ -56,7 +56,7 @@ b {
 
 .bannerHeader {
     margin: 0;
-    padding: 1rem 0;
+    padding: 0.5rem 0;
     font-family: "TruenoRg";
     font-size: 1.2rem;
     font-weight: bold;
@@ -70,7 +70,7 @@ b {
 
 .bannerHeaderSecondary {
     margin: 0;
-    padding: 1rem 0;
+    padding: 0.5rem 0;
     font-family: "TruenoRg";
     font-size: 1.2rem;
     font-weight: bold;

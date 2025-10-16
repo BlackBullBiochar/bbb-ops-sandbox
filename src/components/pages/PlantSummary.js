@@ -25,6 +25,34 @@ import { useSensorReadings } from '../../hooks/useSensorReadings';
 import { useHeatTotal } from '../../hooks/useHeatTotal.js';
 
 
+// Helper function to get the previous week in ISO format
+const getPreviousWeek = () => {
+  const now = new Date();
+  const currentWeek = getISOWeek(now);
+  const currentYear = now.getFullYear();
+  
+  // Calculate previous week
+  let prevWeek = currentWeek - 1;
+  let prevYear = currentYear;
+  
+  // Handle year boundary
+  if (prevWeek < 1) {
+    prevWeek = 52; // Last week of previous year
+    prevYear = currentYear - 1;
+  }
+  
+  return `${prevYear}-W${prevWeek.toString().padStart(2, '0')}`;
+};
+
+// Helper function to get ISO week number
+const getISOWeek = (date) => {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+};
+
 const PlantSummaryView = () => {
   const dispatch = useFilterDispatch();
   const { shouldFetch } = useFilters();
@@ -33,7 +61,7 @@ const PlantSummaryView = () => {
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [isWeek, setIsWeek]     = useState(true);
-  const [week, setWeek]         = useState("");  
+  const [week, setWeek]         = useState(getPreviousWeek());  
   const [specHigh, setSpecHigh] = useState(780); 
   const [specLow, setSpecLow] = useState(520);
   const [localFetchTrigger, setLocalFetchTrigger] = useState(0);
@@ -245,13 +273,13 @@ const PlantSummaryView = () => {
           singleSelect
         />
         <Button name="Fetch Data" onPress={handleFetch} />
-        <PdfExporter
+        {/* <PdfExporter
           elementRef={contentRef}
           filename="Plant_Summary"
           title="Plant Summary"
           subtitle={`${selectedSite} - ${isWeek ? `Week ${week}` : `${fromDate} to ${toDate}`}`}
           buttonText="Export"
-        />
+        /> */}
       </div>
 
       <div ref={contentRef} className={styles.contentGrid}>
