@@ -321,7 +321,7 @@ const PlantSummaryView = () => {
           
           {/* CO2 Removed - Always calculated */}
           <div className={kpiStyles.kpiItem}>
-            <div className={kpiStyles.kpiLabel}>Estimated CO₂ removed (t)</div>
+            <div className={kpiStyles.kpiLabel}>Est. CO₂ removed (t)</div>
             <div className={kpiStyles.kpiValue}>
               <span style={{ color: '#B0E000', fontSize: '2.8rem', fontFamily: 'RobotoCondensed, Arial, sans-serif' }}>
                 {displayCO2.toFixed(1)}
