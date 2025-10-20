@@ -108,17 +108,7 @@ const Sidebar = () => {
             EBC Dashboard
           </NavLink>
         </li>
-        <li>
-        <NavLink
-          to="/bag-inventory"
-          className={({ isActive }) =>
-            isActive ? styles.menuItemSelected : styles.menuItem
-          }
-        >
-          <i className={`fas fa-boxes ${styles.navIcon}`}></i>
-          Bag Inventory  
-        </NavLink>
-        </li>
+        
         <li>
         <NavLink
           to="/charcode-summary"
