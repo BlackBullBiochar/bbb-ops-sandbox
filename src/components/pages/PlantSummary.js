@@ -166,7 +166,7 @@ const PlantSummaryView = () => {
   
   // Fallback values when no data is fetched
   const displayBiochar = rawBagRows.length > 0 ? biocharProduced : biocharInput;
-  const displayHeat = rawBagRows.length > 0 && meterDelta !== null ? (meterDelta / 1000) : heatOutputInput;
+  const displayHeat = rawBagRows.length > 0 && meterDelta !== null ? meterDelta : heatOutputInput;
   
   const { hours: ARArunningHours } = useRunningHours(rawTempRows, 520, 720, ['r1_temp','r2_temp']);
   const { hours: JNRrunningHours } = useRunningHours(rawTempRows, 520, 720, ['t5_temp']);

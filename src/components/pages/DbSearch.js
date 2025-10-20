@@ -100,6 +100,25 @@ const formatBagStatus = (status) => {
   return formatted;
 };
 
+// Format date to dd/mm/yy format
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+  
+  try {
+    // Handle ISO format dates (YYYY-MM-DD or YYYY-MM-DDTHH:mm:ssZ)
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString; // Return original if invalid
+    
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = String(date.getFullYear()).slice(-2); // Last 2 digits of year
+    
+    return `${day}/${month}/${year}`;
+  } catch (e) {
+    return dateString; // Return original if formatting fails
+  }
+};
+
 // Get color class for bag status based on completion order
 const getStatusColorClass = (status) => {
   if (!status) return styles.statusUnassigned;
@@ -574,7 +593,23 @@ const DbSearch = () => {
               <CSVLink
                 data={rows.map((row) => {
                   const obj = {};
-                  selectedFields.forEach((f) => (obj[f] = row[f]));
+                  selectedFields.forEach((f) => {
+                    // Format date fields for CSV export
+                    const isDateField = f === "bagging_date" ||
+                                      f === "delivery_date" ||
+                                      f === "pickup_date" ||
+                                      f === "application_date" ||
+                                      f === "storage_pickup_date" ||
+                                      f === "storage_delivery_date";
+                    
+                    if (isDateField) {
+                      // Extract date part and format it
+                      const rawDate = row[f]?.split?.("T")[0] || "";
+                      obj[f] = formatDate(rawDate);
+                    } else {
+                      obj[f] = row[f];
+                    }
+                  });
                   return obj;
                 })}
                 headers={selectedFields.map((f) => ({ label: labelize(f), key: f }))}
@@ -833,6 +868,18 @@ const DbSearch = () => {
                               } catch (e) {
                                 err("Cell render error:", { field, item, e });
                                 raw = "";
+                              }
+
+                              // Format date fields for display
+                              const isDateField = field === "bagging_date" ||
+                                                field === "delivery_date" ||
+                                                field === "pickup_date" ||
+                                                field === "application_date" ||
+                                                field === "storage_pickup_date" ||
+                                                field === "storage_delivery_date";
+                              
+                              if (isDateField) {
+                                raw = formatDate(raw);
                               }
 
                               if (field === "status") {
