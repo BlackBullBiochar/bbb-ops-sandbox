@@ -126,35 +126,71 @@ const PlantSummaryView = () => {
   
   // Calculate CO2 removed using correct formula
   const calculateCO2Removed = (bagRows, siteCode) => {
+    console.log('\n🌱 ========== CO2 REMOVAL CALCULATION (calculateCO2Removed) ==========');
+    console.log(`📊 Site: ${siteCode}`);
+    console.log(`📊 Total bags to analyze: ${bagRows?.length || 0}`);
+    
     if (!Array.isArray(bagRows) || bagRows.length === 0) {
-      console.log('No bag rows available for CO2 calculation');
+      console.log('❌ No bag rows available for CO2 calculation');
+      console.log('Result: 0 tCO2');
+      console.log('🌱 ========== END CO2 REMOVAL CALCULATION ==========\n');
       return 0;
     }
     
-    console.log('Bag rows for CO2 calculation:', bagRows.length, 'rows');
-    console.log('Sample bag data:', bagRows[0]);
+    console.log(`\n📋 Sample bag data (first bag):`, JSON.stringify(bagRows[0], null, 2));
     
     const CORC_FACTORS = {
       'ARA': 2.466, // tCO2/dry t biochar
       'JNR': 3.02   // tCO2/dry t biochar
     };
     
-    const totalDryWeight = bagRows.reduce((sum, bag) => {
+    console.log(`\n🔬 CORC Factors by site:`);
+    console.log(`   - ARA: ${CORC_FACTORS.ARA} tCO2/dry t biochar`);
+    console.log(`   - JNR: ${CORC_FACTORS.JNR} tCO2/dry t biochar`);
+    console.log(`   - Selected factor for ${siteCode}: ${CORC_FACTORS[siteCode] || 'UNKNOWN'}`);
+    
+    console.log('\n🔄 Step 1: Converting each bag to dry weight...');
+    console.log('   Formula: Dry Weight (t) = Wet Weight (kg) × (1 - MC/100) / 1000\n');
+    
+    const totalDryWeight = bagRows.reduce((sum, bag, index) => {
       const bagWeight = parseFloat(bag.weight) || 0; // in kg
       const bagMC = parseFloat(bag.moisture_content) || 0; // moisture content %
       
       // bagDryWeight (in tonnes) = bagWeight*(1-bagMC/100)/1000
-      const bagDryWeight = bagWeight * (1 - bagMC / 100) / 1000;
+      const dryFraction = 1 - (bagMC / 100);
+      const bagDryWeight = bagWeight * dryFraction / 1000;
+      const newSum = sum + bagDryWeight;
       
-      console.log(`Bag: weight=${bagWeight}kg, MC=${bagMC}%, dryWeight=${bagDryWeight}t`);
+      // Log first 5 and last 5 bags
+      if (index < 5 || index >= bagRows.length - 5) {
+        console.log(`   Bag ${index + 1}/${bagRows.length}:`);
+        console.log(`     - Wet weight: ${bagWeight.toFixed(2)} kg`);
+        console.log(`     - Moisture content: ${bagMC.toFixed(2)}%`);
+        console.log(`     - Dry fraction: ${dryFraction.toFixed(4)} (${(dryFraction * 100).toFixed(2)}% of wet weight)`);
+        console.log(`     - Dry weight: ${bagDryWeight.toFixed(6)} t`);
+        console.log(`     - Running total: ${newSum.toFixed(6)} t\n`);
+      } else if (index === 5) {
+        console.log(`   ... (showing first 5 and last 5 bags only) ...\n`);
+      }
       
-      return sum + bagDryWeight;
+      return newSum;
     }, 0);
     
     const corcFactor = CORC_FACTORS[siteCode] || 0;
+    
+    console.log('\n🧮 Step 2: Calculating CO2 removed from total dry weight...');
+    console.log(`   Formula: CO2 Removed (t) = Total Dry Weight (t) × CORC Factor`);
+    console.log(`   Calculation: ${totalDryWeight.toFixed(6)} t × ${corcFactor} = ?`);
+    
     const co2Removed = totalDryWeight * corcFactor;
     
-    console.log(`Total dry weight: ${totalDryWeight}t, CORC factor: ${corcFactor}, CO2 removed: ${co2Removed}t`);
+    console.log(`\n✅ FINAL RESULTS:`);
+    console.log(`   - Site: ${siteCode}`);
+    console.log(`   - Total bags processed: ${bagRows.length}`);
+    console.log(`   - Total dry weight: ${totalDryWeight.toFixed(3)} t`);
+    console.log(`   - CORC factor applied: ${corcFactor} tCO2/dry t`);
+    console.log(`   - CO2 removed: ${co2Removed.toFixed(3)} tCO2`);
+    console.log('🌱 ========== END CO2 REMOVAL CALCULATION ==========\n');
     
     return co2Removed;
   };
@@ -173,23 +209,73 @@ const PlantSummaryView = () => {
 
   const runningHours = selectedSite === 'ARA' ? ARArunningHours : JNRrunningHours;
 
-  // Debug logs after all variables are initialized
-  console.log('Debug - Selected site:', selectedSite);
-  console.log('Debug - Local fetch trigger:', localFetchTrigger);
-  console.log('Debug - Raw bag rows length:', rawBagRows?.length);
-  console.log('Debug - Raw bag rows sample:', rawBagRows?.[0]);
-  console.log('Debug - ARA bag rows length:', ARAbagRows?.length);
-  console.log('Debug - JNR bag rows length:', JNRbagRows?.length);
-  console.log('Debug - Sensor rows length:', sensorRows?.length);
-  console.log('Debug - Sensor rows sample:', sensorRows?.[0]);
-  console.log('Debug - Meter delta (heat):', meterDelta);
-  console.log('Debug - Total weight (kg):', totalWeight);
-  console.log('Debug - Biochar produced (t):', biocharProduced);
-  console.log('Debug - Total CO2 calculated:', totalCO2);
-  console.log('Debug - Display CO2:', displayCO2);
-  console.log('Debug - Display Biochar:', displayBiochar);
-  console.log('Debug - Display Heat:', displayHeat);
-  console.log('Debug - Running hours:', runningHours);
+  // Comprehensive summary log for Plant Summary Key Figures
+  console.log('\n');
+  console.log('╔════════════════════════════════════════════════════════════════════════════╗');
+  console.log('║                    PLANT SUMMARY KEY FIGURES - SUMMARY                     ║');
+  console.log('╚════════════════════════════════════════════════════════════════════════════╝');
+  console.log('');
+  console.log(`🏭 SITE: ${selectedSite}`);
+  console.log(`📅 Fetch Status: ${localFetchTrigger > 0 ? 'Data fetched' : 'No data fetched yet'}`);
+  console.log('');
+  console.log('┌─────────────────────────────────────────────────────────────────────────┐');
+  console.log('│ DATA AVAILABILITY                                                       │');
+  console.log('└─────────────────────────────────────────────────────────────────────────┘');
+  console.log(`  • ARA Bag Rows: ${ARAbagRows?.length || 0} bags`);
+  console.log(`  • JNR Bag Rows: ${JNRbagRows?.length || 0} bags`);
+  console.log(`  • Active Site Bag Rows: ${rawBagRows?.length || 0} bags`);
+  console.log(`  • ARA Temp Rows: ${ARAtempRows?.length || 0} readings`);
+  console.log(`  • JNR Temp Rows: ${JNRtempRows?.length || 0} readings`);
+  console.log(`  • Active Site Temp Rows: ${rawTempRows?.length || 0} readings`);
+  console.log(`  • Sensor Readings: ${sensorRows?.length || 0} readings`);
+  console.log('');
+  console.log('┌─────────────────────────────────────────────────────────────────────────┐');
+  console.log('│ KEY PERFORMANCE INDICATORS (KPIs)                                       │');
+  console.log('└─────────────────────────────────────────────────────────────────────────┘');
+  console.log('');
+  console.log('  ⏱️  RUNNING HOURS');
+  console.log(`      Source: ${selectedSite === 'ARA' ? 'R1 & R2 temps' : 'T5 temp'}`);
+  console.log(`      Range: 520-720°C`);
+  console.log(`      Calculated: ${runningHours.toFixed(2)} hours`);
+  console.log(`      Days equivalent: ${(runningHours / 24).toFixed(2)} days`);
+  console.log('');
+  console.log('  🔥 HEAT OUTPUT/USAGE');
+  console.log(`      Site: ${selectedSite}`);
+  console.log(`      Label: ${selectedSite === 'ARA' ? 'Heat Output (MWh)' : 'Heat Usage (kWh)'}`);
+  console.log(`      Raw meter delta: ${meterDelta !== null ? meterDelta.toFixed(2) : 'N/A'} kWh`);
+  console.log(`      Converted: ${meterDelta !== null ? (meterDelta / 1000).toFixed(4) : 'N/A'} MWh`);
+  console.log(`      Display value: ${displayHeat.toFixed(1)} ${selectedSite === 'ARA' ? 'MWh' : 'kWh'}`);
+  console.log(`      Using fallback: ${rawBagRows.length === 0 || meterDelta === null ? 'YES (manual input)' : 'NO (calculated)'}`);
+  console.log('');
+  console.log('  🌱 CO2 REMOVED');
+  console.log(`      Site: ${selectedSite}`);
+  console.log(`      CORC Factor: ${selectedSite === 'ARA' ? '2.466' : '3.02'} tCO2/dry t biochar`);
+  console.log(`      Bags processed: ${rawBagRows?.length || 0}`);
+  console.log(`      Calculated CO2: ${totalCO2.toFixed(3)} tCO2`);
+  console.log(`      Display value: ${displayCO2.toFixed(1)} tCO2`);
+  console.log(`      Using fallback: ${rawBagRows.length === 0 ? 'YES (manual input)' : 'NO (calculated)'}`);
+  console.log('');
+  console.log('  🔷 BIOCHAR PRODUCED');
+  console.log(`      Site: ${selectedSite}`);
+  console.log(`      Total bags: ${bagCount}`);
+  console.log(`      Total weight (raw): ${totalWeight.toFixed(2)} kg`);
+  console.log(`      Biochar produced: ${biocharProduced.toFixed(3)} tonnes`);
+  console.log(`      Display value: ${displayBiochar.toFixed(1)} t`);
+  console.log(`      Using fallback: ${rawBagRows.length === 0 ? 'YES (manual input)' : 'NO (calculated)'}`);
+  console.log('');
+  console.log('┌─────────────────────────────────────────────────────────────────────────┐');
+  console.log('│ FORMULA SUMMARY                                                         │');
+  console.log('└─────────────────────────────────────────────────────────────────────────┘');
+  console.log('  1. Biochar Produced (t) = Σ(bag weights in kg) / 1000');
+  console.log('  2. Dry Weight (t) = Wet Weight (kg) × (1 - MC/100) / 1000');
+  console.log('  3. CO2 Removed (t) = Total Dry Weight (t) × CORC Factor');
+  console.log('  4. Heat Output = Last Energy Reading - First Energy Reading');
+  console.log('  5. Running Hours = Σ(time intervals where temps in spec range)');
+  console.log('');
+  console.log('╔════════════════════════════════════════════════════════════════════════════╗');
+  console.log('║                         END SUMMARY REPORT                                 ║');
+  console.log('╚════════════════════════════════════════════════════════════════════════════╝');
+  console.log('\n');
 
   // for week mode we need full timestamps; build two series of {x:Date,y:number}
   // for week‐mode we use our new hook:
