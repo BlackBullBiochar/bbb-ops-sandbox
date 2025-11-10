@@ -44,16 +44,20 @@ export function useHeatTotal(readings, field = 'energy') {
     let firstVal = null;
     let firstTimestamp = null;
     let firstIndex = -1;
+    let firstRow = null;
     for (const row of sorted) {
       const n = parseFloat(row[field]);
       if (!Number.isNaN(n)) {
         firstVal = n;
         firstTimestamp = row._ts;
         firstIndex = row._originalIndex;
+        firstRow = row;
         console.log(`   ✅ Found first valid reading:`);
-        console.log(`      - Value: ${firstVal} kWh`);
-        console.log(`      - Timestamp: ${firstTimestamp.toISOString()}`);
-        console.log(`      - Original index: ${firstIndex}`);
+        console.log(`      - Meter Reading: ${firstVal.toFixed(2)} kWh`);
+        console.log(`      - Date: ${firstTimestamp.toLocaleDateString('en-GB', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}`);
+        console.log(`      - Time: ${firstTimestamp.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`);
+        console.log(`      - Full Timestamp (ISO): ${firstTimestamp.toISOString()}`);
+        console.log(`      - Array index: ${firstIndex}`);
         break;
       }
     }
@@ -63,6 +67,7 @@ export function useHeatTotal(readings, field = 'energy') {
     let lastVal = null;
     let lastTimestamp = null;
     let lastIndex = -1;
+    let lastRow = null;
     for (let i = sorted.length - 1; i >= 0; i--) {
       const row = sorted[i];
       const n = parseFloat(row[field]);
@@ -70,10 +75,13 @@ export function useHeatTotal(readings, field = 'energy') {
         lastVal = n;
         lastTimestamp = row._ts;
         lastIndex = row._originalIndex;
+        lastRow = row;
         console.log(`   ✅ Found last valid reading:`);
-        console.log(`      - Value: ${lastVal} kWh`);
-        console.log(`      - Timestamp: ${lastTimestamp.toISOString()}`);
-        console.log(`      - Original index: ${lastIndex}`);
+        console.log(`      - Meter Reading: ${lastVal.toFixed(2)} kWh`);
+        console.log(`      - Date: ${lastTimestamp.toLocaleDateString('en-GB', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}`);
+        console.log(`      - Time: ${lastTimestamp.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`);
+        console.log(`      - Full Timestamp (ISO): ${lastTimestamp.toISOString()}`);
+        console.log(`      - Array index: ${lastIndex}`);
         break;
       }
     }
@@ -88,14 +96,31 @@ export function useHeatTotal(readings, field = 'energy') {
     console.log('\n🧮 Step 4: Calculating delta...');
     const delta = lastVal - firstVal;
     const deltaInMWh = delta / 1000;
-    const timeSpanDays = (lastTimestamp - firstTimestamp) / (1000 * 60 * 60 * 24);
+    const timeSpanMs = lastTimestamp - firstTimestamp;
+    const timeSpanDays = timeSpanMs / (1000 * 60 * 60 * 24);
+    const timeSpanHours = timeSpanMs / (1000 * 60 * 60);
     
-    console.log(`   - Last value: ${lastVal.toFixed(2)} kWh`);
-    console.log(`   - First value: ${firstVal.toFixed(2)} kWh`);
-    console.log(`   - Delta (kWh): ${delta.toFixed(2)} kWh`);
-    console.log(`   - Delta (MWh): ${deltaInMWh.toFixed(4)} MWh`);
-    console.log(`   - Time span: ${timeSpanDays.toFixed(2)} days`);
-    console.log(`   - Average per day: ${(delta / timeSpanDays).toFixed(2)} kWh/day`);
+    console.log('\n   📊 START READING:');
+    console.log(`      Meter: ${firstVal.toFixed(2)} kWh`);
+    console.log(`      Date:  ${firstTimestamp.toLocaleDateString('en-GB', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}`);
+    console.log(`      Time:  ${firstTimestamp.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`);
+    
+    console.log('\n   📊 END READING:');
+    console.log(`      Meter: ${lastVal.toFixed(2)} kWh`);
+    console.log(`      Date:  ${lastTimestamp.toLocaleDateString('en-GB', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}`);
+    console.log(`      Time:  ${lastTimestamp.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`);
+    
+    console.log('\n   🧮 CALCULATION:');
+    console.log(`      Formula: End Reading - Start Reading`);
+    console.log(`      ${lastVal.toFixed(2)} kWh - ${firstVal.toFixed(2)} kWh = ${delta.toFixed(2)} kWh`);
+    console.log(`      Delta (kWh): ${delta.toFixed(2)} kWh`);
+    console.log(`      Delta (MWh): ${deltaInMWh.toFixed(4)} MWh`);
+    
+    console.log('\n   ⏱️  TIME SPAN:');
+    console.log(`      Days: ${timeSpanDays.toFixed(2)} days`);
+    console.log(`      Hours: ${timeSpanHours.toFixed(2)} hours`);
+    console.log(`      Average per day: ${(delta / timeSpanDays).toFixed(2)} kWh/day`);
+    console.log(`      Average per hour: ${(delta / timeSpanHours).toFixed(2)} kWh/hour`);
 
     console.log(`\n✅ FINAL RESULT: ${delta.toFixed(2)} kWh (${deltaInMWh.toFixed(2)} MWh)`);
     console.log('🔥 ========== END HEAT OUTPUT CALCULATION ==========\n');

@@ -313,12 +313,11 @@ const PlantSummaryView = () => {
 
     if (mode === 'week') {
       const { fromDate: f, toDate: t } = isoWeekToDateRange(week);
-      // Add one day to toDate to include the last day (API treats toDate as exclusive)
-      const extendedToDate = new Date(new Date(t).getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      // Don't add extra day - API treats toDate as inclusive (includes entire day)
       console.log(ACTIONS.SET_FROM_DATE, f);
-      console.log(ACTIONS.SET_TO_DATE, extendedToDate);
+      console.log(ACTIONS.SET_TO_DATE, t);
       dispatch({ type: ACTIONS.SET_FROM_DATE, payload: f });
-      dispatch({ type: ACTIONS.SET_TO_DATE, payload: extendedToDate });
+      dispatch({ type: ACTIONS.SET_TO_DATE, payload: t });
     } else {
      dispatch({ type: ACTIONS.SET_FROM_DATE, payload: fromDate });
      dispatch({ type: ACTIONS.SET_TO_DATE,   payload: toDate });
