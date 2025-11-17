@@ -3,19 +3,63 @@ import styles from './Sidebar.module.css';
 import logo from '../assets/images/bbbLogoWhite.png';
 import { useCallback, useContext } from 'react';
 import { UserContext } from '../UserContext';
+import Icon from './Icon.js';
 
 
 const Sidebar = () => {
     const navigate = useNavigate(); //use callback
     const { setUser } = useContext(UserContext);
 
-
-
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
   const goToScreen = useCallback((screenName, params) => {
     const freshParams = { ...params };
     navigate(screenName, { state: freshParams, replace: true });
   }, [navigate]);
+
+  const openDocs = async () => {
+    const token = localStorage.getItem("token");
+    
+    if (!token) {
+      alert("Please log in to access documentation");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/docs/`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        if (response.status === 403) {
+          alert("Admin access required to view documentation");
+        } else {
+          alert("Failed to load documentation. Please try again.");
+        }
+        return;
+      }
+
+      const html = await response.text();
+      
+      // Fix relative URLs in the HTML to point to API server
+      const fixedHtml = html
+        .replace(/href="\//g, `href="${API_URL}/docs/`)
+        .replace(/src="\//g, `src="${API_URL}/docs/`)
+        .replace(/href="(?!http)/g, `href="${API_URL}/docs/`)
+        .replace(/src="(?!http)/g, `src="${API_URL}/docs/`);
+      
+      const newWindow = window.open();
+      if (newWindow) {
+        newWindow.document.write(fixedHtml);
+        newWindow.document.close();
+      }
+    } catch (error) {
+      console.error("Error loading documentation:", error);
+      alert("Failed to load documentation. Please try again.");
+    }
+  };
 
   const logout = () => {
       localStorage.removeItem("token");
@@ -47,7 +91,7 @@ const Sidebar = () => {
             isActive ? styles.menuItemSelected : styles.menuItem
           }
         >
-          <i className={`fas fa-database ${styles.navIcon}`}></i>
+          <Icon name="FaDatabase" size={16} className={styles.navIcon} />
           Database
         </NavLink>
         </li>
@@ -58,7 +102,7 @@ const Sidebar = () => {
             isActive ? styles.menuItemSelected : styles.menuItem
           }
         >
-          <i className={`fas fa-upload ${styles.navIcon}`}></i>
+          <Icon name="FaUpload" size={16} className={styles.navIcon} />
           Upload
         </NavLink>
         </li>
@@ -70,7 +114,7 @@ const Sidebar = () => {
             isActive ? styles.menuItemSelected : styles.menuItem
           }
         >
-          <i className={`fas fa-history ${styles.navIcon}`}></i>
+          <Icon name="FaHistory" size={16} className={styles.navIcon} />
           Upload History
         </NavLink>
         </li>
@@ -82,7 +126,7 @@ const Sidebar = () => {
             isActive ? styles.menuItemSelected : styles.menuItem
           }
         >
-          <i className={`fas fa-chart-line ${styles.navIcon}`}></i>
+          <Icon name="FaChartLine" size={16} className={styles.navIcon} />
           ARA Dashboard
         </NavLink>
         </li>
@@ -93,7 +137,7 @@ const Sidebar = () => {
             isActive ? styles.menuItemSelected : styles.menuItem
           }
         >
-          <i className={`fas fa-chart-line ${styles.navIcon}`}></i>
+          <Icon name="FaChartBar" size={16} className={styles.navIcon} />
           JNR Dashboard
         </NavLink>
         </li>
@@ -104,7 +148,7 @@ const Sidebar = () => {
               isActive ? styles.menuItemSelected : styles.menuItem
             }
           >
-            <i className={`fas fa-exclamation-triangle ${styles.navIcon}`}></i>
+            <Icon name="FaExclamationTriangle" size={16} className={styles.navIcon} />
             EBC Dashboard
           </NavLink>
         </li>
@@ -116,7 +160,7 @@ const Sidebar = () => {
             isActive ? styles.menuItemSelected : styles.menuItem
           }
         >
-          <i className={`fas fa-barcode ${styles.navIcon}`}></i>
+          <Icon name="FaBarcode" size={16} className={styles.navIcon} />
           Charcode Summary  
         </NavLink>
         </li>
@@ -127,14 +171,25 @@ const Sidebar = () => {
             isActive ? styles.menuItemSelected : styles.menuItem
           }
         >
-          <i className={`fas fa-industry ${styles.navIcon}`}></i>
+          <Icon name="FaIndustry" size={16} className={styles.navIcon} />
           Plant Summary
         </NavLink>
+        </li>
+
+        <li>
+          <div
+            onClick={openDocs}
+            className={styles.menuItem}
+            style={{ cursor: 'pointer' }}
+          >
+            <Icon name="FaBook" size={16} className={styles.navIcon} />
+            Documentation
+          </div>
         </li>
         
       </ul>
       <div onClick={() => logout()} className={styles.logoutContainer}>
-                Logout <span className={styles.logoutIcon}>&#xf2f5;</span>
+                Logout <span className={styles.logoutIcon}><Icon name="FaSignOutAlt" size={16} /></span>
             </div>
             <div className={styles.bbbNavFooter}>
                 BLACK BULL BIOCHAR
