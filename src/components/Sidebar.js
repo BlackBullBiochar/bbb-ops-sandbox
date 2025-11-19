@@ -42,13 +42,11 @@ const Sidebar = () => {
       }
 
       const html = await response.text();
-      
-      // Fix relative URLs in the HTML to point to API server
-      const fixedHtml = html
-        .replace(/href="\//g, `href="${API_URL}/docs/`)
-        .replace(/src="\//g, `src="${API_URL}/docs/`)
-        .replace(/href="(?!http)/g, `href="${API_URL}/docs/`)
-        .replace(/src="(?!http)/g, `src="${API_URL}/docs/`);
+      const baseHref = `${API_URL}/docs/`;
+      const fixedHtml = html.replace(
+        /<head>/i,
+        `<head><base href="${baseHref}">`
+      );
       
       const newWindow = window.open();
       if (newWindow) {
@@ -176,21 +174,15 @@ const Sidebar = () => {
         </NavLink>
         </li>
 
-        <li>
-          <div
-            onClick={openDocs}
-            className={styles.menuItem}
-            style={{ cursor: 'pointer' }}
-          >
-            <Icon name="FaBook" size={16} className={styles.navIcon} />
-            Documentation
-          </div>
-        </li>
-        
       </ul>
-      <div onClick={() => logout()} className={styles.logoutContainer}>
-                Logout <span className={styles.logoutIcon}><Icon name="FaSignOutAlt" size={16} /></span>
-            </div>
+      <div className={styles.footerActions}>
+        <div onClick={openDocs} className={styles.footerAction}>
+          Documentation <span className={styles.logoutIcon}><Icon name="FaBook" size={16} /></span>
+        </div>
+        <div onClick={logout} className={styles.footerAction}>
+          Logout <span className={styles.logoutIcon}><Icon name="FaSignOutAlt" size={16} /></span>
+        </div>
+      </div>
             <div className={styles.bbbNavFooter}>
                 BLACK BULL BIOCHAR
             </div>
