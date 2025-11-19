@@ -230,7 +230,7 @@ const CharcodeSummaryView = () => {
 
   return (
     <div className={styles.mainWhiteContainer}>
-      <ScreenHeader name="Charcode Performance Summary" />
+      <ScreenHeader iconName="FaBarcode" name="Charcode Performance Summary" />
       <ModuleMain>
         <div>
           <div className={styles.topRow}>

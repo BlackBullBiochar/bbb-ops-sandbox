@@ -58,7 +58,7 @@ const AlertDashboard = () => {
 
   return (
     <div className={styles.mainWhiteContainer}>
-      <ScreenHeader name={"EBC Alert Dashboard"} />
+      <ScreenHeader iconName="FaExclamationTriangle" name={"EBC Alert Dashboard"} />
         <ModuleMain>
           <div>
           <div className={styles.topRow}>

@@ -57,7 +57,7 @@ const DataAnalysisPageJNR = () => {
 
   return (
     <div className={styles.mainWhiteContainer}>
-      <ScreenHeader name={"JNR Plant Dashboard"} />
+      <ScreenHeader iconName="FaChartBar" name={"JNR Plant Dashboard"} />
       <ModuleMain>
         <DateSelector
           isRange={isRange}

@@ -42,7 +42,8 @@ const DataAnalysisPage = () => {
   const noHours = useRangeHours();
   const sensorRows    = Object.values(rawSensoreReadings).flat();
   const meterDelta = useHeatTotal(sensorRows, 'energy');
-  const avgHeatGenerated = meterDelta / noHours;  
+  // useHeatTotal returns kWh; convert to MWh then divide by hours
+  const avgHeatGenerated = (meterDelta / 1000) / noHours;  
   const { totalWeight, bagCount } = useBagStats(bagRows);
   const [avg1, avg2, avg5, bagAvgWeight, bagAvgMC] = useAvgTemps(tempRows, bagRows);
   const { labels: r1SingleLabels, data: r1SingleData } = useSingleTempChart(tempRows, 'r1_temp');
@@ -74,7 +75,7 @@ const DataAnalysisPage = () => {
 
   return (
     <div className={styles.mainWhiteContainer}>
-      <ScreenHeader name="ARA Plant Dashboard" />
+      <ScreenHeader iconName="FaChartLine" name="ARA Plant Dashboard" />
       <ModuleMain>
         <DateSelector
           isRange={isRange}

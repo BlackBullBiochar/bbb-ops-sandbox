@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styles from './TextInput.module.css';
 import helpers from '../helpers.js';
+import Icon from './Icon.js';
 
 import eyePassword1 from "../assets/images/eyePassword1.png"; // visible
 import eyePassword2 from "../assets/images/eyePassword2.png"; // hidden
@@ -27,9 +28,11 @@ const TextInput = (props) => {
           props.highlighted ? styles.highlightedLabel : ""
         )}
       >
-        <div className={styles.labelIcon}>
-          {props.iconName}
-        </div>
+        {props.iconName && (
+          <div className={styles.labelIcon}>
+            <Icon name={props.iconName} size={16} />
+          </div>
+        )}
         {props.iconCustom && (
           <img src={props.iconCustom} className={styles.customIcon} alt="icon" />
         )}
@@ -77,7 +80,8 @@ TextInput.defaultProps = {
   placeholder: "Change Placeholder Prop",
   labelStyle: 'left',
   onChange: () => console.log("Change onChangeProp"),
-  iconName: "",
+  iconName: "", //react-icons icon name (e.g., "FaUser")
+  iconCustom: null, //custom image icon (fallback)
   isPassword: false,
   onKeyDown: () => {}
 };

@@ -202,7 +202,9 @@ const PlantSummaryView = () => {
   
   // Fallback values when no data is fetched
   const displayBiochar = rawBagRows.length > 0 ? biocharProduced : biocharInput;
-  const displayHeat = rawBagRows.length > 0 && meterDelta !== null ? meterDelta : heatOutputInput;
+  // ARA card shows MWh, useHeatTotal returns MWh → no conversion needed
+  // Heat data is independent of bag data, so only check if meterDelta exists
+  const displayHeat = meterDelta !== null ? meterDelta : heatOutputInput;
   
   const { hours: ARArunningHours } = useRunningHours(rawTempRows, 520, 720, ['r1_temp','r2_temp']);
   const { hours: JNRrunningHours } = useRunningHours(rawTempRows, 520, 720, ['t5_temp']);
@@ -242,10 +244,9 @@ const PlantSummaryView = () => {
   console.log('  🔥 HEAT OUTPUT/USAGE');
   console.log(`      Site: ${selectedSite}`);
   console.log(`      Label: ${selectedSite === 'ARA' ? 'Heat Output (MWh)' : 'Heat Usage (kWh)'}`);
-  console.log(`      Raw meter delta: ${meterDelta !== null ? meterDelta.toFixed(2) : 'N/A'} kWh`);
-  console.log(`      Converted: ${meterDelta !== null ? (meterDelta / 1000).toFixed(4) : 'N/A'} MWh`);
+  console.log(`      Raw meter delta: ${meterDelta !== null ? meterDelta.toFixed(4) : 'N/A'} MWh`);
   console.log(`      Display value: ${displayHeat.toFixed(1)} ${selectedSite === 'ARA' ? 'MWh' : 'kWh'}`);
-  console.log(`      Using fallback: ${rawBagRows.length === 0 || meterDelta === null ? 'YES (manual input)' : 'NO (calculated)'}`);
+  console.log(`      Using fallback: ${meterDelta === null ? 'YES (manual input)' : 'NO (calculated)'}`);
   console.log('');
   console.log('  🌱 CO2 REMOVED');
   console.log(`      Site: ${selectedSite}`);
@@ -502,7 +503,7 @@ const PlantSummaryView = () => {
 
 const PlantSummary = () => (
   <div className={styles.mainWhiteContainer}>
-    <ScreenHeader name="Plant Summary" />
+    <ScreenHeader iconName="FaIndustry" name="Plant Summary" />
     <ModuleMain>
       <PlantSummaryView />
     </ModuleMain>

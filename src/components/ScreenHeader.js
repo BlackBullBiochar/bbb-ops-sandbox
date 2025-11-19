@@ -1,22 +1,13 @@
 import React from 'react';
 import styles from './ScreenHeader.module.css'; //styles
-import helpers from '../helpers.js';
 
 
 
 /*
-
-<img/>
-<div className="squareClassAndA"/>
-    BUTTON
+    SCREEN HEADER
         props:
-            name: str, name and label of input
-            placeholder: str, placeholder text
-            labelStyle: default is on the left, top has the label above the input
-            iconName: font awesome icon name, default is no icon
-            value: input value (state) from parent
-            onPress: setter from parent
-            customStyle: TODO based on future requirements
+            name: str, name and label of header
+            content: str, subtitle/description text
 */
 const ScreenHeader = (props) => {
     return(
@@ -33,6 +24,11 @@ const ScreenHeader = (props) => {
             </div>
     )
 }
+
+ScreenHeader.defaultProps = {
+    name: '',
+    content: '',
+};
 
 
 export default React.memo(ScreenHeader);

@@ -195,7 +195,7 @@ const UploadDataPage = () => {
 
   return (
     <div className={styles.container}>
-      <ScreenHeader name="Uploaded Data" />
+      <ScreenHeader iconName="FaHistory" name="Uploaded Data" />
       <ModuleMain>
         <DateSelector
           isRange={isRange}

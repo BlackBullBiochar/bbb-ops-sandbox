@@ -585,7 +585,7 @@ const DbSearch = () => {
   return (
     <FilterProvider>
       <div className={styles.mainWhiteContainer}>
-        <ScreenHeader name={"Search the Database"} />
+        <ScreenHeader iconName="FaDatabase" name={"Search the Database"} />
         <ModuleMain>
           <div className={styles.container}>
             {/* CSV Export in upper right of module */}

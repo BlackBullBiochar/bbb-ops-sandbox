@@ -20,6 +20,14 @@
 .header {
     font-size: 4rem;
     margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.headerIcon {
+    display: inline-flex;
+    align-items: center;
 }
 
 .subHeader {

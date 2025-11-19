@@ -56,7 +56,7 @@ const getQR = (site) => {
 
   return (
     <div className={styles.mainWhiteContainer}>
-        <ScreenHeader name={"Upload Portal"}/>
+        <ScreenHeader iconName="FaUpload" name={"Upload Portal"}/>
         <div className={styles.uploadContainer}>
           <div className={styles.cardsGrid}>
             {/* Upload TempData Card */}
