@@ -26,34 +26,25 @@ const Sidebar = () => {
     }
 
     try {
-      const response = await fetch(`${API_URL}/docs/`, {
+      const response = await fetch(`${API_URL}/docs/bootstrap`, {
+        method: "POST",
         headers: {
           'Authorization': `Bearer ${token}`
-        }
+        },
+        credentials: "include",
       });
 
       if (!response.ok) {
         if (response.status === 403) {
           alert("Admin access required to view documentation");
         } else {
-          alert("Failed to load documentation. Please try again.");
+          alert("Failed to prepare documentation session. Please try again.");
         }
         return;
       }
 
-      const html = await response.text();
-      const apiOrigin = API_URL.replace(/\/$/, "");
-      const docsBase = `${apiOrigin}/docs/`;
-      const fixedHtml = html
-        .replace(/<head>/i, `<head><base href="${docsBase}">`)
-        .replace(/href="\//g, `href="${apiOrigin}/`)
-        .replace(/src="\//g, `src="${apiOrigin}/`);
-      
-      const newWindow = window.open();
-      if (newWindow) {
-        newWindow.document.write(fixedHtml);
-        newWindow.document.close();
-      }
+      const docsUrl = `${API_URL.replace(/\/$/, "")}/docs/`;
+      window.open(docsUrl, "_blank", "noopener,noreferrer");
     } catch (error) {
       console.error("Error loading documentation:", error);
       alert("Failed to load documentation. Please try again.");
