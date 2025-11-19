@@ -42,11 +42,12 @@ const Sidebar = () => {
       }
 
       const html = await response.text();
-      const baseHref = `${API_URL}/docs/`;
-      const fixedHtml = html.replace(
-        /<head>/i,
-        `<head><base href="${baseHref}">`
-      );
+      const apiOrigin = API_URL.replace(/\/$/, "");
+      const docsBase = `${apiOrigin}/docs/`;
+      const fixedHtml = html
+        .replace(/<head>/i, `<head><base href="${docsBase}">`)
+        .replace(/href="\//g, `href="${apiOrigin}/`)
+        .replace(/src="\//g, `src="${apiOrigin}/`);
       
       const newWindow = window.open();
       if (newWindow) {
@@ -177,7 +178,7 @@ const Sidebar = () => {
       </ul>
       <div className={styles.footerActions}>
         <div onClick={openDocs} className={styles.footerAction}>
-          Documentation <span className={styles.logoutIcon}><Icon name="FaBook" size={16} /></span>
+          Doc <span className={styles.logoutIcon}><Icon name="FaBook" size={16} /></span>
         </div>
         <div onClick={logout} className={styles.footerAction}>
           Logout <span className={styles.logoutIcon}><Icon name="FaSignOutAlt" size={16} /></span>
