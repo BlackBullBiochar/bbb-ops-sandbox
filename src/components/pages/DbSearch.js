@@ -57,6 +57,9 @@ const FIELD_LABELS = {
   storage_order_id: "Storage Order ID",
   storage_pickup_date: "Storage Pickup Date",
   storage_delivery_date: "Storage Delivery Date",
+  processing_order_id: "Processing Order ID",
+  processing_pickup_date: "Processing Pickup Date",
+  processing_delivery_date: "Processing Delivery Date",
 };
 
 const ALL_FIELDS = [
@@ -79,6 +82,9 @@ const ALL_FIELDS = [
   "storage_order_id",
   "storage_pickup_date",
   "storage_delivery_date",
+  "processing_order_id",
+  "processing_pickup_date",
+  "processing_delivery_date",
 ];
 
 const labelize = (key) =>
@@ -134,6 +140,7 @@ const getStatusColorClass = (status) => {
       return styles.statusPickedUp;
     case 'delivered':
     case 'deliveredtostorage':
+    case 'deliveredtoprocessing':
       return styles.statusDelivered;
     case 'applied':
       return styles.statusApplied;
@@ -563,7 +570,8 @@ const DbSearch = () => {
       field === "ebc_status" ||
       field === "order_id" ||
       field === "batch_id" ||
-      field === "delivery_id";
+      field === "delivery_id" ||
+      field === "processing_order_id";
 
     return (
       <th key={field} style={{ whiteSpace: "nowrap" }}>
@@ -600,7 +608,9 @@ const DbSearch = () => {
                                       f === "pickup_date" ||
                                       f === "application_date" ||
                                       f === "storage_pickup_date" ||
-                                      f === "storage_delivery_date";
+                                      f === "storage_delivery_date" ||
+                                      f === "processing_pickup_date" ||
+                                      f === "processing_delivery_date";
                     
                     if (isDateField) {
                       // Extract date part and format it
@@ -725,6 +735,7 @@ const DbSearch = () => {
                     { name: "Picked Up", value: "pickedUp" },
                     { name: "Delivered", value: "delivered" },
                     { name: "Storage", value: "delivered_to_storage" },
+                      { name: "Processing", value: "delivered_to_processing" },
                     { name: "Applied", value: "applied" },
                   ]}
                   values={statusFilters}
@@ -846,7 +857,9 @@ const DbSearch = () => {
                                     field === "pickup_date" ||
                                     field === "application_date" ||
                                     field === "storage_pickup_date" ||
-                                    field === "storage_delivery_date") {
+                                    field === "storage_delivery_date" ||
+                                    field === "processing_pickup_date" ||
+                                    field === "processing_delivery_date") {
                                   raw = item[field]?.split?.("T")[0] || "";
                                 }
                                 // Handle storage fields - check direct field first, then locations object
@@ -858,6 +871,16 @@ const DbSearch = () => {
                                 }
                                 else if (field === "storage_delivery_date") {
                                   raw = item[field]?.split?.("T")[0] || item?.locations?.storage_delivery?.time?.split?.("T")[0] || "";
+                                }
+                                // Processing fields
+                                else if (field === "processing_order_id") {
+                                  raw = item[field] || item?.locations?.processing_pickup?._order_to_processing || "";
+                                }
+                                else if (field === "processing_pickup_date") {
+                                  raw = item[field]?.split?.("T")[0] || item?.locations?.processing_pickup?.time?.split?.("T")[0] || "";
+                                }
+                                else if (field === "processing_delivery_date") {
+                                  raw = item[field]?.split?.("T")[0] || item?.locations?.processing_delivery?.time?.split?.("T")[0] || "";
                                 }
                                 // Handle other fields
                                 else {
@@ -876,7 +899,9 @@ const DbSearch = () => {
                                                 field === "pickup_date" ||
                                                 field === "application_date" ||
                                                 field === "storage_pickup_date" ||
-                                                field === "storage_delivery_date";
+                                                field === "storage_delivery_date" ||
+                                                field === "processing_pickup_date" ||
+                                                field === "processing_delivery_date";
                               
                               if (isDateField) {
                                 raw = formatDate(raw);

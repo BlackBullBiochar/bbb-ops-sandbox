@@ -110,25 +110,30 @@
     color: white;
 }
 
-.logoutContainer {
+.footerActions {
+    position: absolute;
+    bottom: 3.8rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 0.2rem;
+    padding: 0 1rem;
+}
+
+.footerAction {
     font-family: "RobotoCondensed";
-    /* font-weight: bold; */
     font-size: 1.4rem;
     text-align: center;
     display: flex;
-    width: 100%;
     justify-content: center;
     align-items: center;
-    padding: 1rem;
-    padding-bottom: 3.8rem;
-    position: absolute;
-    bottom: 0;
+    gap: 0.4rem;
     color: white;
     cursor: pointer;
-    /* background-color: pink; */
+    padding: 1rem 1.2rem;
 }
 
-.logoutContainer:hover {
+.footerAction:hover {
     opacity: 0.7;
 }
 
@@ -173,8 +178,14 @@
         font-size: 0.8rem;
     }
 
-    .logoutContainer {
+    .footerActions {
+        flex-direction: column;
+        gap: 0.5rem;
+        bottom: 4.8rem;
+    }
+
+    .footerAction {
         font-size: 0rem;
-        padding-bottom: 5rem;
+        padding-bottom: 0.6rem;
     }
 }
