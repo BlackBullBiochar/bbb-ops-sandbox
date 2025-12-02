@@ -4,13 +4,14 @@ import logo from '../assets/images/bbbLogoWhite.png';
 import { useCallback, useContext } from 'react';
 import { UserContext } from '../UserContext';
 import Icon from './Icon.js';
+import { API } from '../config/api';
 
 
 const Sidebar = () => {
     const navigate = useNavigate(); //use callback
     const { setUser } = useContext(UserContext);
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+  const API_URL = API;
 
   const goToScreen = useCallback((screenName, params) => {
     const freshParams = { ...params };
