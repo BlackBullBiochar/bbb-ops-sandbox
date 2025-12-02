@@ -138,6 +138,7 @@ const CharcodeOverlayCard = ({ parsed, onClose }) => {
               charcodeId={parsed?.charcode}
               ebcEntries={ebcHistory}
               onDeleted={handleEntryDeleted}
+              batchId={parsed?.batch_id}
             />
           </Module>
           {siteName === 'ARA' ? (

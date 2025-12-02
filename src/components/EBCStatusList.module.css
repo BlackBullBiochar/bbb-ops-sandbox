@@ -29,6 +29,28 @@
   font-family: "RobotoCondensed";
 }
 
+.ebcLinkContainer {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.ebcLink {
+  color: #49a400;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ebcLink:hover {
+  color: #73c700;
+  text-decoration: underline;
+}
+
 .ContainerSmall {
   height: 1.4rem;
   padding: 0.1rem;

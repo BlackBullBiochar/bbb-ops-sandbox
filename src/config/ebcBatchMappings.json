@@ -1,0 +1,11 @@
+{
+  "baseUrl": "https://biochar.easy-cert.cloud/analytical-result/",
+  "fallbackUrl": "https://www.european-biochar.org/en",
+  "batchMappings": {
+    "ba-gb-ca11-01": "G9R5P8Y52E/VRY5EQ85G4",
+    "ba-gb-ca11-02": "G9R5P8Y52E/VRY5EQ85G4",
+    "ba-gb-455-1-1": "https://www.european-biochar.org/cert/341e-2531-z3d1-5rgq",
+    "ba-gb-m26-04": "https://www.european-biochar.org/en"
+  }
+}
+
