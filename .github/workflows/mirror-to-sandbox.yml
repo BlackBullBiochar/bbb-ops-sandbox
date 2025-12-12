@@ -1,0 +1,22 @@
+name: Mirror production to sandbox repo
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to sandbox repo
+        run: |
+          git remote add sandbox https://x-access-token:${{ secrets.SANDBOX_TOKEN }}@github.com/BlackBullBiochar/bbb-ops-sandbox.git
+          git push sandbox production:production --force
+          git push sandbox --tags --force
