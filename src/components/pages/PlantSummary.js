@@ -379,13 +379,9 @@ const PlantSummaryView = () => {
           <div className={kpiStyles.kpiItem}>
             <div className={kpiStyles.kpiLabel}>Running Hours</div>
             <div className={kpiStyles.kpiValue}>
-              {selectedSite === "ARA" ? (
-                <EditableFigure initialValue={runningHoursInput} onChange={(v) => handleKpiBlur('runningHours', v, setRunningHoursInput)} color="#fff" placeholder="Enter Value" />
-              ) : (
                 <span style={{ color: '#fff', fontSize: '2.8rem', fontFamily: 'RobotoCondensed, Arial, sans-serif' }}>
                   {runningHours.toFixed(1)}
                 </span>
-              )}
             </div>
           </div>
           
