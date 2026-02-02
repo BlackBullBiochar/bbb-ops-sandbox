@@ -23,6 +23,7 @@ import { useBagStats } from '../../hooks/useBagTotal.js';
 import { useRunningHours } from '../../hooks/useTempTotal.js';
 import { useSensorReadings } from '../../hooks/useSensorReadings';
 import { useHeatTotal } from '../../hooks/useHeatTotal.js';
+import usePowerFromSensorRows from '../../hooks/usePowerFromSensorRows.js'
 
 
 // Helper function to get the previous week in ISO format
@@ -109,15 +110,21 @@ const PlantSummaryView = () => {
     localFetchTrigger > 0
   );
 
+
   // Both hooks return flattened arrays already
   const rawTempRows = selectedSite === 'ARA' ? ARAtempRows : JNRtempRows;
   const rawBagRows = selectedSite === 'ARA' ? ARAbagRows : JNRbagRows;
   
   // Use the data directly since hooks already flatten them
   const chartRows = rawTempRows;
-  const sensorRows = rawSensoreReadings;
+  const sensorRows = Array.isArray(rawSensoreReadings)
+  ? rawSensoreReadings
+  : Object.values(rawSensoreReadings || {}).flat();
 
-  const meterDelta = useHeatTotal(sensorRows, 'energy');
+  const { powerData, powerLabels } = usePowerFromSensorRows(sensorRows);
+
+
+  const meterDelta = useHeatTotal(rawSensoreReadings, 'energy');
   const { totalWeight, bagCount } = useBagStats(rawBagRows);
   
   // Calculate biochar produced (sum of weights of bags in time period)
@@ -488,10 +495,49 @@ const PlantSummaryView = () => {
           </Module>
         )}
         
-        {/* Photo of the Week - for both Jenkinson and Ahlstrom */}
-        <Module name="Photo of the Week" spanColumn={12} spanRow={4} bannerHeader={true} bannerType="secondary">
-          <PhotoOfTheWeek siteCode={selectedSite} />
-        </Module>
+        {/*ara shows graph of heat meter readings and jnr allows photo of the week upload*/}
+        {selectedSite === "ARA" ? (
+          <Module
+            name="Heat Meter Monitor"
+            spanColumn={12}
+            spanRow={4}
+            bannerHeader={true}
+            bannerType="secondary"
+          >
+            <ChartMod
+              isTimeAxis={isWeek} // is it week selection or is is range?
+              title="Instantaneous Power Output"
+              labels={
+                isWeek
+                  ? powerLabels.map(t => t.slice(0, 5)).reverse()
+                  : powerLabels
+              }
+              dataPoints={
+                isWeek
+                  ? powerLabels.map((timestamp, i) => ({
+                      x: new Date(timestamp),
+                      y: 1000 * (powerData[i]),
+                    })).reverse()
+                  : powerLabels.map((d, i) => ({
+                      x: d,
+                      y: 1000 * (powerData[i]),
+                    }))
+              }
+              unit="Power Output (kW)"
+            />
+          </Module>
+        ) : (
+          <Module
+            name="Photo of the Week"
+            spanColumn={12}
+            spanRow={4}
+            bannerHeader={true}
+            bannerType="secondary"
+          >
+            <PhotoOfTheWeek siteCode={selectedSite} />
+          </Module>
+        )}
+
       </div>
     </div>
   );
