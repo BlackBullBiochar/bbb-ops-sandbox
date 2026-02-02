@@ -25,8 +25,9 @@ export function useBagDataRows(siteCode, shouldFetch) {
       qs += `&date=${singleDate}`;
     } else {
       // 👇 make "to" inclusive by sending next day
-      const toInclusiveFix = addDays(toDate, 1);
-      qs += `&from=${fromDate}&to=${toInclusiveFix}`;
+        const fromFix = addDays(fromDate, -1);
+        const toFix   = addDays(toDate, 1);
+        qs += `&from=${fromFix}&to=${toFix}`;
     }
 
     fetch(`${API}/bag/summary${qs}`, {
