@@ -3,6 +3,14 @@ import { useFilters }  from '../contexts/FilterContext';
 import { UserContext } from '../UserContext';
 import { API }         from '../config/api';
 
+const addDays = (yyyy_mm_dd, days) => {
+  if (!yyyy_mm_dd) return '';
+  // force UTC midnight to avoid timezone weirdness
+  const d = new Date(`${yyyy_mm_dd}T00:00:00.000Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+};
+
 export function useBagDataRows(siteCode, shouldFetch) {
   const { mode, singleDate, fromDate, toDate } = useFilters();
   const { user } = useContext(UserContext);
@@ -16,7 +24,9 @@ export function useBagDataRows(siteCode, shouldFetch) {
     if (mode === 'single') {
       qs += `&date=${singleDate}`;
     } else {
-      qs += `&from=${fromDate}&to=${toDate}`;
+      // 👇 make "to" inclusive by sending next day
+      const toInclusiveFix = addDays(toDate, 1);
+      qs += `&from=${fromDate}&to=${toInclusiveFix}`;
     }
 
     fetch(`${API}/bag/summary${qs}`, {
@@ -27,9 +37,7 @@ export function useBagDataRows(siteCode, shouldFetch) {
         return res.json();
       })
       .then(json => {
-        // json.data is { "YYYY-MM-DD": [ { r1_temp, r2_temp, r5_temp, … }, … ], … }
         const byDate = json.data || {};
-        // flatten into one array:
         const flat = Object.values(byDate).flat();
         setRows(flat);
       })
@@ -43,5 +51,6 @@ export function useBagDataRows(siteCode, shouldFetch) {
     shouldFetch,
     siteCode
   ]);
+
   return rows;
 }
