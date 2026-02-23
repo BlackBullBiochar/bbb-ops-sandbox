@@ -68,3 +68,10 @@
     margin-top: 0.5rem;
   }
   
+ .singleLineTextarea {
+    min-height: auto;       /* override your 7rem */
+    height: 2.2rem;         /* single line height */
+    resize: none;           /* prevent drag resizing */
+    overflow: hidden;       /* hide scrollbars */
+    line-height: 1.2rem;
+  }
