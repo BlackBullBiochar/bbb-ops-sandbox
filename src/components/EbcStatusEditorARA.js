@@ -1,22 +1,31 @@
-import React, { useState, useContext } from 'react';
-import styles from './EbcStatusEditor.module.css';
-import { UserContext } from '../UserContext.js';
-import { API } from '../config/api';
-import Button from './Button.js';
+import React, { useState, useContext, useMemo, useEffect } from "react";
+import styles from "./EbcStatusEditor.module.css";
+import { UserContext } from "../UserContext.js";
+import { API } from "../config/api";
+import Button from "./Button.js";
 
-const statusOptions = ['Flagged', 'Rejected', 'Post-Approved'];
+const statusOptions = ["Flagged", "Rejected", "Post-Approved"];
 
-/**
- * EbcStatusEditor
- * Props:
- * - charcodeId: string
- * - bagId: string (ObjectId)
- * - siteId: string (ObjectId)
- * - baggingDate: string (YYYY-MM-DD)
- * - currentStatus: string
- * - currentReason: string
- * - onSaved: function(newStatus)
- */
+const REASONS_BY_STATUS = {
+  "Post-Approved": [
+    "Bag only produced in the correct operating band. Temperature fall and time indicate machine in fault.",
+    "Bag only produced in the correct operating band. Temperature fall and time indicate machine in start up.",
+    "Pyrolysis temperature average correct for approval.",
+    "Bag only produced in the correct operating band. Temperature fall and time indicate machine in restart.",
+    "Other:",
+  ],
+  Rejected: [
+    "Bag produced out of approved temperature band",
+    "Bag produced from out-of-batch feedstock",
+    "Bag produced outside of live EBC batch dates",
+    "Other:",
+  ],
+  Flagged: [
+    "One or more temperatures out of spec (520–780°C)",
+    "Other:",
+  ],
+};
+
 const EbcStatusEditor = ({
   charcodeId,
   bagId,
@@ -24,23 +33,44 @@ const EbcStatusEditor = ({
   baggingDate,
   currentStatus,
   currentReason,
-  onSaved
+  onSaved,
 }) => {
   const { user } = useContext(UserContext);
+
   const [status, setStatus] = useState(currentStatus || statusOptions[0]);
-  const [reason, setReason] = useState(currentReason || '');
+  const [reasonMode, setReasonMode] = useState("Other:");
+  const [customReason, setCustomReason] = useState("");
+
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+
+  const reasonOptions = useMemo(() => {
+    return REASONS_BY_STATUS[status] || ["Other:"];
+  }, [status]);
+
+  useEffect(() => {
+    const opts = REASONS_BY_STATUS[status] || ["Other:"];
+    const first = opts[0] || "Other:";
+    setReasonMode(first);
+    setCustomReason("");
+  }, [status]);
+
+  const finalReason =
+    reasonMode === "Other:" ? customReason.trim() : reasonMode;
 
   const handleSave = async () => {
     setSaving(true);
     setError(null);
 
     try {
+      if (!finalReason) {
+        throw new Error("Please select or enter a reason.");
+      }
+
       const res = await fetch(`${API}/ebc/ebcstatus`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${user.token}`,
         },
         body: JSON.stringify({
@@ -49,16 +79,16 @@ const EbcStatusEditor = ({
           charcode: charcodeId,
           baggingDate,
           status,
-          reason
+          reason: finalReason,
         }),
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to save EBC status');
+      if (!res.ok) throw new Error(data.error || "Failed to save EBC status");
 
       if (onSaved) onSaved(data);
     } catch (err) {
-      console.error('❌ Save error:', err);
+      console.error("❌ Save error:", err);
       setError(err.message);
     } finally {
       setSaving(false);
@@ -80,16 +110,37 @@ const EbcStatusEditor = ({
 
       <label>
         Reason:
-        <textarea
-          placeholder="Enter your reason here…"
-          value={reason}
-          onChange={(e) => setReason(e.target.value)}
-        />
+        <select
+          value={reasonMode}
+          onChange={(e) => {
+            setReasonMode(e.target.value);
+            setCustomReason("");
+          }}
+        >
+          {reasonOptions.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
       </label>
+
+      {reasonMode === "Other:" && (
+        <label>
+          Details:
+          <textarea
+            placeholder="Enter reason..."
+            value={customReason}
+            onChange={(e) => setCustomReason(e.target.value)}
+            className={styles.singleLineTextarea}
+            rows={1}
+          />
+        </label>
+      )}
 
       <div className={styles.buttonRow}>
         <Button
-          name={saving ? 'Saving...' : 'Save Status'}
+          name={saving ? "Saving..." : "Save Status"}
           onPress={handleSave}
           disabled={saving}
         />
