@@ -12,7 +12,7 @@ import ebcBatchMappings from '../config/ebcBatchMappings.json';
  */
 const getEbcBatchUrl = (batchId) => {
   if (!batchId || batchId === "" || batchId.toLowerCase() === "batchless" || batchId.toLowerCase() === "n/a") {
-    return ebcBatchMappings.fallbackUrl;
+    return null;
   }
 
   const batchIdLower = batchId.toLowerCase();
