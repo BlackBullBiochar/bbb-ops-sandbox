@@ -31,12 +31,9 @@ const getEbcBatchUrl = (batchId) => {
     }
   }
   
-  if (mapping) {
-    // If the mapping is a full URL (starts with http), return it as-is
-    // Otherwise, it's a path that should be appended to baseUrl
-    if (mapping.startsWith("http")) {
-      return mapping;
-    }
+  if (mapping !== undefined && mapping !== null) {
+    if (mapping === "") return null;
+    if (mapping.startsWith("http")) return mapping;
     return ebcBatchMappings.baseUrl + mapping;
   }
 
