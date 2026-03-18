@@ -59,18 +59,6 @@ const EbcStatusList = ({ charcodeId, ebcEntries = [], onDeleted, batchId }) => {
 
   return (
     <div>
-      {shouldShowLink && (
-        <div className={styles.ebcLinkContainer}>
-          <a 
-            href={ebcUrl} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className={styles.ebcLink}
-          >
-            View EBC Certificate →
-          </a>
-        </div>
-      )}
       <div className={styles.tableWrapper}>
         <table className={styles.table}>
           <colgroup>
