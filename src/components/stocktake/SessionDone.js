@@ -10,7 +10,6 @@ const SessionDone = () => {
     <div className={styles.page}>
       <div className={styles.card}>
         <img src={bbbLogo} alt="BBB" className={styles.logo} />
-        <div className={styles.icon}>{ended ? "✓" : "←"}</div>
         <h1 className={styles.title}>
           {ended ? "Stocktake Session Ended" : "Stocktake Session Left"}
         </h1>

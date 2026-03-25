@@ -10,7 +10,7 @@ const SessionScanning = () => {
   const navigate = useNavigate();
 
   // Recover from state or localStorage if user refreshed
-  const [sessionData, setSessionData] = useState(() => {
+  const [sessionData] = useState(() => {
     if (state?.stocktake) {
       const d = { stocktake: state.stocktake, site: state.site, name: state.name };
       localStorage.setItem("stocktake_session", JSON.stringify(d));
@@ -59,7 +59,7 @@ const SessionScanning = () => {
     }
   });
 
-  // Fetch fresh session on mount (handles page refresh)
+  // Fetch fresh session on mount (handles page refresh / re-entry)
   useEffect(() => {
     if (!session_code) return;
     fetch(`${API}/stocktake/session/${session_code}`)
@@ -71,6 +71,15 @@ const SessionScanning = () => {
             scanned: json.stocktake.bags?.length || 0,
             total: json.stocktake.dbbags?.length || 0,
           });
+          // Keep localStorage up-to-date so future re-entries have the latest bags
+          try {
+            const stored = localStorage.getItem("stocktake_session");
+            if (stored) {
+              const parsed = JSON.parse(stored);
+              parsed.stocktake.bags = json.stocktake.bags || [];
+              localStorage.setItem("stocktake_session", JSON.stringify(parsed));
+            }
+          } catch {}
         }
       })
       .catch(() => {});
