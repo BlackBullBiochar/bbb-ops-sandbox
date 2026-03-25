@@ -1,0 +1,366 @@
+.page {
+  width: 100vw;
+  min-height: 100vh;
+  background: #323232;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 14px;
+  box-sizing: border-box;
+}
+
+.errMsg {
+  color: #c1c1c1;
+  text-align: center;
+  margin-top: 40px;
+  font-size: 1rem;
+}
+
+.link {
+  color: #B0E000;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Site header */
+.siteHeader {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #444;
+}
+
+.siteName {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.metaRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.metaItem {
+  font-size: 0.82rem;
+  color: #7a7a7a;
+}
+
+.sessionCode {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #B0E000;
+  letter-spacing: 2px;
+}
+
+/* Progress */
+.progressSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progressLabel {
+  font-size: 0.9rem;
+  color: #c1c1c1;
+  font-weight: 600;
+}
+
+.progressPct {
+  color: #B0E000;
+}
+
+.progressTrack {
+  width: 100%;
+  height: 12px;
+  background: #1a1a1a;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: #B0E000;
+  border-radius: 6px;
+  transition: width 0.4s ease;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #575757;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 200;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+/* Recent bags */
+.recentSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.recentLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #7a7a7a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.recentBag {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: #2a2a2a;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid #3a3a3a;
+  transition: border-color 0.15s;
+}
+
+.recentBag:active {
+  border-color: #B0E000;
+}
+
+.recentCode {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+.bagNote {
+  font-size: 0.72rem;
+  color: #F06F53;
+  font-weight: 600;
+  padding: 2px 6px;
+  background: rgba(240, 111, 83, 0.12);
+  border-radius: 4px;
+}
+
+/* Action buttons */
+.actionBtns {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.btnSecondary {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: 2px solid #575757;
+  background: transparent;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: "Roboto", sans-serif;
+}
+
+.btnLeave {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: #2a2a2a;
+  color: #7a7a7a;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: "Roboto", sans-serif;
+}
+
+/* All bags view header */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #444;
+}
+
+.backBtn {
+  background: transparent;
+  border: none;
+  color: #B0E000;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: "Roboto", sans-serif;
+  padding: 0;
+}
+
+.headerTitle {
+  flex: 1;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.headerCount {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #B0E000;
+}
+
+.allBagsList {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+}
+
+.emptyMsg {
+  text-align: center;
+  color: #575757;
+  margin-top: 40px;
+  font-size: 0.9rem;
+}
+
+.bagRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #2a2a2a;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid #3a3a3a;
+}
+
+.bagCode {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  flex: 1;
+}
+
+.bagBy {
+  font-size: 0.75rem;
+  color: #7a7a7a;
+}
+
+/* Overlays */
+.overlayBg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 150;
+  padding: 0;
+}
+
+.overlayCard {
+  background: #2a2a2a;
+  border-radius: 20px 20px 0 0;
+  padding: 24px 20px 36px;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.overlayTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.overlayMeta {
+  font-size: 0.8rem;
+  color: #7a7a7a;
+  margin-top: -6px;
+}
+
+.overlayInput {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 2px solid #444;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 1rem;
+  font-family: "Roboto", sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.overlayInput:focus {
+  outline: none;
+  border-color: #B0E000;
+}
+
+.overlayError {
+  color: #F06F53;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.overlayBtn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: #B0E000;
+  color: #323232;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: "Roboto", sans-serif;
+}
+
+.overlayBtnRemove {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: 2px solid #F06F53;
+  background: transparent;
+  color: #F06F53;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: "Roboto", sans-serif;
+}
+
+.overlayBtnGhost {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #7a7a7a;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-family: "Roboto", sans-serif;
+}
+
+.confirmRemove {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.confirmMsg {
+  font-size: 0.9rem;
+  color: #c1c1c1;
+  line-height: 1.4;
+}

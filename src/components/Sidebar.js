@@ -166,6 +166,17 @@ const Sidebar = () => {
           Plant Summary
         </NavLink>
         </li>
+        <li>
+        <NavLink
+          to="/stocktake"
+          className={({ isActive }) =>
+            isActive ? styles.menuItemSelected : styles.menuItem
+          }
+        >
+          <Icon name="FaClipboardList" size={16} className={styles.navIcon} />
+          Stocktake
+        </NavLink>
+        </li>
 
       </ul>
       <div className={styles.footerActions}>

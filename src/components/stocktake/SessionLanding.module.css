@@ -1,0 +1,201 @@
+.page {
+  width: 100vw;
+  min-height: 100vh;
+  background: #323232;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px 16px 48px;
+  box-sizing: border-box;
+}
+
+.card {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  margin: 0 auto 4px;
+  display: block;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #fff;
+  text-align: center;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  color: #7a7a7a;
+  text-align: center;
+}
+
+.label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #c1c1c1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: -6px;
+}
+
+.input {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 2px solid #444;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 1rem;
+  font-family: "Roboto", sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #B0E000;
+}
+
+.select {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 2px solid #444;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 0.95rem;
+  font-family: "Roboto", sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #B0E000;
+}
+
+.btnStack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.btnPrimary {
+  width: 100%;
+  padding: 15px;
+  border-radius: 10px;
+  border: none;
+  background: #B0E000;
+  color: #323232;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: "Roboto", sans-serif;
+  transition: opacity 0.15s;
+}
+
+.btnPrimary:active,
+.btnPrimary:disabled {
+  opacity: 0.7;
+}
+
+.btnSecondary {
+  width: 100%;
+  padding: 15px;
+  border-radius: 10px;
+  border: 2px solid #575757;
+  background: transparent;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: "Roboto", sans-serif;
+}
+
+.btnSecondary:active {
+  opacity: 0.7;
+}
+
+.btnGhost {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #7a7a7a;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-family: "Roboto", sans-serif;
+}
+
+.error {
+  color: #F06F53;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 6px 0;
+}
+
+.rejoinBanner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 10px;
+  border: 2px solid #B0E000;
+  background: rgba(176, 224, 0, 0.07);
+}
+
+.rejoinText {
+  font-size: 0.88rem;
+  color: #c1c1c1;
+  line-height: 1.5;
+}
+
+/* Login overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.popup {
+  background: #2a2a2a;
+  border-radius: 16px;
+  padding: 24px 20px;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+.popupTitle {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.popupSub {
+  margin: -6px 0 0;
+  font-size: 0.82rem;
+  color: #7a7a7a;
+}
