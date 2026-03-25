@@ -189,7 +189,7 @@ const SessionScanning = () => {
     setEditOverlay(null);
   };
 
-  const lastThree = [...bags].reverse().slice(0, 3);
+  const lastThree = [...bags].filter((b) => b.scanned_by === name).reverse().slice(0, 3);
   const site = sessionData.site;
   const dateStr = new Date(sessionData.stocktake.date).toLocaleDateString("en-GB", {
     day: "numeric", month: "long", year: "numeric",
