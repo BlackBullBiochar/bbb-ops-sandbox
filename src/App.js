@@ -31,6 +31,11 @@ import { FilterProvider } from './contexts/FilterContext';
 import AhlstromForm from './components/pages/AhlstomForm';
 import JenkinsonForm from './components/pages/JenkinsonForm';
 import DBSearch from './components/pages/DbSearch'
+import StocktakePage from './components/pages/StocktakePage'
+import SessionLanding from './components/stocktake/SessionLanding'
+import SessionScanning from './components/stocktake/SessionScanning'
+import SessionLeave from './components/stocktake/SessionLeave'
+import SessionDone from './components/stocktake/SessionDone'
 
 const App = () => {
    const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -164,6 +169,12 @@ const App = () => {
           <Route path="/ahlstrom-form" element={<AhlstromForm />} />
           <Route path="/jenkinson-form" element={<JenkinsonForm />} />
 
+          {/* Stocktake mobile webapp — public, no auth, no sidebar */}
+          <Route path="/stocktake/session" element={<SessionLanding />} />
+          <Route path="/stocktake/session/scanning" element={<SessionScanning />} />
+          <Route path="/stocktake/session/leave" element={<SessionLeave />} />
+          <Route path="/stocktake/session/done" element={<SessionDone />} />
+
           {/* Protected app layout */}
           <Route
             element={
@@ -188,6 +199,7 @@ const App = () => {
             <Route path="/charcode-summary" element={<CharcodeSummary />} />
             <Route path="/plant-summary" element={<PlantSummary />} />
             <Route path="/database" element={<DBSearch />} />
+            <Route path="/stocktake" element={<StocktakePage />} />
           </Route>
 
           {/* Fallback */}

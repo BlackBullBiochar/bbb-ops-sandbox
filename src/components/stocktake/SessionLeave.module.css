@@ -1,0 +1,135 @@
+.page {
+  width: 100vw;
+  min-height: 100vh;
+  background: #323232;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  box-sizing: border-box;
+}
+
+.card {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.msg {
+  color: #c1c1c1;
+  text-align: center;
+}
+
+.link {
+  color: #B0E000;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.siteName {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.date {
+  font-size: 0.9rem;
+  color: #7a7a7a;
+}
+
+.code {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #B0E000;
+  letter-spacing: 2px;
+}
+
+.divider {
+  height: 1px;
+  background: #444;
+  margin: 4px 0;
+}
+
+.countRow {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.countNum {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #B0E000;
+}
+
+.countSep {
+  font-size: 1.5rem;
+  color: #575757;
+}
+
+.countTotal {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #c1c1c1;
+}
+
+.countLabel {
+  font-size: 0.9rem;
+  color: #7a7a7a;
+  margin-left: 4px;
+}
+
+.error {
+  color: #F06F53;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.btnEnd {
+  width: 100%;
+  padding: 16px;
+  border-radius: 10px;
+  border: none;
+  background: #B0E000;
+  color: #323232;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: "Roboto", sans-serif;
+  margin-top: 8px;
+}
+
+.btnLeave {
+  width: 100%;
+  padding: 16px;
+  border-radius: 10px;
+  border: 2px solid #575757;
+  background: transparent;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: "Roboto", sans-serif;
+  margin-top: 8px;
+}
+
+.btnEnd:disabled,
+.btnLeave:disabled {
+  opacity: 0.6;
+}
+
+.btnGhost {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #7a7a7a;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-family: "Roboto", sans-serif;
+}
