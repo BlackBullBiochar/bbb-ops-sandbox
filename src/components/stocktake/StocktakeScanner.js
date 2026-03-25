@@ -32,6 +32,8 @@ const StocktakeScanner = ({ onScan, disabled = false }) => {
   const feedbackTimer = useRef(null);
   const disabledRef = useRef(disabled);
   disabledRef.current = disabled;
+  const onScanRef = useRef(onScan);
+  onScanRef.current = onScan;
 
   const showFeedback = useCallback((msg, ms = 1200) => {
     setFeedback(msg);
@@ -55,9 +57,9 @@ const StocktakeScanner = ({ onScan, disabled = false }) => {
         return;
       }
 
-      onScan(charcode);
+      onScanRef.current(charcode);
     },
-    [onScan, showFeedback]
+    [showFeedback]
   );
 
   // Create scanner instance once
