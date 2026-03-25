@@ -173,15 +173,13 @@
   align-items: center;
   justify-content: center;
   z-index: 100;
-  padding: 16px;
 }
 
 .popup {
   background: #fff;
-  border-radius: 16px;
+  border-radius: 0;
   padding: 24px 20px;
-  width: 100%;
-  max-width: 400px;
+  width: 100vw;
   display: flex;
   flex-direction: column;
   gap: 12px;
