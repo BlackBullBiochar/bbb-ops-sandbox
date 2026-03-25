@@ -43,7 +43,7 @@ const SessionLanding = () => {
     fetch(`${API}/sites`)
       .then((r) => r.json())
       .then((json) => {
-        const all = json?.data || json?.sites || [];
+        const all = json?.data?.sites || json?.sites || json?.data || [];
         const relevant = all.filter(
           (s) => (s.category === "Pyrolysis" || s.category === "Storage") &&
                  !/test/i.test(s.name) && !/test/i.test(s.full_name)
@@ -51,7 +51,7 @@ const SessionLanding = () => {
         setSites(relevant);
         if (relevant.length) setSelectedSiteId(relevant[0]._id);
       })
-      .catch(() => setError("Failed to load sites"));
+      .catch((e) => setError(`Failed to load sites from ${API} — ${e.message}`));
   }, []);
 
   const selectedSite = sites.find((s) => s._id === selectedSiteId);

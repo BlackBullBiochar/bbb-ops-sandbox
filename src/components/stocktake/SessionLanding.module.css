@@ -1,63 +1,64 @@
 .page {
   width: 100vw;
   min-height: 100vh;
-  background: #323232;
+  background: #fff;
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 24px 16px 48px;
+  flex-direction: column;
   box-sizing: border-box;
 }
 
 .card {
-  width: 100%;
-  max-width: 480px;
+  flex: 1;
+  padding: 24px 20px 48px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .logo {
-  width: 56px;
-  height: 56px;
+  width: 500px;
+  height: 500px;
   object-fit: contain;
-  margin: 0 auto 4px;
+  margin: 28px auto 4px;
   display: block;
 }
 
 .title {
   margin: 0;
-  font-size: 1.7rem;
-  font-weight: 800;
-  color: #fff;
+  font-size: 10rem;
+  font-weight: 900;
+  font-family: "TruenoBd";
+  color: #323232;
   text-align: center;
   letter-spacing: -0.5px;
 }
 
 .subtitle {
   margin: 0 0 8px;
-  font-size: 0.85rem;
+  font-size: 5rem;
+  font-family: "RobotoCondensed";
   color: #7a7a7a;
   text-align: center;
 }
 
 .label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #c1c1c1;
+  font-size: 3rem;
+  font-weight: 700;
+  font-family: "RobotoCondensedBold";
+  color: #575757;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: -6px;
+  margin-bottom: -8px;
 }
 
 .input {
-  padding: 12px 14px;
+  padding: 13px 14px;
   border-radius: 10px;
-  border: 2px solid #444;
-  background: #1a1a1a;
-  color: #fff;
-  font-size: 1rem;
-  font-family: "Roboto", sans-serif;
+  border: 1.5px solid #dedede;
+  background: #fff;
+  color: #323232;
+  font-size: 3rem;
+  font-family: "RobotoCondensed";
   width: 100%;
   box-sizing: border-box;
 }
@@ -68,13 +69,13 @@
 }
 
 .select {
-  padding: 12px 14px;
+  padding: 13px 14px;
   border-radius: 10px;
-  border: 2px solid #444;
-  background: #1a1a1a;
-  color: #fff;
-  font-size: 0.95rem;
-  font-family: "Roboto", sans-serif;
+  border: 1.5px solid #dedede;
+  background: #fff;
+  color: #323232;
+  font-size: 3rem !important;
+  font-family: "RobotoCondensed";
   width: 100%;
   box-sizing: border-box;
 }
@@ -98,11 +99,11 @@
   border: none;
   background: #B0E000;
   color: #323232;
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 5rem;
+  font-family: "TruenoBd";
   cursor: pointer;
-  font-family: "Roboto", sans-serif;
   transition: opacity 0.15s;
+  letter-spacing: 0.3px;
 }
 
 .btnPrimary:active,
@@ -114,13 +115,12 @@
   width: 100%;
   padding: 15px;
   border-radius: 10px;
-  border: 2px solid #575757;
-  background: transparent;
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 600;
+  border: 1.5px solid #dedede;
+  background: #fff;
+  color: #323232;
+  font-size: 5rem;
+  font-family: "RobotoCondensedBold";
   cursor: pointer;
-  font-family: "Roboto", sans-serif;
 }
 
 .btnSecondary:active {
@@ -134,15 +134,15 @@
   border: none;
   background: transparent;
   color: #7a7a7a;
-  font-size: 0.9rem;
+  font-size: 3rem;
+  font-family: "RobotoCondensed";
   cursor: pointer;
-  font-family: "Roboto", sans-serif;
 }
 
 .error {
   color: #F06F53;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 2rem;
+  font-family: "RobotoCondensedBold";
   text-align: center;
   padding: 6px 0;
 }
@@ -154,12 +154,13 @@
   padding: 14px;
   border-radius: 10px;
   border: 2px solid #B0E000;
-  background: rgba(176, 224, 0, 0.07);
+  background: rgba(176, 224, 0, 0.08);
 }
 
 .rejoinText {
-  font-size: 0.88rem;
-  color: #c1c1c1;
+  font-size: 3rem;
+  font-family: "RobotoCondensed";
+  color: #575757;
   line-height: 1.5;
 }
 
@@ -167,7 +168,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -176,7 +177,7 @@
 }
 
 .popup {
-  background: #2a2a2a;
+  background: #fff;
   border-radius: 16px;
   padding: 24px 20px;
   width: 100%;
@@ -184,18 +185,19 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
 }
 
 .popupTitle {
   margin: 0;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #fff;
+  font-size: 2rem;
+  font-family: "TruenoBd";
+  color: #323232;
 }
 
 .popupSub {
   margin: -6px 0 0;
-  font-size: 0.82rem;
+  font-size: 3rem;
+  font-family: "RobotoCondensed";
   color: #7a7a7a;
 }
