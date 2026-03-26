@@ -208,8 +208,8 @@ const SessionLanding = () => {
     <div className={styles.page}>
       <div className={styles.card}>
         <img src={bbbLogo} alt="BBB" className={styles.logo} />
-        <h1 className={styles.title}>Stocktake</h1>
-        <p className={styles.subtitle}>Black Bull Biochar</p>
+        {mode === "" && <h1 className={styles.title}>Stocktake</h1>}
+        {mode === "" && <p className={styles.subtitle}>Black Bull Biochar</p>}
 
         {/* Site selector (only for start) */}
         {mode === "start" && (
@@ -330,7 +330,6 @@ const SessionLanding = () => {
         <div className={styles.overlay}>
           <div className={styles.popup}>
             <h2 className={styles.popupTitle}>Ops Login Required</h2>
-            <p className={styles.popupSub}>Only ops users can start a new session</p>
 
             <label className={styles.label}>Email</label>
             <input

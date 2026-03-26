@@ -198,7 +198,7 @@ const SessionScanning = () => {
     setEditOverlay(null);
   };
 
-  const lastThree = [...bags].filter((b) => b.scanned_by === name).reverse().slice(0, 3);
+  const myScans = [...bags].filter((b) => b.scanned_by === name).reverse().slice(0, 3);
   const site = sessionData.site;
   const dateStr = new Date(sessionData.stocktake.date).toLocaleDateString("en-GB", {
     day: "numeric", month: "long", year: "numeric",
@@ -260,8 +260,8 @@ const SessionScanning = () => {
     <div className={styles.page}>
       {/* Site header */}
       <div className={styles.siteHeader}>
-        <div className={styles.siteName}>{site?.full_name}</div>
         <div className={styles.metaRow}>
+          <div className={styles.siteName}>{site?.name}</div>
           <span className={styles.metaItem}>{dateStr}</span>
           <span className={styles.sessionCode}>{session_code}</span>
         </div>
@@ -292,10 +292,10 @@ const SessionScanning = () => {
 
       {/* Last 3 scanned — always rendered so layout never shifts */}
       <div className={styles.recentSection}>
-        {lastThree.length > 0 && (
+        {myScans.length > 0 && (
           <div className={styles.recentLabel}>Recently scanned</div>
         )}
-        {lastThree.map((bag) => (
+        {myScans.map((bag) => (
           <div
             key={bag.charcode}
             className={styles.recentBag}
