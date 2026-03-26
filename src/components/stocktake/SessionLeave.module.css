@@ -33,21 +33,21 @@
 }
 
 .siteName {
-  font-size: 48px;
+  font-size: 3rem;
   font-family: "TruenoBd";
   color: #323232;
   letter-spacing: -0.3px;
 }
 
 .date {
-  font-size: 32px;
+  font-size: 2rem;
   font-family: "RobotoCondensed";
   color: #7a7a7a;
   margin-top: -10px;
 }
 
 .code {
-  font-size: 32px;
+  font-size: 2rem;
   font-family: "RobotoCondensedBold";
   color: #B0E000;
   letter-spacing: 2px;
@@ -66,28 +66,28 @@
 }
 
 .countNum {
-  font-size: 80px;
+  font-size: 3rem;
   font-family: "TruenoBd";
   color: #323232;
   line-height: 1;
 }
 
 .countSep {
-  font-size: 80px;
+  font-size: 3rem;
   font-family: "RobotoCondensed";
   font-weight: 300;
   color: #c1c1c1;
 }
 
 .countTotal {
-  font-size: 80px;
+  font-size: 3rem;
   font-family: "TruenoBd";
   color: #7a7a7a;
   line-height: 1;
 }
 
 .countLabel {
-  font-size: 24px;
+  font-size: 1.5rem;
   font-family: "RobotoCondensed";
   color: #7a7a7a;
   margin-left: 4px;
@@ -106,7 +106,7 @@
   border: none;
   background: #B0E000;
   color: #323232;
-  font-size: 32px;
+  font-size: 2rem;
   font-family: "TruenoBd";
   cursor: pointer;
   letter-spacing: 0.3px;
@@ -120,10 +120,10 @@
   width: 100%;
   padding: 15px;
   border-radius: 10px;
-  border: 1.5px solid #dedede;
+  border: 1.5px solid var(--coalLight);
   background: #fff;
   color: #323232;
-  font-size: 32px;
+  font-size: 2rem;
   font-family: "RobotoCondensedBold";
   cursor: pointer;
 }
@@ -132,10 +132,10 @@
   width: 100%;
   padding: 12px;
   border-radius: 10px;
-  border: none;
+  border: 1.5px solid var(--coalVeryLight);
   background: transparent;
   color: #7a7a7a;
-  font-size: 32px;
+  font-size: 2rem;
   font-family: "RobotoCondensed";
   cursor: pointer;
 }
@@ -164,13 +164,13 @@
 }
 
 .overlayTitle {
-  font-size: 64px;
+  font-size: 3rem;
   font-family: "TruenoBd";
   color: #323232;
 }
 
 .overlayMsg {
-  font-size: 24px;
+  font-size: 2rem;
   font-family: "RobotoCondensed";
   color: #575757;
   line-height: 1.5;

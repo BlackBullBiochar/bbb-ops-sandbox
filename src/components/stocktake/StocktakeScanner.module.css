@@ -10,54 +10,61 @@
 }
 
 .manualRow {
+  position: absolute;
+  bottom: 3rem;
+  left: 15%;
+  right: 15%;
   display: flex;
-  gap: 8px;
-  width: 95vw;
+  align-items: center;
+  background: #fff;
+  border-radius: 999px;
+  overflow: hidden;
+  z-index: 10;
 }
 
 .manualInput {
   flex: 1;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1.5px solid #dedede;
-  background: #fff;
-  color: #323232;
-  font-size: 1rem;
+  min-width: 0;
+  padding: 3px 18px;
+  border: none;
+  background: transparent;
+  color: #888;
+  font-size: 1.5rem;
   font-family: "RobotoCondensedBold";
   letter-spacing: -0.3px;
-  width: 60vw;
 }
 
 .manualInput:focus {
   outline: none;
-  border-color: #B0E000;
+  color: #323232;
 }
 
 .manualBtn {
-  padding: 10px 16px;
-  border-radius: 8px;
+  padding: 0 18px;
+  align-self: stretch;
   border: none;
-  background: #B0E000;
-  color: #323232;
-  font-family: "TruenoBd";
-  font-size: 1.5rem;
+  background: transparent;
+  color: #aaa;
+  font-size: 2.1rem;
+  line-height: 1;
   cursor: pointer;
-  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
 }
 
 .manualBtn:active {
-  opacity: 0.8;
+  opacity: 0.5;
 }
 
 /* Camera viewfinder — 80vw square, centered */
 .readerWrap {
   position: relative;
-  width: 70vw;
+  width: 90vw;
 }
 
 .reader {
-  width: 70vw;
-  height: 70vw;
+  width: 90vw;
+  height: 90vw;
   border-radius: 12px;
   overflow: hidden;
   background: #111;
@@ -73,25 +80,22 @@
 }
 
 .cameraOverlay {
-  position: absolute;
-  bottom: 24px;
-  left: 1px;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
   gap: 4px;
-  z-index: 10;
+  width: 70vw;
 }
 
 .switchBtn {
   background: #fff;
   border: 1.5px solid #dedede;
   color: #575757;
-  padding: 4px 12px;
+  padding: 8px 12px;
   border-radius: 12px;
   font-size: 1.25rem;
   font-family: "RobotoCondensedBold";
   cursor: pointer;
+  width: 100%;
 }
 
 .cameraSelect {
@@ -103,6 +107,68 @@
   color: #323232;
   font-family: "RobotoCondensed";
   font-size: 1.5rem;
+}
+
+.confirmOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.confirmBox {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 24px 20px;
+  width: 80vw;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.confirmText {
+  font-family: "TruenoBd";
+  font-size: 1.4rem;
+  color: #323232;
+  text-align: center;
+  margin: 0;
+}
+
+.confirmBtns {
+  display: flex;
+  gap: 10px;
+}
+
+.confirmNo {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1.5px solid #dedede;
+  background: #fff;
+  color: #575757;
+  font-family: "TruenoBd";
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.confirmYes {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #B0E000;
+  color: #323232;
+  font-family: "TruenoBd";
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.confirmNo:active, .confirmYes:active {
+  opacity: 0.8;
 }
 
 .feedback {

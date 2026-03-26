@@ -23,6 +23,7 @@ const StocktakeScanner = ({ onScan, disabled = false }) => {
   const [scannerReady, setScannerReady] = useState(false);
   const [showCameraMenu, setShowCameraMenu] = useState(false);
   const [manualValue, setManualValue] = useState("CHA-00");
+  const [showUnlabelledConfirm, setShowUnlabelledConfirm] = useState(false);
   const [feedback, setFeedback] = useState("");
 
   const html5Ref = useRef(null);
@@ -152,26 +153,22 @@ const StocktakeScanner = ({ onScan, disabled = false }) => {
   };
 
   const submitManual = () => {
-    handleScan(manualValue);
-    setManualValue("CHA-00");
+    const isEmpty = !manualValue.trim() || manualValue.trim() === "CHA-00";
+    if (isEmpty) {
+      setShowUnlabelledConfirm(true);
+    } else {
+      handleScan(manualValue);
+      setManualValue("CHA-00");
+    }
+  };
+
+  const confirmUnlabelled = () => {
+    setShowUnlabelledConfirm(false);
+    onScanRef.current("UNLABELLED");
   };
 
   return (
     <div className={styles.scanner}>
-      {/* Manual input */}
-      <div className={styles.manualRow}>
-        <input
-          className={styles.manualInput}
-          value={manualValue}
-          onChange={(e) => setManualValue(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && submitManual()}
-          placeholder="CHA-000000"
-        />
-        <button className={styles.manualBtn} onClick={submitManual}>
-          Add
-        </button>
-      </div>
-
       {/* Camera viewfinder */}
       <div className={styles.readerWrap}>
         <div id="stocktake-reader" className={styles.reader} />
@@ -180,33 +177,59 @@ const StocktakeScanner = ({ onScan, disabled = false }) => {
           <div className={styles.scannerMsg}>Starting camera…</div>
         )}
 
-        {/* Camera switcher — overlaid bottom-right */}
-        {cameras.length > 1 && (
-          <div className={styles.cameraOverlay}>
-            <button
-              className={styles.switchBtn}
-              onClick={() => setShowCameraMenu((v) => !v)}
-            >
-              Switch camera
-            </button>
-            {showCameraMenu && (
-              <select
-                className={styles.cameraSelect}
-                value={cameraId}
-                onChange={(e) => switchCamera(e.target.value)}
-              >
-                {cameras.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.label}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
-        )}
+        {/* Manual input — overlaid at bottom of camera */}
+        <div className={styles.manualRow}>
+          <input
+            className={styles.manualInput}
+            value={manualValue}
+            onChange={(e) => setManualValue(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && submitManual()}
+            placeholder="CHA-000000"
+          />
+          <button className={styles.manualBtn} onClick={submitManual}>
+            &gt;
+          </button>
+        </div>
       </div>
 
+      {/* Camera switcher — below the viewfinder, full width */}
+      {cameras.length > 1 && (
+        <div className={styles.cameraOverlay}>
+          <button
+            className={styles.switchBtn}
+            onClick={() => setShowCameraMenu((v) => !v)}
+          >
+            Switch camera
+          </button>
+          {showCameraMenu && (
+            <select
+              className={styles.cameraSelect}
+              value={cameraId}
+              onChange={(e) => switchCamera(e.target.value)}
+            >
+              {cameras.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+      )}
+
       {feedback && <div className={styles.feedback}>{feedback}</div>}
+
+      {showUnlabelledConfirm && (
+        <div className={styles.confirmOverlay}>
+          <div className={styles.confirmBox}>
+            <p className={styles.confirmText}>Add an unlabelled bag?</p>
+            <div className={styles.confirmBtns}>
+              <button className={styles.confirmNo} onClick={() => setShowUnlabelledConfirm(false)}>No</button>
+              <button className={styles.confirmYes} onClick={confirmUnlabelled}>Yes</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

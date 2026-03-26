@@ -447,6 +447,76 @@ overflow: visible;
 align-items: center;
 }
 
+/* Sort row */
+.sortRow {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.sortLabel {
+  font-family: "RobotoCondensedBold";
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--coal);
+  padding-top: 0.65rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+
+.sortDirGroup {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.sortDirBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #666;
+  border-radius: 12px;
+  padding: 0.6rem 1.2rem;
+  background: #fff;
+  color: #666;
+  font-family: "RobotoCondensedBold";
+  font-size: 1.1rem;
+  cursor: pointer;
+  user-select: none;
+  transition: all 120ms ease;
+  white-space: nowrap;
+  margin: 0.1rem;
+}
+
+.sortDirBtn:hover:not(:disabled) {
+  background: #666;
+  color: #fff;
+  border-color: #666;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sortDirBtnActive {
+  background: #333 !important;
+  color: #fff !important;
+  border-color: #333 !important;
+}
+
+.sortDirBtnActive:hover:not(:disabled) {
+  background: #000 !important;
+  border-color: #000 !important;
+}
+
+.sortDirBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
 /* DbSearch.module.css */
 .clickableRow {
   cursor: pointer;
@@ -671,7 +741,7 @@ align-items: center;
   font-size: 1.2rem;
   color: var(--coalVeryLight);
   box-sizing: border-box;
-  width: 11rem;
+  width: 18rem;
   background: white;
   border-radius: 1rem;
   box-shadow: 0px 3.45713px 8.64283px rgba(0, 0, 0, 0.1);
@@ -681,7 +751,7 @@ align-items: center;
 
 .customSelect {
   position: relative;
-  width: 11rem; /* match MultiSelector width */
+  width: 18rem; /* match MultiSelector width */
 }
 
 .selectedOption {
@@ -689,7 +759,7 @@ align-items: center;
   font-size: 1.2rem;
   color: var(--coalVeryLight);
   box-sizing: border-box;
-  width: 11rem;
+  width: 18rem;
   padding: 0.5rem;
   padding-left: 1rem;
   background: white;
@@ -705,7 +775,7 @@ align-items: center;
   font-size: 1.2rem;
   color: var(--coalVeryLight);
   box-sizing: border-box;
-  width: 11rem;
+  width: 18rem;
   padding: 0.5rem;
   padding-left: 1rem;
   background: white;
@@ -738,7 +808,7 @@ align-items: center;
   position: absolute;
   top: calc(100%);
   left: 0;
-  width: 11rem;
+  width: 18rem;
   background: white;
   border-radius: 0 0 1rem 1rem;
   z-index: 100;
