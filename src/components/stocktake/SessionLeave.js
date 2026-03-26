@@ -1,14 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../../config/api";
+import { UserContext } from "../../UserContext";
+import { useStocktakeSocket } from "../../hooks/useStocktakeSocket";
 import styles from "./SessionLeave.module.css";
 
 const SessionLeave = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const [modal, setModal] = useState(null); // null | "end" | "pause"
+  const { user } = useContext(UserContext);
+  const [modal, setModal] = useState(null); // null | "end" | "pause" | "cancelled"
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [endingCountdown, setEndingCountdown] = useState(null);
+  const [cancelledBy, setCancelledBy] = useState(null);
+
+  const session_code = state?.stocktake?.session_code;
+  const { stocktake, site, name, progress } = state ?? {};
+
+  useStocktakeSocket(session_code, name, (evt, data) => {
+    if (evt === "session_ending") {
+      setEndingCountdown(data.seconds ?? 5);
+    }
+    if (evt === "session_ended") {
+      localStorage.removeItem("stocktake_session");
+      navigate("/stocktake/session/done", { state: { ended: true } });
+    }
+    if (evt === "session_end_cancelled") {
+      setEndingCountdown(null);
+      setCancelledBy(data.name || null);
+      setModal("cancelled");
+    }
+  });
+
+  useEffect(() => {
+    if (endingCountdown === null || endingCountdown === 0) return;
+    const t = setTimeout(() => setEndingCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [endingCountdown]);
 
   if (!state?.stocktake) {
     return (
@@ -23,9 +52,6 @@ const SessionLeave = () => {
     );
   }
 
-  const { stocktake, site, name, progress } = state;
-  const session_code = stocktake.session_code;
-
   const dateStr = new Date(stocktake.date).toLocaleDateString("en-GB", {
     day: "numeric", month: "long", year: "numeric",
   });
@@ -34,15 +60,18 @@ const SessionLeave = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`${API}/stocktake/session/leave`, {
+      const res = await fetch(`${API}/stocktake/session/end`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ session_code, name, pause: false }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({ session_code }),
       });
       const json = await res.json();
       if (!res.ok) { setError(json.error || "Something went wrong"); setModal(null); return; }
-      localStorage.removeItem("stocktake_session");
-      navigate("/stocktake/session/done", { state: { ended: json.ended } });
+      setModal(null);
+      // Wait for session_ended or session_end_cancelled socket events
     } catch {
       setError("Network error, please try again");
       setModal(null);
@@ -72,10 +101,26 @@ const SessionLeave = () => {
     }
   };
 
+  const handleLeaveOnly = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/stocktake/session/leave`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_code, name, pause: false }),
+      });
+      if (res.ok) {
+        localStorage.removeItem("stocktake_session");
+        navigate("/stocktake/session/done", { state: { ended: false } });
+      }
+    } catch {}
+    setLoading(false);
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <div className={styles.siteName}>{site?.full_name}</div>
+        <div className={styles.siteName}>{site?.name}</div>
         <div className={styles.date}>{dateStr}</div>
         <div className={styles.code}>{session_code}</div>
 
@@ -99,7 +144,7 @@ const SessionLeave = () => {
         </button>
 
         <button className={styles.btnPause} onClick={() => setModal("pause")}>
-          Pause Stocktake Session
+          Leave Stocktake Session
         </button>
 
         <button className={styles.btnGhost} onClick={() => navigate(-1)}>
@@ -107,13 +152,26 @@ const SessionLeave = () => {
         </button>
       </div>
 
+      {/* Waiting for session end */}
+      {endingCountdown !== null && (
+        <div className={styles.overlayBg}>
+          <div className={styles.overlayCard}>
+            <div className={styles.overlayTitle}>Ending Session</div>
+            <div className={styles.overlayMsg}>
+              Ending session for everyone in{" "}
+              <strong>{endingCountdown}</strong> second{endingCountdown !== 1 ? "s" : ""}…
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* End confirmation popup */}
       {modal === "end" && (
         <div className={styles.overlayBg}>
           <div className={styles.overlayCard}>
             <div className={styles.overlayTitle}>End Session?</div>
             <div className={styles.overlayMsg}>
-              By ending the session you will not be able to edit this stocktake.
+              By ending the session all members will be logged out and will not be able to edit this stocktake.
               If there are any more bags to scan, pause the session instead.
             </div>
             <button
@@ -138,7 +196,7 @@ const SessionLeave = () => {
       {modal === "pause" && (
         <div className={styles.overlayBg}>
           <div className={styles.overlayCard}>
-            <div className={styles.overlayTitle}>Pause Session</div>
+            <div className={styles.overlayTitle}>Leave Session</div>
             <div className={styles.overlayMsg}>
               To rejoin the session, find the session code on the ops app.
             </div>
@@ -148,7 +206,7 @@ const SessionLeave = () => {
               onClick={handlePause}
               disabled={loading}
             >
-              {loading ? "Please wait…" : "Pause Session"}
+              {loading ? "Please wait…" : "Leave Session"}
             </button>
             <button
               className={styles.overlayBtnGhost}
@@ -156,6 +214,36 @@ const SessionLeave = () => {
               disabled={loading}
             >
               Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Session end cancelled popup */}
+      {modal === "cancelled" && (
+        <div className={styles.overlayBg}>
+          <div className={styles.overlayCard}>
+            <div className={styles.overlayTitle}>Session Not Ended</div>
+            <div className={styles.overlayMsg}>
+              {cancelledBy
+                ? <><strong>{cancelledBy}</strong> is still scanning and has kept the session open.</>
+                : "Someone is still scanning and has kept the session open."
+              }{" "}
+              If you're done, you can leave without ending it for everyone else.
+            </div>
+            <button
+              className={styles.overlayBtnEnd}
+              onClick={handleLeaveOnly}
+              disabled={loading}
+            >
+              {loading ? "Please wait…" : "Leave Session"}
+            </button>
+            <button
+              className={styles.overlayBtnGhost}
+              onClick={() => navigate(-1)}
+              disabled={loading}
+            >
+              Keep Scanning
             </button>
           </div>
         </div>

@@ -28,8 +28,13 @@ export function useStocktakeSocket(session_code, name, onEvent) {
       "bag_updated",
       "bag_removed",
       "session_ended",
+      "session_ending",
+      "session_end_cancelled",
       "member_joined",
       "member_left",
+      "member_removed",
+      "member_removal_requested",
+      "member_removal_cancelled",
     ];
 
     events.forEach((evt) => {

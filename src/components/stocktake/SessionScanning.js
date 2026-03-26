@@ -9,7 +9,6 @@ const SessionScanning = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  // Recover from state or localStorage if user refreshed
   const [sessionData] = useState(() => {
     if (state?.stocktake) {
       const d = { stocktake: state.stocktake, site: state.site, name: state.name };
@@ -24,16 +23,17 @@ const SessionScanning = () => {
     }
   });
 
-  const [view, setView] = useState("scanning"); // "scanning" | "allBags"
+  const [view, setView] = useState("scanning");
   const [bags, setBags] = useState(sessionData?.stocktake?.bags || []);
   const [progress, setProgress] = useState({
     scanned: sessionData?.stocktake?.bags?.length || 0,
     total: sessionData?.stocktake?.dbbags?.length || 0,
   });
 
-  // Modal states
-  const [scanModal, setScanModal] = useState(null); // { type, message, charcode, onConfirm }
-  const [editOverlay, setEditOverlay] = useState(null); // bag object being edited/removed
+  const [scanModal, setScanModal] = useState(null);
+  const [editOverlay, setEditOverlay] = useState(null);
+  const [endingCountdown, setEndingCountdown] = useState(null);
+  const [removalCountdown, setRemovalCountdown] = useState(null);
   const [editValue, setEditValue] = useState("");
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState("");
@@ -42,24 +42,88 @@ const SessionScanning = () => {
   const session_code = sessionData?.stocktake?.session_code;
   const name = sessionData?.name;
 
-  const showToast = (msg, ms = 2000) => {
+  const showToast = (msg, ms = 2500) => {
     setToast(msg);
     setTimeout(() => setToast(""), ms);
   };
 
-  // Socket.io — live updates
   useStocktakeSocket(session_code, name, (evt, data) => {
     if (evt === "bag_scanned" || evt === "bag_updated" || evt === "bag_removed") {
       setBags(data.bags);
       setProgress(data.progress);
     }
+
     if (evt === "session_ended") {
       localStorage.removeItem("stocktake_session");
       navigate("/stocktake/session/done", { state: { ended: true } });
     }
+
+    if (evt === "session_ending") {
+      setEndingCountdown(data.seconds ?? 5);
+    }
+
+    if (evt === "session_end_cancelled") {
+      setEndingCountdown(null);
+      if (data?.by) {
+        showToast(`${data.by} cancelled session termination`);
+      } else {
+        showToast("Session termination cancelled");
+      }
+    }
+
+    if (evt === "member_removal_requested" && data.name === name) {
+      setRemovalCountdown(data.seconds ?? 5);
+    }
+
+    if (evt === "member_removal_cancelled" && data.name === name) {
+      setRemovalCountdown(null);
+      showToast("Logout cancelled");
+    }
+
+    if (evt === "member_removed" && data.name === name) {
+      localStorage.removeItem("stocktake_session");
+      navigate("/stocktake/session/done", {
+        state: { removed: true, message: "You were removed from the session." },
+      });
+    }
   });
 
-  // Fetch fresh session on mount (handles page refresh / re-entry)
+  useEffect(() => {
+    if (endingCountdown === null) return;
+    if (endingCountdown === 0) return;
+    const t = setTimeout(() => setEndingCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [endingCountdown]);
+
+  useEffect(() => {
+    if (removalCountdown === null) return;
+    if (removalCountdown === 0) return;
+    const t = setTimeout(() => setRemovalCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [removalCountdown]);
+
+  const handleCancelEnd = async () => {
+    try {
+      await fetch(`${API}/stocktake/session/end/cancel`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_code, name }),
+      });
+      setEndingCountdown(null);
+    } catch {}
+  };
+
+  const handleCancelRemoval = async () => {
+    try {
+      await fetch(`${API}/stocktake/session/remove-member/cancel`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_code, name }),
+      });
+      setRemovalCountdown(null);
+    } catch {}
+  };
+
   useEffect(() => {
     if (!session_code) return;
     fetch(`${API}/stocktake/session/${session_code}`)
@@ -71,7 +135,6 @@ const SessionScanning = () => {
             scanned: json.stocktake.bags?.length || 0,
             total: json.stocktake.dbbags?.length || 0,
           });
-          // Keep localStorage up-to-date so future re-entries have the latest bags
           try {
             const stored = localStorage.getItem("stocktake_session");
             if (stored) {
@@ -106,7 +169,6 @@ const SessionScanning = () => {
       ? Math.min(100, Math.round((progress.scanned / progress.total) * 100))
       : 0;
 
-  // ---- Scan handler ----
   const handleScan = useCallback(
     async (charcode, force = false) => {
       const res = await fetch(`${API}/stocktake/session/scan`, {
@@ -138,12 +200,10 @@ const SessionScanning = () => {
         });
         return;
       }
-      // ok — socket will update bags/progress for everyone
     },
     [session_code, name]
   );
 
-  // ---- Edit scan ----
   const openEditOverlay = (bag) => {
     setEditOverlay(bag);
     setEditValue(bag.charcode);
@@ -188,7 +248,6 @@ const SessionScanning = () => {
     setEditOverlay(null);
   };
 
-  // ---- Remove scan ----
   const handleRemove = async (charcode) => {
     await fetch(`${API}/stocktake/session/scan`, {
       method: "DELETE",
@@ -204,17 +263,18 @@ const SessionScanning = () => {
     day: "numeric", month: "long", year: "numeric",
   });
 
-  // ---- All Bags view ----
   if (view === "allBags") {
     return (
       <div className={styles.page}>
         <div className={styles.header}>
           <button className={styles.backBtn} onClick={() => setView("scanning")}>← Back to Scanner</button>
         </div>
+
         <div className={styles.allBagsTop}>
           <span className={styles.headerTitle}>Scanned Bags</span>
           <span className={styles.headerCount}>{bags.length}/{progress.total}</span>
         </div>
+
         <div className={styles.allBagsList}>
           {bags.length === 0 && (
             <div className={styles.emptyMsg}>No bags scanned yet</div>
@@ -244,6 +304,7 @@ const SessionScanning = () => {
             onClose={() => setEditOverlay(null)}
           />
         )}
+
         {scanModal && (
           <ConfirmModal
             message={scanModal.message}
@@ -251,14 +312,22 @@ const SessionScanning = () => {
             onCancel={() => setScanModal(null)}
           />
         )}
+
+        {endingCountdown !== null && (
+          <SessionEndingModal countdown={endingCountdown} onCancel={handleCancelEnd} />
+        )}
+
+        {removalCountdown !== null && (
+          <SessionRemovalModal countdown={removalCountdown} onCancel={handleCancelRemoval} />
+        )}
+
+        {toast && <div className={styles.toast}>{toast}</div>}
       </div>
     );
   }
 
-  // ---- Scanning view ----
   return (
     <div className={styles.page}>
-      {/* Site header */}
       <div className={styles.siteHeader}>
         <div className={styles.metaRow}>
           <div className={styles.siteName}>{site?.name}</div>
@@ -267,7 +336,6 @@ const SessionScanning = () => {
         </div>
       </div>
 
-      {/* Progress bar */}
       <div className={styles.progressSection}>
         <div className={styles.progressLabel}>
           {progress.scanned} / {progress.total} bags
@@ -281,16 +349,20 @@ const SessionScanning = () => {
         </div>
       </div>
 
-      {/* Scanner */}
       <StocktakeScanner
-        onScan={(charcode) => handleScan(charcode, false)}
-        disabled={!!scanModal || !!editOverlay}
+        onScan={(charcode) => {
+          if (charcode === "UNLABELLED") {
+            const n = bags.filter((b) => b.charcode.startsWith("UNLABELLED ")).length + 1;
+            handleScan(`UNLABELLED ${n}`, true);
+          } else {
+            handleScan(charcode, false);
+          }
+        }}
+        disabled={!!scanModal || !!editOverlay || endingCountdown !== null || removalCountdown !== null}
       />
 
-      {/* Toast */}
       {toast && <div className={styles.toast}>{toast}</div>}
 
-      {/* Last 3 scanned — always rendered so layout never shifts */}
       <div className={styles.recentSection}>
         {myScans.length > 0 && (
           <div className={styles.recentLabel}>Recently scanned</div>
@@ -307,7 +379,6 @@ const SessionScanning = () => {
         ))}
       </div>
 
-      {/* Action buttons */}
       <div className={styles.actionBtns}>
         <button className={styles.btnSecondary} onClick={() => setView("allBags")}>
           See All Bags ({bags.length})
@@ -324,7 +395,6 @@ const SessionScanning = () => {
         </button>
       </div>
 
-      {/* Edit overlay */}
       {editOverlay && (
         <EditOverlay
           bag={editOverlay}
@@ -338,7 +408,6 @@ const SessionScanning = () => {
         />
       )}
 
-      {/* Scan warning modal */}
       {scanModal && (
         <ConfirmModal
           message={scanModal.message}
@@ -346,11 +415,17 @@ const SessionScanning = () => {
           onCancel={() => setScanModal(null)}
         />
       )}
+
+      {endingCountdown !== null && (
+        <SessionEndingModal countdown={endingCountdown} onCancel={handleCancelEnd} />
+      )}
+
+      {removalCountdown !== null && (
+        <SessionRemovalModal countdown={removalCountdown} onCancel={handleCancelRemoval} />
+      )}
     </div>
   );
 };
-
-// ---- Shared sub-components ----
 
 const EditOverlay = ({
   bag, editValue, setEditValue, editError, editLoading, onSave, onRemove, onClose,
@@ -409,6 +484,36 @@ const EditOverlay = ({
     </div>
   );
 };
+
+const SessionEndingModal = ({ countdown, onCancel }) => (
+  <div className={styles.overlayBg}>
+    <div className={styles.overlayCard}>
+      <div className={styles.overlayTitle}>Session Ending</div>
+      <div className={styles.confirmMsg}>
+        Ops is ending this session. You will be logged out in{" "}
+        <strong>{countdown}</strong> second{countdown !== 1 ? "s" : ""}.
+      </div>
+      <button className={styles.overlayBtn} onClick={onCancel}>
+        I’m Still Scanning
+      </button>
+    </div>
+  </div>
+);
+
+const SessionRemovalModal = ({ countdown, onCancel }) => (
+  <div className={styles.overlayBg}>
+    <div className={styles.overlayCard}>
+      <div className={styles.overlayTitle}>You Are Being Logged Out</div>
+      <div className={styles.confirmMsg}>
+        Ops requested to remove you from this session. You will be logged out in{" "}
+        <strong>{countdown}</strong> second{countdown !== 1 ? "s" : ""}.
+      </div>
+      <button className={styles.overlayBtn} onClick={onCancel}>
+        I’m Still Scanning
+      </button>
+    </div>
+  </div>
+);
 
 const ConfirmModal = ({ message, onConfirm, onCancel }) => (
   <div className={styles.overlayBg}>
