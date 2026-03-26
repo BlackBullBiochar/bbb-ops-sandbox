@@ -22,7 +22,7 @@
   border: 1.5px solid #dedede;
   background: #fff;
   color: #323232;
-  font-size: 2.5rem;
+  font-size: 1rem;
   font-family: "RobotoCondensedBold";
   letter-spacing: -0.3px;
   width: 60vw;
@@ -40,7 +40,7 @@
   background: #B0E000;
   color: #323232;
   font-family: "TruenoBd";
-  font-size: 2.5rem;
+  font-size: 1.5rem;
   cursor: pointer;
   letter-spacing: 0.3px;
 }
@@ -52,12 +52,12 @@
 /* Camera viewfinder — 80vw square, centered */
 .readerWrap {
   position: relative;
-  width: 80vw;
+  width: 70vw;
 }
 
 .reader {
-  width: 80vw;
-  height: 80vw;
+  width: 70vw;
+  height: 70vw;
   border-radius: 12px;
   overflow: hidden;
   background: #111;
@@ -89,7 +89,7 @@
   color: #575757;
   padding: 4px 12px;
   border-radius: 12px;
-  font-size: 2rem;
+  font-size: 1.25rem;
   font-family: "RobotoCondensedBold";
   cursor: pointer;
 }
@@ -102,14 +102,14 @@
   background: #fff;
   color: #323232;
   font-family: "RobotoCondensed";
-  font-size: 3rem;
+  font-size: 1.5rem;
 }
 
 .feedback {
   text-align: center;
   font-family: "RobotoCondensedBold";
   color: #B0E000;
-  font-size: 2rem;
+  font-size: 1rem;
   padding: 4px 0;
   min-height: 20px;
 }

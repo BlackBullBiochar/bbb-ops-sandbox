@@ -20,13 +20,13 @@
   width: 70vw;
   height: 70vw;
   object-fit: contain;
-  margin: 28px auto 4px;
+  margin: 0px auto 4px;
   display: block;
 }
 
 .title {
   margin: 0;
-  font-size: 5rem;
+  font-size: 3rem;
   font-weight: 900;
   font-family: "TruenoBd";
   color: #323232;
@@ -36,14 +36,14 @@
 
 .subtitle {
   margin: 0 0 8px;
-  font-size: 3rem;
+  font-size: 2rem;
   font-family: "RobotoCondensed";
   color: #7a7a7a;
   text-align: center;
 }
 
 .label {
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: 700;
   font-family: "RobotoCondensedBold";
   color: #575757;
@@ -58,7 +58,7 @@
   border: 1.5px solid #dedede;
   background: #fff;
   color: #323232;
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-family: "RobotoCondensed";
   width: 100%;
   box-sizing: border-box;
@@ -196,7 +196,7 @@
 
 .popupSub {
   margin: -6px 0 0;
-  font-size: 3rem;
+  font-size: 1.25rem;
   font-family: "RobotoCondensed";
   color: #7a7a7a;
 }

@@ -34,7 +34,7 @@
 }
 
 .siteName {
-  font-size: 2.5rem;
+  font-size: 1.5rem;
   font-family: "TruenoBd";
   color: #fff;
   line-height: 1.2;
@@ -55,7 +55,7 @@
 }
 
 .sessionCode {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-family: "RobotoCondensedBold";
   color: #B0E000;
   letter-spacing: 2px;
@@ -112,16 +112,15 @@
   box-shadow: 0 4px 16px rgba(0,0,0,0.25);
 }
 
-/* Recent bags — fixed height so adding bags never shifts the layout */
+/* Recent bags — scrollable, takes remaining space above action buttons */
 .recentSection {
-  flex-shrink: 0;
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
   padding: 6px 16px 4px;
-  /* height is fixed: label + up to 3 compact rows */
-  height: 22vh;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 .recentLabel {
@@ -152,7 +151,7 @@
 
 /* Smaller charcode font to fit in compact space */
 .recentCode {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-family: "RobotoCondensedBold";
   color: #323232;
   letter-spacing: -0.3px;
@@ -167,41 +166,37 @@
   border-radius: 4px;
 }
 
-/* Action buttons — fixed at bottom so they never move */
+/* Action buttons — pinned to bottom of flex column */
 .actionBtns {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  flex-shrink: 0;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 6px;
-  padding: 8px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px));
   background: #fff;
   box-shadow: 0 -1px 8px rgba(0,0,0,0.08);
-  z-index: 10;
 }
 
 .btnSecondary {
   width: 100%;
-  padding: 14px;
+  padding: 10px;
   border-radius: 10px;
   border: 1.5px solid #dedede;
   background: #fff;
   color: #323232;
-  font-size: 2.5rem;
+  font-size: 1.5rem;
   font-family: "RobotoCondensedBold";
   cursor: pointer;
 }
 
 .btnLeave {
   width: 100%;
-  padding: 14px;
+  padding: 10px;
   border-radius: 10px;
   border: 1.5px solid #dedede;
   background: #fff;
   color: #7a7a7a;
-  font-size: 2.5rem;
+  font-size: 1.5rem;
   font-family: "RobotoCondensedBold";
   cursor: pointer;
 }
@@ -279,7 +274,7 @@
 }
 
 .bagCode {
-  font-size: 3rem;
+  font-size: 1.5rem;
   font-family: "RobotoCondensedBold";
   color: #323232;
   letter-spacing: -0.3px;
@@ -287,7 +282,7 @@
 }
 
 .bagBy {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-family: "RobotoCondensed";
   color: #7a7a7a;
 }
@@ -316,13 +311,13 @@
 }
 
 .overlayTitle {
-  font-size: 4rem;
+  font-size: 2rem;
   font-family: "TruenoBd";
   color: #323232;
 }
 
 .overlayMeta {
-  font-size: 2rem;
+  font-size: 1.25rem;
   font-family: "RobotoCondensed";
   color: #7a7a7a;
   margin-top: -6px;
@@ -334,7 +329,7 @@
   border: 1.5px solid #dedede;
   background: #fff;
   color: #323232;
-  font-size: 3rem;
+  font-size: 1.5rem;
   font-family: "RobotoCondensedBold";
   width: 100%;
   box-sizing: border-box;
@@ -360,7 +355,7 @@
   border: none;
   background: #B0E000;
   color: #323232;
-  font-size: 4rem;
+  font-size: 1.5rem;
   font-family: "TruenoBd";
   cursor: pointer;
   letter-spacing: 0.3px;
@@ -373,7 +368,7 @@
   border: 1.5px solid #F06F53;
   background: transparent;
   color: #F06F53;
-  font-size: 3rem;
+  font-size: 1.5rem;
   font-family: "RobotoCondensedBold";
   cursor: pointer;
 }
@@ -385,7 +380,7 @@
   border: none;
   background: transparent;
   color: #7a7a7a;
-  font-size: 3rem;
+  font-size: 1.5rem;
   font-family: "RobotoCondensed";
   cursor: pointer;
 }
