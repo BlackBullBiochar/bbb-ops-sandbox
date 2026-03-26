@@ -6,6 +6,7 @@ import styles from "./SessionLeave.module.css";
 const SessionLeave = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const [modal, setModal] = useState(null); // null | "end" | "pause"
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -25,28 +26,47 @@ const SessionLeave = () => {
   const { stocktake, site, name, progress } = state;
   const session_code = stocktake.session_code;
 
-  const isLast = stocktake.active_members?.length <= 1;
-
   const dateStr = new Date(stocktake.date).toLocaleDateString("en-GB", {
     day: "numeric", month: "long", year: "numeric",
   });
 
-  const handleLeaveOrEnd = async () => {
+  const handleEnd = async () => {
     setLoading(true);
     setError("");
     try {
       const res = await fetch(`${API}/stocktake/session/leave`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ session_code, name }),
+        body: JSON.stringify({ session_code, name, pause: false }),
       });
       const json = await res.json();
-      if (!res.ok) { setError(json.error || "Something went wrong"); return; }
-
+      if (!res.ok) { setError(json.error || "Something went wrong"); setModal(null); return; }
       localStorage.removeItem("stocktake_session");
       navigate("/stocktake/session/done", { state: { ended: json.ended } });
     } catch {
       setError("Network error, please try again");
+      setModal(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePause = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(`${API}/stocktake/session/leave`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_code, name, pause: true }),
+      });
+      const json = await res.json();
+      if (!res.ok) { setError(json.error || "Something went wrong"); setModal(null); return; }
+      localStorage.removeItem("stocktake_session");
+      navigate("/stocktake/session/done", { state: { ended: false, paused: true } });
+    } catch {
+      setError("Network error, please try again");
+      setModal(null);
     } finally {
       setLoading(false);
     }
@@ -74,26 +94,72 @@ const SessionLeave = () => {
 
         {error && <div className={styles.error}>{error}</div>}
 
-        <button
-          className={isLast ? styles.btnEnd : styles.btnLeave}
-          onClick={handleLeaveOrEnd}
-          disabled={loading}
-        >
-          {loading
-            ? "Please wait…"
-            : isLast
-            ? "End Stocktake Session"
-            : "Leave Stocktake Session"}
+        <button className={styles.btnEnd} onClick={() => setModal("end")}>
+          End Stocktake Session
         </button>
 
-        <button
-          className={styles.btnGhost}
-          onClick={() => navigate(-1)}
-          disabled={loading}
-        >
+        <button className={styles.btnPause} onClick={() => setModal("pause")}>
+          Pause Stocktake Session
+        </button>
+
+        <button className={styles.btnGhost} onClick={() => navigate(-1)}>
           Go back to scanning
         </button>
       </div>
+
+      {/* End confirmation popup */}
+      {modal === "end" && (
+        <div className={styles.overlayBg}>
+          <div className={styles.overlayCard}>
+            <div className={styles.overlayTitle}>End Session?</div>
+            <div className={styles.overlayMsg}>
+              By ending the session you will not be able to edit this stocktake.
+              If there are any more bags to scan, pause the session instead.
+            </div>
+            <button
+              className={styles.overlayBtnEnd}
+              onClick={handleEnd}
+              disabled={loading}
+            >
+              {loading ? "Please wait…" : "End Session"}
+            </button>
+            <button
+              className={styles.overlayBtnGhost}
+              onClick={() => setModal(null)}
+              disabled={loading}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Pause confirmation popup */}
+      {modal === "pause" && (
+        <div className={styles.overlayBg}>
+          <div className={styles.overlayCard}>
+            <div className={styles.overlayTitle}>Pause Session</div>
+            <div className={styles.overlayMsg}>
+              To rejoin the session, find the session code on the ops app.
+            </div>
+            <div className={styles.overlayCode}>{session_code}</div>
+            <button
+              className={styles.overlayBtnPause}
+              onClick={handlePause}
+              disabled={loading}
+            >
+              {loading ? "Please wait…" : "Pause Session"}
+            </button>
+            <button
+              className={styles.overlayBtnGhost}
+              onClick={() => setModal(null)}
+              disabled={loading}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
