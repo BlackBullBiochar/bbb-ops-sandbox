@@ -209,9 +209,11 @@ const SessionScanning = () => {
     return (
       <div className={styles.page}>
         <div className={styles.header}>
-          <button className={styles.backBtn} onClick={() => setView("scanning")}>← Back</button>
-          <span className={styles.headerTitle}>All Scanned Bags</span>
-          <span className={styles.headerCount}>{bags.length}</span>
+          <button className={styles.backBtn} onClick={() => setView("scanning")}>← Back to Scanner</button>
+        </div>
+        <div className={styles.allBagsTop}>
+          <span className={styles.headerTitle}>Scanned Bags</span>
+          <span className={styles.headerCount}>{bags.length}/{progress.total}</span>
         </div>
         <div className={styles.allBagsList}>
           {bags.length === 0 && (

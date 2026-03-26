@@ -173,36 +173,38 @@ const StocktakeScanner = ({ onScan, disabled = false }) => {
       </div>
 
       {/* Camera viewfinder */}
-      <div id="stocktake-reader" className={styles.reader} />
+      <div className={styles.readerWrap}>
+        <div id="stocktake-reader" className={styles.reader} />
 
-      {!scannerReady && (
-        <div className={styles.scannerMsg}>Starting camera…</div>
-      )}
+        {!scannerReady && (
+          <div className={styles.scannerMsg}>Starting camera…</div>
+        )}
 
-      {/* Camera switcher */}
-      {cameras.length > 1 && (
-        <div className={styles.cameraRow}>
-          <button
-            className={styles.switchBtn}
-            onClick={() => setShowCameraMenu((v) => !v)}
-          >
-            Switch camera
-          </button>
-          {showCameraMenu && (
-            <select
-              className={styles.cameraSelect}
-              value={cameraId}
-              onChange={(e) => switchCamera(e.target.value)}
+        {/* Camera switcher — overlaid bottom-right */}
+        {cameras.length > 1 && (
+          <div className={styles.cameraOverlay}>
+            <button
+              className={styles.switchBtn}
+              onClick={() => setShowCameraMenu((v) => !v)}
             >
-              {cameras.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.label}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
-      )}
+              Switch camera
+            </button>
+            {showCameraMenu && (
+              <select
+                className={styles.cameraSelect}
+                value={cameraId}
+                onChange={(e) => switchCamera(e.target.value)}
+              >
+                {cameras.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.label}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+        )}
+      </div>
 
       {feedback && <div className={styles.feedback}>{feedback}</div>}
     </div>

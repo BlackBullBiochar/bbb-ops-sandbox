@@ -88,7 +88,7 @@ const SessionLanding = () => {
       const json = await res.json();
 
       if (res.status === 409) {
-        setError(`A session is already active for this site — code: ${json.session_code}`);
+        setError(`A session is already active for this site code. Check ops app for active session`);
         return;
       }
       if (!res.ok) {

@@ -1,5 +1,6 @@
 .page {
   width: 100vw;
+  height: 100vh;
   height: 100dvh;
   overflow: hidden;
   background: #fff;
@@ -195,13 +196,13 @@
 
 .btnLeave {
   width: 100%;
-  padding: 10px;
+  padding: 14px;
   border-radius: 10px;
-  border: none;
-  background: #f7f7f7;
+  border: 1.5px solid #dedede;
+  background: #fff;
   color: #7a7a7a;
   font-size: 2.5rem;
-  font-family: "RobotoCondensed";
+  font-family: "RobotoCondensedBold";
   cursor: pointer;
 }
 
@@ -211,7 +212,19 @@
   align-items: center;
   gap: 12px;
   padding: 16px;
-  border-bottom: 1px solid #ececec;
+  border-bottom: 1px solid var(--coalVeryLight);
+  background: #fff;
+}
+
+.allBagsTop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding-left: 16px;
+  padding-top: 0px;
+  padding-right: 16px;
+  border-bottom: 1px solid var(--coalVeryLight);
   background: #fff;
 }
 
@@ -219,15 +232,14 @@
   background: transparent;
   border: none;
   color: #B0E000;
-  font-size: 3rem;
+  font-size: 2rem;
   font-family: "RobotoCondensedBold";
   cursor: pointer;
   padding: 0;
 }
 
 .headerTitle {
-  flex: 1;
-  font-size: 3.5rem;
+  font-size: 2rem;
   font-family: "TruenoBd";
   color: #323232;
 }
@@ -250,7 +262,7 @@
 .emptyMsg {
   text-align: center;
   font-family: "RobotoCondensed";
-  font-size: 3rem;
+  font-size: 1.5rem;
   color: #c1c1c1;
   margin-top: 40px;
 }

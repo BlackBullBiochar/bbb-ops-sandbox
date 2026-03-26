@@ -1,6 +1,7 @@
 .page {
   width: 100vw;
   min-height: 100vh;
+  min-height: 100dvh;
   background: #fff;
   display: flex;
   flex-direction: column;
@@ -16,8 +17,8 @@
 }
 
 .logo {
-  width: 500px;
-  height: 500px;
+  width: 70vw;
+  height: 70vw;
   object-fit: contain;
   margin: 28px auto 4px;
   display: block;
@@ -25,7 +26,7 @@
 
 .title {
   margin: 0;
-  font-size: 10rem;
+  font-size: 5rem;
   font-weight: 900;
   font-family: "TruenoBd";
   color: #323232;
@@ -35,14 +36,14 @@
 
 .subtitle {
   margin: 0 0 8px;
-  font-size: 5rem;
+  font-size: 3rem;
   font-family: "RobotoCondensed";
   color: #7a7a7a;
   text-align: center;
 }
 
 .label {
-  font-size: 3rem;
+  font-size: 1.5rem;
   font-weight: 700;
   font-family: "RobotoCondensedBold";
   color: #575757;
@@ -57,7 +58,7 @@
   border: 1.5px solid #dedede;
   background: #fff;
   color: #323232;
-  font-size: 3rem;
+  font-size: 2rem;
   font-family: "RobotoCondensed";
   width: 100%;
   box-sizing: border-box;
@@ -74,7 +75,7 @@
   border: 1.5px solid #dedede;
   background: #fff;
   color: #323232;
-  font-size: 3rem !important;
+  font-size: 1.5rem !important;
   font-family: "RobotoCondensed";
   width: 100%;
   box-sizing: border-box;
@@ -99,7 +100,7 @@
   border: none;
   background: #B0E000;
   color: #323232;
-  font-size: 5rem;
+  font-size: 2rem;
   font-family: "TruenoBd";
   cursor: pointer;
   transition: opacity 0.15s;
@@ -115,10 +116,10 @@
   width: 100%;
   padding: 15px;
   border-radius: 10px;
-  border: 1.5px solid #dedede;
+  border: 1.5px solid var(--coal);
   background: #fff;
   color: #323232;
-  font-size: 5rem;
+  font-size: 2rem;
   font-family: "RobotoCondensedBold";
   cursor: pointer;
 }
@@ -131,17 +132,17 @@
   width: 100%;
   padding: 12px;
   border-radius: 10px;
-  border: none;
+  border: 1.5px solid var(--coal);
   background: transparent;
   color: #7a7a7a;
-  font-size: 3rem;
+  font-size: 2rem;
   font-family: "RobotoCondensed";
   cursor: pointer;
 }
 
 .error {
   color: #F06F53;
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-family: "RobotoCondensedBold";
   text-align: center;
   padding: 6px 0;
@@ -158,7 +159,7 @@
 }
 
 .rejoinText {
-  font-size: 3rem;
+  font-size: 2rem;
   font-family: "RobotoCondensed";
   color: #575757;
   line-height: 1.5;

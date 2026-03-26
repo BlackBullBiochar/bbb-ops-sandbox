@@ -1,6 +1,7 @@
 .page {
   width: 100vw;
   min-height: 100vh;
+  min-height: 100dvh;
   background: #fff;
   display: flex;
   align-items: center;
@@ -10,7 +11,7 @@
 }
 
 .msg {
-  font-size: 3rem;
+  font-size: 1.5rem;
   font-family: "RobotoCondensed";
   color: #575757;
   text-align: center;
@@ -32,7 +33,7 @@
 }
 
 .siteName {
-  font-size: 5rem;
+  font-size: 3rem;
   font-family: "TruenoBd";
   color: #323232;
   letter-spacing: -0.3px;
@@ -46,7 +47,7 @@
 }
 
 .code {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-family: "RobotoCondensedBold";
   color: #B0E000;
   letter-spacing: 2px;
@@ -65,14 +66,14 @@
 }
 
 .countNum {
-  font-size: 6rem;
+  font-size: 5rem;
   font-family: "TruenoBd";
   color: #323232;
   line-height: 1;
 }
 
 .countSep {
-  font-size: 4rem;
+  font-size: 5rem;
   font-family: "RobotoCondensed";
   font-weight: 300;
   color: #c1c1c1;
@@ -86,7 +87,7 @@
 }
 
 .countLabel {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-family: "RobotoCondensed";
   color: #7a7a7a;
   margin-left: 4px;
@@ -105,7 +106,7 @@
   border: none;
   background: #B0E000;
   color: #323232;
-  font-size: 5rem;
+  font-size: 2rem;
   font-family: "TruenoBd";
   cursor: pointer;
   letter-spacing: 0.3px;
@@ -115,20 +116,16 @@
   opacity: 0.6;
 }
 
-.btnLeave {
+.btnPause {
   width: 100%;
   padding: 15px;
   border-radius: 10px;
   border: 1.5px solid #dedede;
   background: #fff;
   color: #323232;
-  font-size: 5rem;
+  font-size: 2rem;
   font-family: "RobotoCondensedBold";
   cursor: pointer;
-}
-
-.btnLeave:disabled {
-  opacity: 0.6;
 }
 
 .btnGhost {
@@ -138,7 +135,96 @@
   border: none;
   background: transparent;
   color: #7a7a7a;
-  font-size: 3rem;
+  font-size: 2rem;
+  font-family: "RobotoCondensed";
+  cursor: pointer;
+}
+
+/* Overlay popup */
+.overlayBg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+}
+
+.overlayCard {
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  padding: 28px 20px calc(28px + env(safe-area-inset-bottom, 0px));
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
+}
+
+.overlayTitle {
+  font-size: 4rem;
+  font-family: "TruenoBd";
+  color: #323232;
+}
+
+.overlayMsg {
+  font-size: 1.5rem;
+  font-family: "RobotoCondensed";
+  color: #575757;
+  line-height: 1.5;
+}
+
+.overlayCode {
+  font-size: 4rem;
+  font-family: "RobotoCondensedBold";
+  color: #B0E000;
+  letter-spacing: 4px;
+  text-align: center;
+  padding: 8px 0;
+}
+
+.overlayBtnEnd {
+  width: 100%;
+  padding: 16px;
+  border-radius: 10px;
+  border: none;
+  background: #F06F53;
+  color: #fff;
+  font-size: 2rem;
+  font-family: "TruenoBd";
+  cursor: pointer;
+}
+
+.overlayBtnEnd:disabled {
+  opacity: 0.6;
+}
+
+.overlayBtnPause {
+  width: 100%;
+  padding: 16px;
+  border-radius: 10px;
+  border: none;
+  background: #B0E000;
+  color: #323232;
+  font-size: 2rem;
+  font-family: "TruenoBd";
+  cursor: pointer;
+}
+
+.overlayBtnPause:disabled {
+  opacity: 0.6;
+}
+
+.overlayBtnGhost {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #7a7a7a;
+  font-size: 2rem;
   font-family: "RobotoCondensed";
   cursor: pointer;
 }
