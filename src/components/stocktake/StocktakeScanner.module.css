@@ -2,24 +2,27 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 14px 16px 0;
+  align-items: center;
+  gap: 8px;
+  /* 10vh breathing room above the camera */
+  padding: 10vh 0 0;
   box-sizing: border-box;
 }
 
 .manualRow {
   display: flex;
   gap: 8px;
+  width: 80vw;
 }
 
 .manualInput {
   flex: 1;
-  padding: 11px 12px;
+  padding: 10px 12px;
   border-radius: 8px;
   border: 1.5px solid #dedede;
   background: #fff;
   color: #323232;
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-family: "RobotoCondensedBold";
   letter-spacing: -0.3px;
 }
@@ -30,13 +33,13 @@
 }
 
 .manualBtn {
-  padding: 11px 18px;
+  padding: 10px 16px;
   border-radius: 8px;
   border: none;
   background: #B0E000;
   color: #323232;
   font-family: "TruenoBd";
-  font-size: 3rem;
+  font-size: 2.5rem;
   cursor: pointer;
   letter-spacing: 0.3px;
 }
@@ -45,10 +48,10 @@
   opacity: 0.8;
 }
 
-/* Camera viewfinder — dark for contrast */
+/* Camera viewfinder — 80vw square, centered */
 .reader {
-  width: 100%;
-  aspect-ratio: 1 / 1;
+  width: 80vw;
+  height: 80vw;
   border-radius: 12px;
   overflow: hidden;
   background: #111;
@@ -59,44 +62,45 @@
   text-align: center;
   font-family: "RobotoCondensed";
   color: #7a7a7a;
-  font-size: 2.5rem;
-  padding: 8px 0;
+  font-size: 2rem;
+  padding: 4px 0;
 }
 
 .cameraRow {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   align-items: flex-start;
+  width: 80vw;
 }
 
 .switchBtn {
   background: #fff;
   border: 1.5px solid #dedede;
   color: #575757;
-  padding: 6px 14px;
+  padding: 4px 12px;
   border-radius: 8px;
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-family: "RobotoCondensedBold";
   cursor: pointer;
 }
 
 .cameraSelect {
-  width: 80%;
-  padding: 8px;
+  width: 100%;
+  padding: 6px 8px;
   border-radius: 8px;
   border: 1.5px solid #dedede;
   background: #fff;
   color: #323232;
   font-family: "RobotoCondensed";
-  font-size: 2rem;
+  font-size: 1.8rem;
 }
 
 .feedback {
   text-align: center;
   font-family: "RobotoCondensedBold";
   color: #B0E000;
-  font-size: 2.5rem;
-  padding: 6px 0;
-  min-height: 24px;
+  font-size: 2rem;
+  padding: 4px 0;
+  min-height: 20px;
 }

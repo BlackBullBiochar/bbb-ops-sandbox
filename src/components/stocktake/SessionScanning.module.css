@@ -1,6 +1,7 @@
 .page {
   width: 100vw;
-  min-height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   background: #fff;
   display: flex;
   flex-direction: column;
@@ -23,15 +24,16 @@
   text-decoration: underline;
 }
 
-/* Dark top strip */
+/* Dark top strip — compact for scanning screen */
 .siteHeader {
   background: #323232;
-  padding: 16px 16px 14px;
+  padding: 10px 16px 8px;
   border-bottom: 3px solid #B0E000;
+  flex-shrink: 0;
 }
 
 .siteName {
-  font-size: 5rem;
+  font-size: 2.5rem;
   font-family: "TruenoBd";
   color: #fff;
   line-height: 1.2;
@@ -42,32 +44,33 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 .metaItem {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-family: "RobotoCondensed";
   color: #7a7a7a;
 }
 
 .sessionCode {
-  font-size: 2.5rem;
+  font-size: 1.8rem;
   font-family: "RobotoCondensedBold";
   color: #B0E000;
   letter-spacing: 2px;
 }
 
-/* Progress */
+/* Progress — compact */
 .progressSection {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 14px 16px 0;
+  gap: 4px;
+  padding: 6px 16px;
+  flex-shrink: 0;
 }
 
 .progressLabel {
-  font-size: 3rem;
+  font-size: 2rem;
   font-family: "RobotoCondensedBold";
   color: #575757;
 }
@@ -78,7 +81,7 @@
 
 .progressTrack {
   width: 100%;
-  height: 14px;
+  height: 10px;
   background: #ececec;
   border-radius: 6px;
   overflow: hidden;
@@ -108,83 +111,96 @@
   box-shadow: 0 4px 16px rgba(0,0,0,0.25);
 }
 
-/* Recent bags */
+/* Recent bags — fixed height so adding bags never shifts the layout */
 .recentSection {
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 14px 16px 0;
+  gap: 4px;
+  padding: 6px 16px 4px;
+  /* height is fixed: label + up to 3 compact rows */
+  height: 22vh;
+  overflow: hidden;
 }
 
 .recentLabel {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-family: "RobotoCondensedBold";
   color: #7a7a7a;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  flex-shrink: 0;
 }
 
 .recentBag {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
+  padding: 8px 12px;
   background: #fff;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
   border: 1.5px solid #dedede;
   transition: border-color 0.15s;
+  flex-shrink: 0;
 }
 
 .recentBag:active {
   border-color: #B0E000;
 }
 
+/* Smaller charcode font to fit in compact space */
 .recentCode {
-  font-size: 3rem;
+  font-size: 2rem;
   font-family: "RobotoCondensedBold";
   color: #323232;
   letter-spacing: -0.3px;
 }
 
 .bagNote {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-family: "RobotoCondensedBold";
   color: #F06F53;
-  padding: 2px 8px;
+  padding: 2px 6px;
   background: rgba(240, 111, 83, 0.1);
   border-radius: 4px;
 }
 
-/* Action buttons */
+/* Action buttons — fixed at bottom so they never move */
 .actionBtns {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 14px 16px 32px;
-  margin-top: auto;
+  gap: 6px;
+  padding: 8px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  background: #fff;
+  box-shadow: 0 -1px 8px rgba(0,0,0,0.08);
+  z-index: 10;
 }
 
 .btnSecondary {
   width: 100%;
-  padding: 18px;
+  padding: 14px;
   border-radius: 10px;
   border: 1.5px solid #dedede;
   background: #fff;
   color: #323232;
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-family: "RobotoCondensedBold";
   cursor: pointer;
 }
 
 .btnLeave {
   width: 100%;
-  padding: 14px;
+  padding: 10px;
   border-radius: 10px;
   border: none;
   background: #f7f7f7;
   color: #7a7a7a;
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-family: "RobotoCondensed";
   cursor: pointer;
 }

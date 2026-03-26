@@ -288,22 +288,22 @@ const SessionScanning = () => {
       {/* Toast */}
       {toast && <div className={styles.toast}>{toast}</div>}
 
-      {/* Last 3 scanned */}
-      {lastThree.length > 0 && (
-        <div className={styles.recentSection}>
+      {/* Last 3 scanned — always rendered so layout never shifts */}
+      <div className={styles.recentSection}>
+        {lastThree.length > 0 && (
           <div className={styles.recentLabel}>Recently scanned</div>
-          {lastThree.map((bag) => (
-            <div
-              key={bag.charcode}
-              className={styles.recentBag}
-              onClick={() => openEditOverlay(bag)}
-            >
-              <span className={styles.recentCode}>{bag.charcode}</span>
-              {bag.note && <span className={styles.bagNote}>{bag.note.replace("_", " ")}</span>}
-            </div>
-          ))}
-        </div>
-      )}
+        )}
+        {lastThree.map((bag) => (
+          <div
+            key={bag.charcode}
+            className={styles.recentBag}
+            onClick={() => openEditOverlay(bag)}
+          >
+            <span className={styles.recentCode}>{bag.charcode}</span>
+            {bag.note && <span className={styles.bagNote}>{bag.note.replace("_", " ")}</span>}
+          </div>
+        ))}
+      </div>
 
       {/* Action buttons */}
       <div className={styles.actionBtns}>
