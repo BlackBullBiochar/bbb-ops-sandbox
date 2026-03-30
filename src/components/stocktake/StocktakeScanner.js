@@ -22,7 +22,7 @@ const StocktakeScanner = ({ onScan, disabled = false }) => {
   const [cameraId, setCameraId] = useState("");
   const [scannerReady, setScannerReady] = useState(false);
   const [showCameraMenu, setShowCameraMenu] = useState(false);
-  const [manualValue, setManualValue] = useState("CHA-00");
+  const [manualValue, setManualValue] = useState("");
   const [showUnlabelledConfirm, setShowUnlabelledConfirm] = useState(false);
   const [feedback, setFeedback] = useState("");
 
@@ -153,12 +153,11 @@ const StocktakeScanner = ({ onScan, disabled = false }) => {
   };
 
   const submitManual = () => {
-    const isEmpty = !manualValue.trim() || manualValue.trim() === "CHA-00";
-    if (isEmpty) {
+    if (!manualValue.trim()) {
       setShowUnlabelledConfirm(true);
     } else {
-      handleScan(manualValue);
-      setManualValue("CHA-00");
+      handleScan(`CHA-${manualValue}`);
+      setManualValue("");
     }
   };
 
@@ -179,12 +178,14 @@ const StocktakeScanner = ({ onScan, disabled = false }) => {
 
         {/* Manual input — overlaid at bottom of camera */}
         <div className={styles.manualRow}>
+          <span className={styles.manualPrefix}>CHA-</span>
           <input
             className={styles.manualInput}
             value={manualValue}
-            onChange={(e) => setManualValue(e.target.value)}
+            onChange={(e) => setManualValue(e.target.value.replace(/\D/g, "").slice(0, 6))}
             onKeyDown={(e) => e.key === "Enter" && submitManual()}
-            placeholder="CHA-000000"
+            placeholder="000000"
+            inputMode="numeric"
           />
           <button className={styles.manualBtn} onClick={submitManual}>
             &gt;

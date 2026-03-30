@@ -1,14 +1,13 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../../config/api";
-import { UserContext } from "../../UserContext";
 import { useStocktakeSocket } from "../../hooks/useStocktakeSocket";
 import styles from "./SessionLeave.module.css";
 
 const SessionLeave = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const { user } = useContext(UserContext);
+
   const [modal, setModal] = useState(null); // null | "end" | "pause" | "cancelled"
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -62,10 +61,7 @@ const SessionLeave = () => {
     try {
       const res = await fetch(`${API}/stocktake/session/end`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ session_code }),
       });
       const json = await res.json();
