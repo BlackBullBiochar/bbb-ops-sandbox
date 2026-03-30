@@ -166,9 +166,10 @@ const SessionScanning = () => {
     );
   }
 
+  const matchedCount = bags.filter((b) => !b.note).length;
   const progressPct =
     progress.total > 0
-      ? Math.min(100, Math.round((progress.scanned / progress.total) * 100))
+      ? Math.min(100, Math.round((matchedCount / progress.total) * 100))
       : 0;
 
   const handleScan = useCallback(
@@ -360,9 +361,14 @@ const SessionScanning = () => {
       </div>
 
       <div className={styles.progressSection}>
-        <div className={styles.progressLabel}>
-          {progress.scanned} / {progress.total} bags
-          <span className={styles.progressPct}> {progressPct}%</span>
+        <div className={styles.progressLabelRow}>
+          <div className={styles.progressLabel}>
+            {matchedCount} / {progress.total} bags
+            <span className={styles.progressPct}> {progressPct}%</span>
+          </div>
+          <div className={styles.totalScanned}>
+            Total scanned: <span className={styles.totalScannedNum}>{bags.length}</span>
+          </div>
         </div>
         <div className={styles.progressTrack}>
           <div

@@ -69,8 +69,25 @@
   flex-shrink: 0;
 }
 
+.progressLabelRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
 .progressLabel {
   font-size: 2rem;
+  font-family: "RobotoCondensedBold";
+  color: #575757;
+}
+
+.totalScanned {
+  font-size: 1.3rem;
+  font-family: "RobotoCondensed";
+  color: #7a7a7a;
+}
+
+.totalScannedNum {
   font-family: "RobotoCondensedBold";
   color: #575757;
 }
