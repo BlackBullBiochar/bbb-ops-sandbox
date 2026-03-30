@@ -23,7 +23,6 @@ const SessionScanning = () => {
     }
   });
 
-  const [view, setView] = useState("scanning");
   const [bags, setBags] = useState(sessionData?.stocktake?.bags || []);
   const [progress, setProgress] = useState({
     scanned: sessionData?.stocktake?.bags?.length || 0,
@@ -38,6 +37,9 @@ const SessionScanning = () => {
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState("");
   const [toast, setToast] = useState("");
+  const [view, setView] = useState("scanning");
+  const [scannedOpen, setScannedOpen] = useState(true);
+  const [missingOpen, setMissingOpen] = useState(false);
 
   const session_code = sessionData?.stocktake?.session_code;
   const name = sessionData?.name;
@@ -263,6 +265,9 @@ const SessionScanning = () => {
     day: "numeric", month: "long", year: "numeric",
   });
 
+  const scannedCodes = new Set(bags.map((b) => b.charcode));
+  const missingBags = (sessionData.stocktake.dbbags || []).filter((code) => !scannedCodes.has(code));
+
   if (view === "allBags") {
     return (
       <div className={styles.page}>
@@ -270,26 +275,44 @@ const SessionScanning = () => {
           <button className={styles.backBtn} onClick={() => setView("scanning")}>← Back to Scanner</button>
         </div>
 
-        <div className={styles.allBagsTop}>
-          <span className={styles.headerTitle}>Scanned Bags</span>
-          <span className={styles.headerCount}>{bags.length}/{progress.total}</span>
-        </div>
-
         <div className={styles.allBagsList}>
-          {bags.length === 0 && (
-            <div className={styles.emptyMsg}>No bags scanned yet</div>
-          )}
-          {[...bags].reverse().map((bag) => (
-            <div
-              key={bag.charcode}
-              className={styles.bagRow}
-              onClick={() => openEditOverlay(bag)}
-            >
-              <span className={styles.bagCode}>{bag.charcode}</span>
-              {bag.note && <span className={styles.bagNote}>{bag.note.replace("_", " ")}</span>}
-              <span className={styles.bagBy}>{bag.scanned_by}</span>
-            </div>
-          ))}
+          <div className={styles.accordion}>
+            <button className={styles.accordionBtn} onClick={() => setScannedOpen((v) => !v)}>
+              <span className={styles.accordionLabel}>Scanned Bags</span>
+              <span className={styles.accordionCount}>{bags.length}</span>
+              <span className={styles.accordionArrow}>{scannedOpen ? "▲" : "▼"}</span>
+            </button>
+            {scannedOpen && (
+              <div className={styles.accordionList}>
+                {bags.length === 0 && <div className={styles.emptyMsg}>No bags scanned yet</div>}
+                {[...bags].reverse().map((bag) => (
+                  <div key={bag.charcode} className={styles.bagRow} onClick={() => openEditOverlay(bag)}>
+                    <span className={styles.bagCode}>{bag.charcode}</span>
+                    {bag.note && <span className={styles.bagNote}>{bag.note.replace("_", " ")}</span>}
+                    <span className={styles.bagBy}>{bag.scanned_by}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className={styles.accordion}>
+            <button className={styles.accordionBtn} onClick={() => setMissingOpen((v) => !v)}>
+              <span className={styles.accordionLabel}>Missing Bags</span>
+              <span className={styles.accordionCount}>{missingBags.length}</span>
+              <span className={styles.accordionArrow}>{missingOpen ? "▲" : "▼"}</span>
+            </button>
+            {missingOpen && (
+              <div className={styles.accordionList}>
+                {missingBags.length === 0 && <div className={styles.emptyMsg}>All bags scanned!</div>}
+                {missingBags.map((code) => (
+                  <div key={code} className={styles.bagRow}>
+                    <span className={styles.bagCode}>{code}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {editOverlay && (

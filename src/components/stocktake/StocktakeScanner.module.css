@@ -22,10 +22,20 @@
   z-index: 10;
 }
 
+.manualPrefix {
+  padding: 3px 0 3px 18px;
+  color: #888;
+  font-size: 1.5rem;
+  font-family: "RobotoCondensedBold";
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .manualInput {
   flex: 1;
   min-width: 0;
-  padding: 3px 18px;
+  padding: 3px 4px;
   border: none;
   background: transparent;
   color: #888;
@@ -59,12 +69,12 @@
 /* Camera viewfinder — 80vw square, centered */
 .readerWrap {
   position: relative;
-  width: 90vw;
+  width: 80vw;
 }
 
 .reader {
-  width: 90vw;
-  height: 90vw;
+  width: 80vw;
+  height: 80vw;
   border-radius: 12px;
   overflow: hidden;
   background: #111;
