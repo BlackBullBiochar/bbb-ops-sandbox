@@ -510,12 +510,13 @@
   border-radius: 16px;
   padding: 0;
   width: 100%;
-  max-width: 40vw;
+  max-width: 80vw;
   max-height: 80vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+  position: relative;
 }
 
 .popupHeader {
@@ -553,7 +554,7 @@
 
 .compCols {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   padding: 10px 24px;
   background: #f7f7f7;
   border-bottom: 1px solid #e0e0e0;
@@ -576,14 +577,14 @@
 
 .compRowGreen {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   padding: 5px 24px;
   background: rgba(52, 182, 31, 0.06);
 }
 
 .compRowRed {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   padding: 5px 24px;
   background: rgba(240, 111, 83, 0.06);
 }
@@ -593,6 +594,11 @@
   font-family: "Roboto Mono", monospace;
   color: #323232;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
 .noteWrongSite, .noteUnlabelled, .noteNotInDb {
@@ -760,4 +766,422 @@
   padding: 12px 14px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.35);
   max-width: 360px;
+}
+
+/* ── Issues section ── */
+.issuesSiteList {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.issuesSiteRow {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.issuesSiteRow:last-child {
+  border-bottom: none;
+}
+
+.issuesSiteBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: "Roboto", sans-serif;
+  transition: background 0.1s;
+}
+
+.issuesSiteBtn:hover {
+  background: #fafff0 !important;
+}
+
+.issuesSiteName {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #323232;
+}
+
+.issuesBadge {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #c0442a;
+  background: rgba(240, 111, 83, 0.12);
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+
+.issuesBadgeNone {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #7a7a7a;
+  background: #f0f0f0;
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+
+.issuesTableWrap {
+  border-top: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.issuesEmpty {
+  padding: 14px 16px;
+  font-size: 1rem;
+  color: #7a7a7a;
+  margin: 0;
+}
+
+.issuesTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.1rem;
+}
+
+.issueTr + .issueTr {
+  border-top: 1px solid #f0f0f0;
+}
+
+/* ── Log issue button (in comparison popup) ── */
+.logIssueBtn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #dedede;
+  background: #fff;
+  color: #323232;
+  font-size: 1rem;
+  font-family: "Roboto", sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s;
+}
+
+.logIssueBtn:hover {
+  border-color: #B0E000 !important;
+  background: #fafff0 !important;
+}
+
+/* ── Log issue overlay (sits on top of comparison popup) ── */
+.issueOverlayBg {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  z-index: 10;
+}
+
+.issueOverlayCard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  width: 90%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+.issueOverlayTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #323232;
+  margin-bottom: 2px;
+}
+
+.issueOverlayCharcode {
+  font-size: 1.1rem;
+  font-family: "Roboto Mono", monospace;
+  color: #575757;
+  margin-bottom: 4px;
+}
+
+.issueLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #575757;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-top: 4px;
+}
+
+.issueSelect {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #dedede;
+  font-size: 1rem;
+  background: #fff;
+  color: #323232;
+  font-family: "Roboto", sans-serif;
+}
+
+.issueSelect:focus {
+  outline: none;
+  border-color: #B0E000;
+}
+
+.issueTextarea {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #dedede;
+  font-size: 1rem;
+  font-family: "Roboto", sans-serif;
+  color: #323232;
+  resize: vertical;
+}
+
+.issueTextarea:focus {
+  outline: none;
+  border-color: #B0E000;
+}
+
+.issueError {
+  color: #c0442a;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.issueActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.issuePostBtn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background: #B0E000;
+  color: #323232;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: "Roboto", sans-serif;
+}
+
+.issuePostBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.issueCancelBtn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid #dedede;
+  background: #fff;
+  color: #7a7a7a;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: "Roboto", sans-serif;
+}
+
+.issueLoggedText {
+  font-size: 1rem;
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+  color: #278817;
+}
+
+.issueResolvedText {
+  font-size: 1rem;
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+  color: #278817;
+}
+
+.resolutionsSection {
+  border-top: 2px solid #B0E000;
+  padding: 12px 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.resolutionsSectionTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #575757;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.resolutionRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+.resolutionUnlabelled {
+  font-size: 1.1rem;
+  font-family: "Roboto Mono", monospace;
+  color: #7a7a7a;
+  min-width: 120px;
+}
+
+.resolutionArrow {
+  color: #B0E000;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.resolutionCharcode {
+  font-size: 1.1rem;
+  font-family: "Roboto Mono", monospace;
+  color: #323232;
+  font-weight: 600;
+  flex: 1;
+}
+
+.resolutionMessage {
+  font-size: 0.95rem;
+  color: #575757;
+  flex: 2;
+}
+
+.issueRowActions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.issueEditBtn {
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid #dedede;
+  background: #fff;
+  color: #575757;
+  font-size: 0.9rem;
+  font-family: "Roboto", sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.issueEditBtn:hover {
+  border-color: #B0E000 !important;
+  background: #fafff0 !important;
+}
+
+.issueResolveBtn {
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid #B0E000;
+  background: #fff;
+  color: #278817;
+  font-size: 0.9rem;
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.issueResolveBtn:hover {
+  background: #f5ffe0 !important;
+}
+
+.issueResolveConfirmBtn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background: #278817;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: "Roboto", sans-serif;
+}
+
+.issueResolveConfirmBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.resolveIssueProblem {
+  font-size: 1rem;
+  color: #7a7a7a;
+  margin-bottom: 4px;
+}
+
+.assignedTag {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #278817;
+  margin-left: 4px;
+}
+
+.assignedNote {
+  font-size: 0.9rem;
+  color: #575757;
+  padding: 6px 0;
+}
+
+.issueResolvedToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-family: "Roboto", sans-serif;
+  color: #323232;
+  cursor: pointer;
+  margin-top: 2px;
+}
+
+.issueEditModal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+}
+
+/* ── Resolved issues section ── */
+.resolvedIssuesSection {
+  margin-top: 20px;
+  border-top: 2px solid #e0e0e0;
+  padding-top: 14px;
+}
+
+.resolvedIssuesSectionTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #278817;
+  margin-bottom: 12px;
+}
+
+.resolvedStocktakeGroup {
+  margin-bottom: 16px;
+}
+
+.resolvedStocktakeDate {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #7a7a7a;
+  margin-bottom: 6px;
+  padding: 4px 8px;
+  background: #f3f3f3;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.issueTrResolved {
+  opacity: 0.7;
+  background: #f9fff4 !important;
 }
