@@ -271,6 +271,7 @@ const DbSearch = () => {
   const allBatchIds = useBatchIds();
   const batchOptions = useMemo(() => {
     const opts = allBatchIds.map((id) => ({ name: id, value: id.toLowerCase() }));
+    opts.unshift({ name: "Unassigned", value: "__unassigned__" });
     opts.unshift({ name: "Batchless", value: "__batchless__" });
     return opts;
   }, [allBatchIds]);
@@ -310,7 +311,8 @@ const DbSearch = () => {
     if (batchFilters.length) {
       result = result.filter((item) => {
         const raw = (item.batch_id ?? "").toString().trim();
-        if (!raw) return batchFilters.includes("__batchless__");
+        if (!raw) return batchFilters.includes("__unassigned__");
+        if (raw.toLowerCase() === "batchless") return batchFilters.includes("__batchless__");
         return batchFilters.includes(raw.toLowerCase());
       });
     }
@@ -771,7 +773,7 @@ const DbSearch = () => {
                     if (f === "dry_weight") {
                       const w = parseFloat(row.weight);
                       const m = parseFloat(row.moisture_content);
-                      obj[f] = (!isNaN(w) && !isNaN(m)) ? (w * (1 - m / 100)).toFixed(2) : "";
+                      obj[f] = (!isNaN(w) && !isNaN(m)) ? String(Math.round(w * (1 - m / 100))) : "";
                     } else if (isDateField) {
                       // Extract date part and format it
                       const rawDate = row[f]?.split?.("T")[0] || "";
@@ -1124,7 +1126,7 @@ const DbSearch = () => {
                                   const w = parseFloat(item.weight);
                                   const m = parseFloat(item.moisture_content);
                                   raw = (!isNaN(w) && !isNaN(m))
-                                    ? (w * (1 - m / 100)).toFixed(2)
+                                    ? String(Math.round(w * (1 - m / 100)))
                                     : "";
                                 }
                                 // Handle other fields
