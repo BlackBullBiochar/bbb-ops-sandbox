@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { CSVLink } from "react-csv";
 import { useInventorySearch } from "../../hooks/useInventorySearch";
 import { useStocktakes } from "../../hooks/useStocktakes";
+import { useBatchIds } from "../../hooks/useBatchIds";
 import styles from "./DbSearch.module.css";
 import ScreenHeader from "../ScreenHeader";
 import ModuleMain from "../ModuleMain";
@@ -43,6 +44,7 @@ const FIELD_LABELS = {
   bagging_date: "Bagging date",
   weight: "Weight (kg)",
   moisture_content: "Moisture (%)",
+  dry_weight: "Dry Weight (kg)",
   status: "Bag Status",
   site: "Site",
   batch_id: "Batch ID",
@@ -68,10 +70,11 @@ const ALL_FIELDS = [
   "bagging_date",
   "ebc_status",
   "weight",
+  "moisture_content",
+  "dry_weight",
   "status",
   "site",
   "batch_id",
-  "moisture_content",
   "order_id",
   "delivery_id",
   "pickup_date",
@@ -243,6 +246,7 @@ const DbSearch = () => {
   const [ebcStatusFilters, setEbcStatusFilters] = useState([]);
   const [siteFilters, setSiteFilters] = useState([]);
   const [locationFilters, setLocationFilters] = useState([]);
+  const [batchFilters, setBatchFilters] = useState([]);
 
   // sort
   const [sortField, setSortField] = useState("bagging_date");
@@ -262,6 +266,14 @@ const DbSearch = () => {
 
   // inventory
   const { fetchInventory, loading, error, rows = [] } = useInventorySearch();
+
+  // batch IDs for filter dropdown
+  const allBatchIds = useBatchIds();
+  const batchOptions = useMemo(() => {
+    const opts = allBatchIds.map((id) => ({ name: id, value: id.toLowerCase() }));
+    opts.unshift({ name: "Batchless", value: "__batchless__" });
+    return opts;
+  }, [allBatchIds]);
 
   // stocktakes + sites (for location filter)
   const { stocktakes, sites } = useStocktakes();
@@ -293,8 +305,18 @@ const DbSearch = () => {
 
   // apply location filter client-side
   const filteredRows = useMemo(() => {
-    if (!locationFilters.length) return rows;
-    return rows.filter((item) => {
+    let result = rows;
+
+    if (batchFilters.length) {
+      result = result.filter((item) => {
+        const raw = (item.batch_id ?? "").toString().trim();
+        if (!raw) return batchFilters.includes("__batchless__");
+        return batchFilters.includes(raw.toLowerCase());
+      });
+    }
+
+    if (!locationFilters.length) return result;
+    return result.filter((item) => {
       const charcode = item.charcode ?? item.code ?? "";
       for (const filter of locationFilters) {
         if (filter === "__delivered__") {
@@ -310,7 +332,7 @@ const DbSearch = () => {
       }
       return false;
     });
-  }, [rows, locationFilters, locationBagMap]);
+  }, [rows, locationFilters, locationBagMap, batchFilters]);
 
   // apply sort client-side
   const sortedRows = useMemo(() => {
@@ -472,7 +494,10 @@ const DbSearch = () => {
       "delivery_id",
     ];
 
-    const fieldsForFetch = Array.from(new Set([...selectedFields, ...requiredForOverlay]));
+    const extraForDryWeight = selectedFields.includes("dry_weight")
+      ? ["weight", "moisture_content"]
+      : [];
+    const fieldsForFetch = Array.from(new Set([...selectedFields, ...requiredForOverlay, ...extraForDryWeight]));
 
     // top-level in DbSearch.jsx
     const TABLE_LIMIT = 5000; // or 20000 if you need; keep sensible
@@ -509,6 +534,7 @@ const DbSearch = () => {
     setEbcStatusFilters([]);
     setSiteFilters([]);
     setLocationFilters([]);
+    setBatchFilters([]);
     setSortField("bagging_date");
     setSortDir("desc");
     setSelectedFields(DEFAULT_FIELDS_BY_INDEX[selectedIndex] || []);
@@ -656,6 +682,24 @@ const DbSearch = () => {
         break;
       }
 
+      case "dry_weight": {
+        const vals = filteredRows
+          .map((r) => {
+            const w = parseFloat(r.weight);
+            const m = parseFloat(r.moisture_content);
+            if (isNaN(w) || isNaN(m)) return NaN;
+            return w * (1 - m / 100);
+          })
+          .filter((n) => !isNaN(n));
+        if (vals.length === 0) break;
+        const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+        const total = vals.reduce((a, b) => a + b, 0);
+        lines.push(`Average — ${avg.toFixed(2)} kg`);
+        lines.push(`Total — ${total.toFixed(2)} kg`);
+        lines.push(`From ${vals.length} bag${vals.length !== 1 ? "s" : ""} with weight & moisture recorded`);
+        break;
+      }
+
       // explicitly no totals
       case "bagging_date":
       default:
@@ -663,7 +707,7 @@ const DbSearch = () => {
         break;
     }
 
-    const isAvgField = field === "weight" || field === "internal_temperature" || field === "moisture_content";
+    const isAvgField = field === "weight" || field === "internal_temperature" || field === "moisture_content" || field === "dry_weight";
     setHeaderOverlayTitle(`${readable} — ${isAvgField ? "average" : "totals"}`);
     setHeaderOverlayLines(lines);
     setHeaderOverlayOpen(true);
@@ -682,7 +726,8 @@ const DbSearch = () => {
       field === "processing_order_id" ||
       field === "weight" ||
       field === "internal_temperature" ||
-      field === "moisture_content";
+      field === "moisture_content" ||
+      field === "dry_weight";
 
     return (
       <th key={field} style={{ whiteSpace: "nowrap" }}>
@@ -722,8 +767,12 @@ const DbSearch = () => {
                                       f === "storage_delivery_date" ||
                                       f === "processing_pickup_date" ||
                                       f === "processing_delivery_date";
-                    
-                    if (isDateField) {
+
+                    if (f === "dry_weight") {
+                      const w = parseFloat(row.weight);
+                      const m = parseFloat(row.moisture_content);
+                      obj[f] = (!isNaN(w) && !isNaN(m)) ? (w * (1 - m / 100)).toFixed(2) : "";
+                    } else if (isDateField) {
                       // Extract date part and format it
                       const rawDate = row[f]?.split?.("T")[0] || "";
                       obj[f] = formatDate(rawDate);
@@ -904,6 +953,17 @@ const DbSearch = () => {
                   onChange={(v) => setLocationFilters(v)}
                 />
               </div>
+
+              <div className={styles.multiSelectorWrapper}>
+                <MultiSelector
+                  name="Batch"
+                  placeholder="All"
+                  labelStyle="top"
+                  data={batchOptions}
+                  values={batchFilters}
+                  onChange={(v) => setBatchFilters(v)}
+                />
+              </div>
             </div>
 
             {/* Field selector */}
@@ -1058,6 +1118,14 @@ const DbSearch = () => {
                                 }
                                 else if (field === "processing_delivery_date") {
                                   raw = item[field]?.split?.("T")[0] || item?.locations?.processing_delivery?.time?.split?.("T")[0] || "";
+                                }
+                                // Computed dry weight
+                                else if (field === "dry_weight") {
+                                  const w = parseFloat(item.weight);
+                                  const m = parseFloat(item.moisture_content);
+                                  raw = (!isNaN(w) && !isNaN(m))
+                                    ? (w * (1 - m / 100)).toFixed(2)
+                                    : "";
                                 }
                                 // Handle other fields
                                 else {
