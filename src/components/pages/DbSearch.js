@@ -33,8 +33,8 @@ const INDEX_OPTIONS = [
 
 const DEFAULT_FIELDS_BY_INDEX = {
   bags: ["charcode", "bagging_date", "status", "site", "weight", "ebc_status", "batch_id", "moisture_content"],
-  orders: ["charcode", "bagging_date", "status", "order_id", "delivery_date"],
-  deliveries: ["charcode", "bagging_date", "status", "delivery_id", "delivery_date"],
+  orders: ["charcode", "bagging_date", "status", "order_id", "delivery_date", "postcode"],
+  deliveries: ["charcode", "bagging_date", "status", "delivery_id", "delivery_date", "postcode"],
   batches: ["batch_id","charcode", "bagging_date", "status", "site", "weight", "ebc_status"],
   users: ["user", "charcode", "bagging_date", "status", "site", "weight", "ebc_status"],
 };
@@ -63,6 +63,7 @@ const FIELD_LABELS = {
   processing_order_id: "Processing Order ID",
   processing_pickup_date: "Processing Pickup Date",
   processing_delivery_date: "Processing Delivery Date",
+  postcode: "Postcode",
 };
 
 const ALL_FIELDS = [
@@ -89,6 +90,7 @@ const ALL_FIELDS = [
   "processing_order_id",
   "processing_pickup_date",
   "processing_delivery_date",
+  "postcode",
 ];
 
 const labelize = (key) =>
