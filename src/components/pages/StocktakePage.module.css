@@ -1001,11 +1001,47 @@
 
 .resolutionsSection {
   border-top: 2px solid #B0E000;
-  padding: 12px 24px 16px;
+  padding: 0 24px 0;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.resolutionsToggleBtn {
+  align-self: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: #7a7a7a;
+  padding: 6px 16px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.resolutionsToggleBtn:hover {
+  color: #B0E000 !important;
+}
+
+.resolutionsContent {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  flex-shrink: 0;
+  overflow: hidden;
+  max-height: 600px;
+  padding-bottom: 16px;
+  transition: max-height 0.3s ease;
+}
+
+.resolutionsContentHidden {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: hidden;
+  max-height: 0;
+  padding-bottom: 0;
+  transition: max-height 0.3s ease;
 }
 
 .resolutionsSectionTitle {

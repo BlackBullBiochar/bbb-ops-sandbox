@@ -792,6 +792,7 @@ const MapSiteOverlay = ({ site, stocktakes, onSelectStocktake, onClose }) => {
 const BagComparisonPopup = ({ stocktake, onClose, onIssueLogged, stocktakeIssues = [] }) => {
   const allRows = buildRows(stocktake.dbbags, stocktake.bags);
   const [logIssueTarget, setLogIssueTarget] = useState(null);
+  const [resolutionsOpen, setResolutionsOpen] = useState(true);
 
   const site = stocktake._site;
   const siteName = typeof site === "object" ? site.full_name : "Site";
@@ -907,25 +908,34 @@ const BagComparisonPopup = ({ stocktake, onClose, onIssueLogged, stocktakeIssues
 
         {(resolvedRows.length > 0 || stocktakeIssues.some((i) => i.is_resolved && i.resolution)) && (
           <div className={styles.resolutionsSection}>
-            <div className={styles.resolutionsSectionTitle}>Resolutions</div>
-            {resolvedRows.map((row, i) => (
-              <div key={i} className={styles.resolutionRow}>
-                <span className={styles.resolutionUnlabelled}>{row.scanned}</span>
-                <span className={styles.resolutionArrow}>→</span>
-                <span className={styles.resolutionCharcode}>{unlabelledAssignments.get(row.scanned)}</span>
-                <span className={styles.issueResolvedText}>Issue resolved</span>
-              </div>
-            ))}
-            {stocktakeIssues
-              .filter((i) => i.is_resolved && i.resolution && !i.assigned_charcode)
-              .map((issue) => (
-                <div key={issue._id} className={styles.resolutionRow}>
-                  <span className={styles.resolutionCharcode}>{issue.charcode}</span>
-                  <span className={styles.resolutionArrow}>—</span>
-                  <span className={styles.resolutionMessage}>{issue.resolution}</span>
+            <button
+              className={styles.resolutionsToggleBtn}
+              onClick={() => setResolutionsOpen((o) => !o)}
+              title={resolutionsOpen ? "Hide resolutions" : "Show resolutions"}
+            >
+              {resolutionsOpen ? "▼" : "▲"}
+            </button>
+            <div className={resolutionsOpen ? styles.resolutionsContent : styles.resolutionsContentHidden}>
+              <div className={styles.resolutionsSectionTitle}>Resolutions</div>
+              {resolvedRows.map((row, i) => (
+                <div key={i} className={styles.resolutionRow}>
+                  <span className={styles.resolutionUnlabelled}>{row.scanned}</span>
+                  <span className={styles.resolutionArrow}>→</span>
+                  <span className={styles.resolutionCharcode}>{unlabelledAssignments.get(row.scanned)}</span>
+                  <span className={styles.issueResolvedText}>Issue resolved</span>
                 </div>
-              ))
-            }
+              ))}
+              {stocktakeIssues
+                .filter((i) => i.is_resolved && i.resolution && !i.assigned_charcode)
+                .map((issue) => (
+                  <div key={issue._id} className={styles.resolutionRow}>
+                    <span className={styles.resolutionCharcode}>{issue.charcode}</span>
+                    <span className={styles.resolutionArrow}>—</span>
+                    <span className={styles.resolutionMessage}>{issue.resolution}</span>
+                  </div>
+                ))
+              }
+            </div>
           </div>
         )}
 
