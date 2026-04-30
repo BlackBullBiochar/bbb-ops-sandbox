@@ -71,7 +71,8 @@ const MultiSelector = ({
       className={helpers.clx(
         styles.mainContainer,
         labelStyle === "top" && styles.mainContainerLabelTop,
-        labelStyle === "none" && styles.mainContainerNoLabel
+        labelStyle === "none" && styles.mainContainerNoLabel,
+        focused && styles.mainContainerFocused
       )}
     >
       {labelStyle !== "none" && (

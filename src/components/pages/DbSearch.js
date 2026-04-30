@@ -292,6 +292,18 @@ const DbSearch = () => {
     [sites]
   );
 
+  // set of site IDs that are Pyrolysis category (ARA, JNR)
+  const pyrolysisSiteIds = useMemo(
+    () => new Set(locationSites.filter((s) => s.category === "Pyrolysis").map((s) => s._id)),
+    [locationSites]
+  );
+
+  // set of site IDs that are Storage or Processing category
+  const storageSiteIds = useMemo(
+    () => new Set(locationSites.filter((s) => s.category === "Storage" || s.category === "Processing").map((s) => s._id)),
+    [locationSites]
+  );
+
   // map of siteId -> Set<charcode> from latest stocktake per site
   const locationBagMap = useMemo(() => {
     const map = {};
@@ -330,6 +342,26 @@ const DbSearch = () => {
             item?.locations?.storage_pickup?._order_to_storage
           );
           if ((status === "delivered" || status === "pickedup") && !hasStorageOrder) return true;
+        } else if (pyrolysisSiteIds.has(filter)) {
+          // Pyrolysis sites (ARA, JNR): bags that are "bagged" at this site
+          const pyroSite = locationSites.find((s) => s._id === filter);
+          if (
+            pyroSite &&
+            (item.status || "").toLowerCase() === "bagged" &&
+            item.site === pyroSite.name
+          ) return true;
+        } else if (storageSiteIds.has(filter)) {
+          // Storage/Processing sites: match via the order's destination site
+          if (
+            item.storage_destination_site_id &&
+            String(item.storage_destination_site_id) === String(filter)
+          ) return true;
+          if (
+            item.processing_destination_site_id &&
+            String(item.processing_destination_site_id) === String(filter)
+          ) return true;
+          // Fallback to stocktake data
+          if (locationBagMap[filter]?.has(charcode)) return true;
         } else {
           if (locationBagMap[filter]?.has(charcode)) return true;
         }
@@ -407,7 +439,7 @@ const DbSearch = () => {
     return active;
   }, [isRange, singleDate, fromDate, toDate]);
 
-  // pre-aggregated maps for fast header stats
+  // pre-aggregated maps for fast header stats (recalculate whenever filters change)
   const aggregates = useMemo(() => {
     const byStatus = {};
     const byEbc = {};
@@ -416,6 +448,8 @@ const DbSearch = () => {
     const byDeliveryId = {};
     const byBatchId = {};
     const byUser = {};
+    let totalWeight = 0;
+    let weightCount = 0;
 
     for (const r of filteredRows) {
       const s = (r.status ?? "").toString().trim();
@@ -434,13 +468,17 @@ const DbSearch = () => {
 
       const did = r.delivery_id ?? null;
       if (did) byDeliveryId[did] = (byDeliveryId[did] || 0) + 1;
-      
+
       const bid = (r.batch_id ?? "").toString().trim();
       if (bid) byBatchId[bid] = (byBatchId[bid] || 0) + 1;
+
+      const w = parseFloat(r.weight);
+      if (!isNaN(w)) { totalWeight += w; weightCount++; }
     }
 
     return {
-      totalRows: rows.length,
+      totalRows: filteredRows.length,
+      totalFromApi: rows.length,
       byStatus,
       byEbc,
       bySite,
@@ -448,12 +486,14 @@ const DbSearch = () => {
       byDeliveryId,
       byBatchId,
       byUser,
+      totalWeight,
+      weightCount,
       distinctBatchIds: Object.keys(byBatchId).length,
       distinctUsers: Object.keys(byUser).length,
       distinctOrderIds: Object.keys(byOrderId).length,
       distinctDeliveryIds: Object.keys(byDeliveryId).length,
     };
-  }, [rows]);
+  }, [filteredRows, rows.length]);
 
   const handleFieldToggle = (field) => {
     setSelectedFields((prev) =>
@@ -496,6 +536,8 @@ const DbSearch = () => {
       "faultMessages",
       "order_id",
       "delivery_id",
+      "storage_destination_site_id",
+      "processing_destination_site_id",
     ];
 
     const extraForDryWeight = selectedFields.includes("dry_weight")
@@ -594,7 +636,7 @@ const DbSearch = () => {
 
     switch (field) {
       case "charcode":
-        lines.push(`Total rows — ${aggregates.totalRows}`);
+        lines.push(`Total rows — ${aggregates.totalRows.toLocaleString()}`);
         break;
 
       case "status": {
