@@ -26,11 +26,20 @@ export function useSingleRangeTempChart(rows, field) {
       .filter(r => r._ts instanceof Date && !isNaN(r._ts.getTime()))
       .sort((a, b) => a._ts - b._ts);
 
-    // 2) Use full ISO datetime for each label
-    const labels = sorted.map(r => r._ts.toISOString());
+    // 2) Downsample to one reading per 30-minute bucket (keeps first reading in each bucket)
+    const seen = new Set();
+    const downsampled = sorted.filter(r => {
+      const bucketKey = Math.floor(r._ts.getTime() / (120 * 60 * 1000));
+      if (seen.has(bucketKey)) return false;
+      seen.add(bucketKey);
+      return true;
+    });
 
-    // 3) Pull out the numeric values (or null)
-    const data = sorted.map(r => {
+    // 3) Use full ISO datetime for each label
+    const labels = downsampled.map(r => r._ts.toISOString());
+
+    // 4) Pull out the numeric values (or null)
+    const data = downsampled.map(r => {
       const num = parseFloat(r[field]);
       return Number.isNaN(num) ? null : num;
     });
