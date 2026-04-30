@@ -298,25 +298,17 @@ const DbSearch = () => {
     [locationSites]
   );
 
-  // set of site IDs that are Storage or Processing category
+  // set of site IDs that are Storage category only
   const storageSiteIds = useMemo(
-    () => new Set(locationSites.filter((s) => s.category === "Storage" || s.category === "Processing").map((s) => s._id)),
+    () => new Set(locationSites.filter((s) => s.category === "Storage").map((s) => s._id)),
     [locationSites]
   );
 
-  // map of siteId -> Set<charcode> from latest stocktake per site
-  const locationBagMap = useMemo(() => {
-    const map = {};
-    for (const site of locationSites) {
-      const forSite = stocktakes.filter(
-        (s) => (s._site?._id || s._site) === site._id
-      );
-      if (!forSite.length) continue;
-      const latest = [...forSite].sort((a, b) => new Date(b.starttime) - new Date(a.starttime))[0];
-      map[site._id] = new Set(latest.dbbags || []);
-    }
-    return map;
-  }, [stocktakes, locationSites]);
+  // set of site IDs that are Processing category (e.g. Woodtek)
+  const processingSiteIds = useMemo(
+    () => new Set(locationSites.filter((s) => s.category === "Processing").map((s) => s._id)),
+    [locationSites]
+  );
 
   // apply location filter client-side
   const filteredRows = useMemo(() => {
@@ -333,42 +325,30 @@ const DbSearch = () => {
 
     if (!locationFilters.length) return result;
     return result.filter((item) => {
-      const charcode = item.charcode ?? item.code ?? "";
+      const statusNorm = (item.status || "").toLowerCase().replace(/_/g, "");
       for (const filter of locationFilters) {
         if (filter === "__delivered__") {
-          const status = (item.status || "").toLowerCase().replace(/_/g, "");
-          const hasStorageOrder = !!(
-            item.storage_order_id ||
-            item?.locations?.storage_pickup?._order_to_storage
-          );
-          if ((status === "delivered" || status === "pickedup") && !hasStorageOrder) return true;
+          // On Farm: bags with status pickedUp or delivered
+          if (statusNorm === "delivered" || statusNorm === "pickedup") return true;
         } else if (pyrolysisSiteIds.has(filter)) {
-          // Pyrolysis sites (ARA, JNR): bags that are "bagged" at this site
+          // Pyrolysis sites (ARA, JNR): bagged bags whose site name matches this site
           const pyroSite = locationSites.find((s) => s._id === filter);
-          if (
-            pyroSite &&
-            (item.status || "").toLowerCase() === "bagged" &&
-            item.site === pyroSite.name
-          ) return true;
+          if (pyroSite && statusNorm === "bagged" && item.site === pyroSite.name) return true;
         } else if (storageSiteIds.has(filter)) {
-          // Storage/Processing sites: match via the order's destination site
-          if (
-            item.storage_destination_site_id &&
-            String(item.storage_destination_site_id) === String(filter)
-          ) return true;
-          if (
-            item.processing_destination_site_id &&
-            String(item.processing_destination_site_id) === String(filter)
-          ) return true;
-          // Fallback to stocktake data
-          if (locationBagMap[filter]?.has(charcode)) return true;
-        } else {
-          if (locationBagMap[filter]?.has(charcode)) return true;
+          // Storage sites (BOW, PRK): delivered_to_storage bags whose storage destination matches this site
+          const storageSite = locationSites.find((s) => s._id === filter);
+          if (storageSite && statusNorm === "deliveredtostorage") {
+            const destId = String(item.storage_destination_site_id || "");
+            if (destId && destId === String(storageSite._id)) return true;
+          }
+        } else if (processingSiteIds.has(filter)) {
+          // Processing sites (Woodtek): bags with status delivered_to_processing
+          if (statusNorm === "deliveredtoprocessing") return true;
         }
       }
       return false;
     });
-  }, [rows, locationFilters, locationBagMap, batchFilters]);
+  }, [rows, locationFilters, batchFilters, pyrolysisSiteIds, storageSiteIds, processingSiteIds, locationSites]);
 
   // apply sort client-side
   const sortedRows = useMemo(() => {
