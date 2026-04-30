@@ -33,8 +33,8 @@ const INDEX_OPTIONS = [
 
 const DEFAULT_FIELDS_BY_INDEX = {
   bags: ["charcode", "bagging_date", "status", "site", "weight", "ebc_status", "batch_id", "moisture_content"],
-  orders: ["charcode", "bagging_date", "status", "order_id", "delivery_date"],
-  deliveries: ["charcode", "bagging_date", "status", "delivery_id", "delivery_date"],
+  orders: ["charcode", "bagging_date", "status", "order_id", "delivery_date", "postcode"],
+  deliveries: ["charcode", "bagging_date", "status", "delivery_id", "delivery_date", "postcode"],
   batches: ["batch_id","charcode", "bagging_date", "status", "site", "weight", "ebc_status"],
   users: ["user", "charcode", "bagging_date", "status", "site", "weight", "ebc_status"],
 };
@@ -63,6 +63,7 @@ const FIELD_LABELS = {
   processing_order_id: "Processing Order ID",
   processing_pickup_date: "Processing Pickup Date",
   processing_delivery_date: "Processing Delivery Date",
+  postcode: "Postcode",
 };
 
 const ALL_FIELDS = [
@@ -89,6 +90,7 @@ const ALL_FIELDS = [
   "processing_order_id",
   "processing_pickup_date",
   "processing_delivery_date",
+  "postcode",
 ];
 
 const labelize = (key) =>
@@ -290,19 +292,23 @@ const DbSearch = () => {
     [sites]
   );
 
-  // map of siteId -> Set<charcode> from latest stocktake per site
-  const locationBagMap = useMemo(() => {
-    const map = {};
-    for (const site of locationSites) {
-      const forSite = stocktakes.filter(
-        (s) => (s._site?._id || s._site) === site._id
-      );
-      if (!forSite.length) continue;
-      const latest = [...forSite].sort((a, b) => new Date(b.starttime) - new Date(a.starttime))[0];
-      map[site._id] = new Set(latest.dbbags || []);
-    }
-    return map;
-  }, [stocktakes, locationSites]);
+  // set of site IDs that are Pyrolysis category (ARA, JNR)
+  const pyrolysisSiteIds = useMemo(
+    () => new Set(locationSites.filter((s) => s.category === "Pyrolysis").map((s) => s._id)),
+    [locationSites]
+  );
+
+  // set of site IDs that are Storage category only
+  const storageSiteIds = useMemo(
+    () => new Set(locationSites.filter((s) => s.category === "Storage").map((s) => s._id)),
+    [locationSites]
+  );
+
+  // set of site IDs that are Processing category (e.g. Woodtek)
+  const processingSiteIds = useMemo(
+    () => new Set(locationSites.filter((s) => s.category === "Processing").map((s) => s._id)),
+    [locationSites]
+  );
 
   // apply location filter client-side
   const filteredRows = useMemo(() => {
@@ -319,22 +325,30 @@ const DbSearch = () => {
 
     if (!locationFilters.length) return result;
     return result.filter((item) => {
-      const charcode = item.charcode ?? item.code ?? "";
+      const statusNorm = (item.status || "").toLowerCase().replace(/_/g, "");
       for (const filter of locationFilters) {
         if (filter === "__delivered__") {
-          const status = (item.status || "").toLowerCase().replace(/_/g, "");
-          const hasStorageOrder = !!(
-            item.storage_order_id ||
-            item?.locations?.storage_pickup?._order_to_storage
-          );
-          if ((status === "delivered" || status === "pickedup") && !hasStorageOrder) return true;
-        } else {
-          if (locationBagMap[filter]?.has(charcode)) return true;
+          // On Farm: bags with status pickedUp or delivered
+          if (statusNorm === "delivered" || statusNorm === "pickedup") return true;
+        } else if (pyrolysisSiteIds.has(filter)) {
+          // Pyrolysis sites (ARA, JNR): bagged bags whose site name matches this site
+          const pyroSite = locationSites.find((s) => s._id === filter);
+          if (pyroSite && statusNorm === "bagged" && item.site === pyroSite.name) return true;
+        } else if (storageSiteIds.has(filter)) {
+          // Storage sites (BOW, PRK): delivered_to_storage bags whose storage destination matches this site
+          const storageSite = locationSites.find((s) => s._id === filter);
+          if (storageSite && statusNorm === "deliveredtostorage") {
+            const destId = String(item.storage_destination_site_id || "");
+            if (destId && destId === String(storageSite._id)) return true;
+          }
+        } else if (processingSiteIds.has(filter)) {
+          // Processing sites (Woodtek): bags with status delivered_to_processing
+          if (statusNorm === "deliveredtoprocessing") return true;
         }
       }
       return false;
     });
-  }, [rows, locationFilters, locationBagMap, batchFilters]);
+  }, [rows, locationFilters, batchFilters, pyrolysisSiteIds, storageSiteIds, processingSiteIds, locationSites]);
 
   // apply sort client-side
   const sortedRows = useMemo(() => {
@@ -405,7 +419,7 @@ const DbSearch = () => {
     return active;
   }, [isRange, singleDate, fromDate, toDate]);
 
-  // pre-aggregated maps for fast header stats
+  // pre-aggregated maps for fast header stats (recalculate whenever filters change)
   const aggregates = useMemo(() => {
     const byStatus = {};
     const byEbc = {};
@@ -414,6 +428,8 @@ const DbSearch = () => {
     const byDeliveryId = {};
     const byBatchId = {};
     const byUser = {};
+    let totalWeight = 0;
+    let weightCount = 0;
 
     for (const r of filteredRows) {
       const s = (r.status ?? "").toString().trim();
@@ -432,13 +448,17 @@ const DbSearch = () => {
 
       const did = r.delivery_id ?? null;
       if (did) byDeliveryId[did] = (byDeliveryId[did] || 0) + 1;
-      
+
       const bid = (r.batch_id ?? "").toString().trim();
       if (bid) byBatchId[bid] = (byBatchId[bid] || 0) + 1;
+
+      const w = parseFloat(r.weight);
+      if (!isNaN(w)) { totalWeight += w; weightCount++; }
     }
 
     return {
-      totalRows: rows.length,
+      totalRows: filteredRows.length,
+      totalFromApi: rows.length,
       byStatus,
       byEbc,
       bySite,
@@ -446,12 +466,14 @@ const DbSearch = () => {
       byDeliveryId,
       byBatchId,
       byUser,
+      totalWeight,
+      weightCount,
       distinctBatchIds: Object.keys(byBatchId).length,
       distinctUsers: Object.keys(byUser).length,
       distinctOrderIds: Object.keys(byOrderId).length,
       distinctDeliveryIds: Object.keys(byDeliveryId).length,
     };
-  }, [rows]);
+  }, [filteredRows, rows.length]);
 
   const handleFieldToggle = (field) => {
     setSelectedFields((prev) =>
@@ -494,6 +516,8 @@ const DbSearch = () => {
       "faultMessages",
       "order_id",
       "delivery_id",
+      "storage_destination_site_id",
+      "processing_destination_site_id",
     ];
 
     const extraForDryWeight = selectedFields.includes("dry_weight")
@@ -592,7 +616,7 @@ const DbSearch = () => {
 
     switch (field) {
       case "charcode":
-        lines.push(`Total rows — ${aggregates.totalRows}`);
+        lines.push(`Total rows — ${aggregates.totalRows.toLocaleString()}`);
         break;
 
       case "status": {

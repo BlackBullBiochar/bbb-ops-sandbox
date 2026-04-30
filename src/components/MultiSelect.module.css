@@ -43,6 +43,10 @@
     gap: 0rem;
 }
 
+.mainContainerFocused {
+  z-index: 100;
+}
+
 /* Selector container & dropdown */
 .selectorContainer {
     font-weight: 100;
