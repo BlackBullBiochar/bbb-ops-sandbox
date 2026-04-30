@@ -1,0 +1,191 @@
+.scanner {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  /* 10vh breathing room above the camera */
+  padding: 1rem 0 0;
+  box-sizing: border-box;
+}
+
+.manualRow {
+  position: absolute;
+  bottom: 3rem;
+  left: 15%;
+  right: 15%;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 999px;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.manualPrefix {
+  padding: 3px 0 3px 18px;
+  color: #888;
+  font-size: 1.5rem;
+  font-family: "RobotoCondensedBold";
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.manualInput {
+  flex: 1;
+  min-width: 0;
+  padding: 3px 4px;
+  border: none;
+  background: transparent;
+  color: #888;
+  font-size: 1.5rem;
+  font-family: "RobotoCondensedBold";
+  letter-spacing: -0.3px;
+}
+
+.manualInput:focus {
+  outline: none;
+  color: #323232;
+}
+
+.manualBtn {
+  padding: 0 18px;
+  align-self: stretch;
+  border: none;
+  background: transparent;
+  color: #aaa;
+  font-size: 2.1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.manualBtn:active {
+  opacity: 0.5;
+}
+
+/* Camera viewfinder — 80vw square, centered */
+.readerWrap {
+  position: relative;
+  width: 80vw;
+}
+
+.reader {
+  width: 80vw;
+  height: 80vw;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #111;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+
+.scannerMsg {
+  text-align: center;
+  font-family: "RobotoCondensed";
+  color: #7a7a7a;
+  font-size: 1rem;
+  padding: 4px 0;
+}
+
+.cameraOverlay {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 70vw;
+}
+
+.switchBtn {
+  background: #fff;
+  border: 1.5px solid #dedede;
+  color: #575757;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 1.25rem;
+  font-family: "RobotoCondensedBold";
+  cursor: pointer;
+  width: 100%;
+}
+
+.cameraSelect {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1.5px solid #dedede;
+  background: #fff;
+  color: #323232;
+  font-family: "RobotoCondensed";
+  font-size: 1.5rem;
+}
+
+.confirmOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.confirmBox {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 24px 20px;
+  width: 80vw;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.confirmText {
+  font-family: "TruenoBd";
+  font-size: 1.4rem;
+  color: #323232;
+  text-align: center;
+  margin: 0;
+}
+
+.confirmBtns {
+  display: flex;
+  gap: 10px;
+}
+
+.confirmNo {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1.5px solid #dedede;
+  background: #fff;
+  color: #575757;
+  font-family: "TruenoBd";
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.confirmYes {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #B0E000;
+  color: #323232;
+  font-family: "TruenoBd";
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.confirmNo:active, .confirmYes:active {
+  opacity: 0.8;
+}
+
+.feedback {
+  text-align: center;
+  font-family: "RobotoCondensedBold";
+  color: #B0E000;
+  font-size: 1rem;
+  padding: 4px 0;
+  min-height: 20px;
+}

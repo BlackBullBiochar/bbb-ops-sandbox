@@ -101,8 +101,8 @@ const PlantSummaryView = () => {
   const biocharProduced = totalWeight / 1000;
 
   // KPI: running hours
-  const { hours: ARArunningHours } = useRunningHours(rawTempRows, 520, 720, ["r1_temp", "r2_temp"]);
-  const { hours: JNRrunningHours } = useRunningHours(rawTempRows, 520, 720, ["t5_temp"]);
+  const { hours: ARArunningHours } = useRunningHours(rawTempRows, 520, 780, ["r1_temp", "r2_temp"]);
+  const { hours: JNRrunningHours } = useRunningHours(rawTempRows, 520, 780, ["t5_temp"]);
   const runningHours = selectedSite === "ARA" ? ARArunningHours : JNRrunningHours;
 
   // CO2 calc (unchanged)

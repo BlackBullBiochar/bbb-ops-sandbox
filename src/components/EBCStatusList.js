@@ -12,7 +12,7 @@ import ebcBatchMappings from '../config/ebcBatchMappings.json';
  */
 const getEbcBatchUrl = (batchId) => {
   if (!batchId || batchId === "" || batchId.toLowerCase() === "batchless" || batchId.toLowerCase() === "n/a") {
-    return ebcBatchMappings.fallbackUrl;
+    return null;
   }
 
   const batchIdLower = batchId.toLowerCase();
@@ -31,12 +31,9 @@ const getEbcBatchUrl = (batchId) => {
     }
   }
   
-  if (mapping) {
-    // If the mapping is a full URL (starts with http), return it as-is
-    // Otherwise, it's a path that should be appended to baseUrl
-    if (mapping.startsWith("http")) {
-      return mapping;
-    }
+  if (mapping !== undefined && mapping !== null) {
+    if (mapping === "") return null;
+    if (mapping.startsWith("http")) return mapping;
     return ebcBatchMappings.baseUrl + mapping;
   }
 
@@ -62,18 +59,6 @@ const EbcStatusList = ({ charcodeId, ebcEntries = [], onDeleted, batchId }) => {
 
   return (
     <div>
-      {shouldShowLink && (
-        <div className={styles.ebcLinkContainer}>
-          <a 
-            href={ebcUrl} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className={styles.ebcLink}
-          >
-            View EBC Certificate →
-          </a>
-        </div>
-      )}
       <div className={styles.tableWrapper}>
         <table className={styles.table}>
           <colgroup>

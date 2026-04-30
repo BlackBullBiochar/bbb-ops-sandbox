@@ -4,6 +4,8 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 import { CSVLink } from "react-csv";
 import { useInventorySearch } from "../../hooks/useInventorySearch";
+import { useStocktakes } from "../../hooks/useStocktakes";
+import { useBatchIds } from "../../hooks/useBatchIds";
 import styles from "./DbSearch.module.css";
 import ScreenHeader from "../ScreenHeader";
 import ModuleMain from "../ModuleMain";
@@ -42,6 +44,7 @@ const FIELD_LABELS = {
   bagging_date: "Bagging date",
   weight: "Weight (kg)",
   moisture_content: "Moisture (%)",
+  dry_weight: "Dry Weight (kg)",
   status: "Bag Status",
   site: "Site",
   batch_id: "Batch ID",
@@ -67,10 +70,11 @@ const ALL_FIELDS = [
   "bagging_date",
   "ebc_status",
   "weight",
+  "moisture_content",
+  "dry_weight",
   "status",
   "site",
   "batch_id",
-  "moisture_content",
   "order_id",
   "delivery_id",
   "pickup_date",
@@ -241,9 +245,112 @@ const DbSearch = () => {
   const [statusFilters, setStatusFilters] = useState([]);
   const [ebcStatusFilters, setEbcStatusFilters] = useState([]);
   const [siteFilters, setSiteFilters] = useState([]);
+  const [locationFilters, setLocationFilters] = useState([]);
+  const [batchFilters, setBatchFilters] = useState([]);
+
+  // sort
+  const [sortField, setSortField] = useState("bagging_date");
+  const [sortDir, setSortDir] = useState("desc");
+
+  const SORT_FIELDS = [
+    { value: "charcode",                 label: "Charcode" },
+    { value: "bagging_date",             label: "Bagging Date" },
+    { value: "pickup_date",              label: "Pickup Date" },
+    { value: "delivery_date",            label: "Delivery Date" },
+    { value: "application_date",         label: "Application Date" },
+    { value: "storage_pickup_date",      label: "Storage Pickup Date" },
+    { value: "storage_delivery_date",    label: "Storage Delivery Date" },
+    { value: "processing_pickup_date",   label: "Processing Pickup Date" },
+    { value: "processing_delivery_date", label: "Processing Delivery Date" },
+  ];
 
   // inventory
   const { fetchInventory, loading, error, rows = [] } = useInventorySearch();
+
+  // batch IDs for filter dropdown
+  const allBatchIds = useBatchIds();
+  const batchOptions = useMemo(() => {
+    const opts = allBatchIds.map((id) => ({ name: id, value: id.toLowerCase() }));
+    opts.unshift({ name: "Unassigned", value: "__unassigned__" });
+    opts.unshift({ name: "Batchless", value: "__batchless__" });
+    return opts;
+  }, [allBatchIds]);
+
+  // stocktakes + sites (for location filter)
+  const { stocktakes, sites } = useStocktakes();
+
+  const locationSites = useMemo(
+    () =>
+      sites.filter(
+        (s) =>
+          (s.category === "Pyrolysis" || s.category === "Storage" || s.category === "Processing") &&
+          !/test/i.test(s.name) &&
+          !/test/i.test(s.full_name)
+      ),
+    [sites]
+  );
+
+  // map of siteId -> Set<charcode> from latest stocktake per site
+  const locationBagMap = useMemo(() => {
+    const map = {};
+    for (const site of locationSites) {
+      const forSite = stocktakes.filter(
+        (s) => (s._site?._id || s._site) === site._id
+      );
+      if (!forSite.length) continue;
+      const latest = [...forSite].sort((a, b) => new Date(b.starttime) - new Date(a.starttime))[0];
+      map[site._id] = new Set(latest.dbbags || []);
+    }
+    return map;
+  }, [stocktakes, locationSites]);
+
+  // apply location filter client-side
+  const filteredRows = useMemo(() => {
+    let result = rows;
+
+    if (batchFilters.length) {
+      result = result.filter((item) => {
+        const raw = (item.batch_id ?? "").toString().trim();
+        if (!raw) return batchFilters.includes("__unassigned__");
+        if (raw.toLowerCase() === "batchless") return batchFilters.includes("__batchless__");
+        return batchFilters.includes(raw.toLowerCase());
+      });
+    }
+
+    if (!locationFilters.length) return result;
+    return result.filter((item) => {
+      const charcode = item.charcode ?? item.code ?? "";
+      for (const filter of locationFilters) {
+        if (filter === "__delivered__") {
+          const status = (item.status || "").toLowerCase().replace(/_/g, "");
+          const hasStorageOrder = !!(
+            item.storage_order_id ||
+            item?.locations?.storage_pickup?._order_to_storage
+          );
+          if ((status === "delivered" || status === "pickedup") && !hasStorageOrder) return true;
+        } else {
+          if (locationBagMap[filter]?.has(charcode)) return true;
+        }
+      }
+      return false;
+    });
+  }, [rows, locationFilters, locationBagMap, batchFilters]);
+
+  // apply sort client-side
+  const sortedRows = useMemo(() => {
+    if (!sortField) return filteredRows;
+    return [...filteredRows].sort((a, b) => {
+      const aVal = a[sortField] ?? "";
+      const bVal = b[sortField] ?? "";
+      if (sortField === "charcode") {
+        const cmp = String(aVal).localeCompare(String(bVal));
+        return sortDir === "asc" ? cmp : -cmp;
+      }
+      const aTime = aVal ? new Date(aVal).getTime() : 0;
+      const bTime = bVal ? new Date(bVal).getTime() : 0;
+      return sortDir === "asc" ? aTime - bTime : bTime - aTime;
+    });
+  }, [filteredRows, sortField, sortDir]);
 
   // Charcode overlay
   const [overlayOpen, setOverlayOpen] = useState(false);
@@ -257,6 +364,10 @@ const DbSearch = () => {
   // Index dropdown state
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  // Sort dropdown state
+  const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
+  const sortDropdownRef = useRef(null);
 
   // interactive guard (safe for text nodes)
   const isInteractive = (el, container) => {
@@ -274,11 +385,14 @@ const DbSearch = () => {
     setSelectedFields(next);
   }, [selectedIndex]);
 
-  // Close dropdown on outside click
+  // Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setIsDropdownOpen(false);
+      }
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(e.target)) {
+        setIsSortDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -301,7 +415,7 @@ const DbSearch = () => {
     const byBatchId = {};
     const byUser = {};
 
-    for (const r of rows) {
+    for (const r of filteredRows) {
       const s = (r.status ?? "").toString().trim();
       if (s) byStatus[s] = (byStatus[s] || 0) + 1;
 
@@ -382,7 +496,10 @@ const DbSearch = () => {
       "delivery_id",
     ];
 
-    const fieldsForFetch = Array.from(new Set([...selectedFields, ...requiredForOverlay]));
+    const extraForDryWeight = selectedFields.includes("dry_weight")
+      ? ["weight", "moisture_content"]
+      : [];
+    const fieldsForFetch = Array.from(new Set([...selectedFields, ...requiredForOverlay, ...extraForDryWeight]));
 
     // top-level in DbSearch.jsx
     const TABLE_LIMIT = 5000; // or 20000 if you need; keep sensible
@@ -418,6 +535,10 @@ const DbSearch = () => {
     setStatusFilters([]);
     setEbcStatusFilters([]);
     setSiteFilters([]);
+    setLocationFilters([]);
+    setBatchFilters([]);
+    setSortField("bagging_date");
+    setSortDir("desc");
     setSelectedFields(DEFAULT_FIELDS_BY_INDEX[selectedIndex] || []);
   };
 
@@ -549,6 +670,38 @@ const DbSearch = () => {
         break;
       }
 
+      case "weight":
+      case "internal_temperature":
+      case "moisture_content": {
+        const vals = filteredRows
+          .map((r) => parseFloat(r[field]))
+          .filter((n) => !isNaN(n));
+        if (vals.length === 0) break;
+        const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+        const unit = field === "weight" ? " kg" : field === "internal_temperature" ? " °C" : "%";
+        lines.push(`Average — ${avg.toFixed(2)}${unit}`);
+        lines.push(`From ${vals.length} bag${vals.length !== 1 ? "s" : ""} with a recorded value`);
+        break;
+      }
+
+      case "dry_weight": {
+        const vals = filteredRows
+          .map((r) => {
+            const w = parseFloat(r.weight);
+            const m = parseFloat(r.moisture_content);
+            if (isNaN(w) || isNaN(m)) return NaN;
+            return w * (1 - m / 100);
+          })
+          .filter((n) => !isNaN(n));
+        if (vals.length === 0) break;
+        const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+        const total = vals.reduce((a, b) => a + b, 0);
+        lines.push(`Average — ${avg.toFixed(2)} kg`);
+        lines.push(`Total — ${total.toFixed(2)} kg`);
+        lines.push(`From ${vals.length} bag${vals.length !== 1 ? "s" : ""} with weight & moisture recorded`);
+        break;
+      }
+
       // explicitly no totals
       case "bagging_date":
       default:
@@ -556,7 +709,8 @@ const DbSearch = () => {
         break;
     }
 
-    setHeaderOverlayTitle(`${readable} — totals`);
+    const isAvgField = field === "weight" || field === "internal_temperature" || field === "moisture_content" || field === "dry_weight";
+    setHeaderOverlayTitle(`${readable} — ${isAvgField ? "average" : "totals"}`);
     setHeaderOverlayLines(lines);
     setHeaderOverlayOpen(true);
   };
@@ -571,7 +725,11 @@ const DbSearch = () => {
       field === "order_id" ||
       field === "batch_id" ||
       field === "delivery_id" ||
-      field === "processing_order_id";
+      field === "processing_order_id" ||
+      field === "weight" ||
+      field === "internal_temperature" ||
+      field === "moisture_content" ||
+      field === "dry_weight";
 
     return (
       <th key={field} style={{ whiteSpace: "nowrap" }}>
@@ -597,9 +755,9 @@ const DbSearch = () => {
         <ModuleMain>
           <div className={styles.container}>
             {/* CSV Export in upper right of module */}
-            {rows.length > 0 && (
+            {sortedRows.length > 0 && (
               <CSVLink
-                data={rows.map((row) => {
+                data={sortedRows.map((row) => {
                   const obj = {};
                   selectedFields.forEach((f) => {
                     // Format date fields for CSV export
@@ -611,8 +769,12 @@ const DbSearch = () => {
                                       f === "storage_delivery_date" ||
                                       f === "processing_pickup_date" ||
                                       f === "processing_delivery_date";
-                    
-                    if (isDateField) {
+
+                    if (f === "dry_weight") {
+                      const w = parseFloat(row.weight);
+                      const m = parseFloat(row.moisture_content);
+                      obj[f] = (!isNaN(w) && !isNaN(m)) ? String(Math.round(w * (1 - m / 100))) : "";
+                    } else if (isDateField) {
                       // Extract date part and format it
                       const rawDate = row[f]?.split?.("T")[0] || "";
                       obj[f] = formatDate(rawDate);
@@ -718,7 +880,7 @@ const DbSearch = () => {
                 <Button 
                   name="Fetch Data →"
                   onPress={handleSearch}
-                  customStyle={{ height: '2.6rem', fontSize: '1.5rem' }}
+                  customStyle={{ height: '2.6rem', fontSize: '1.5rem', margin: 0 }}
                 />
               </div>
             </div>
@@ -779,6 +941,31 @@ const DbSearch = () => {
                   }}
                 />
               </div>
+
+              <div className={styles.multiSelectorWrapper}>
+                <MultiSelector
+                  name="Location"
+                  placeholder="All"
+                  labelStyle="top"
+                  data={[
+                    ...locationSites.map((s) => ({ name: s.name, value: s._id })),
+                    { name: "On Farm", value: "__delivered__" },
+                  ]}
+                  values={locationFilters}
+                  onChange={(v) => setLocationFilters(v)}
+                />
+              </div>
+
+              <div className={styles.multiSelectorWrapper}>
+                <MultiSelector
+                  name="Batch"
+                  placeholder="All"
+                  labelStyle="top"
+                  data={batchOptions}
+                  values={batchFilters}
+                  onChange={(v) => setBatchFilters(v)}
+                />
+              </div>
             </div>
 
             {/* Field selector */}
@@ -808,6 +995,58 @@ const DbSearch = () => {
               </div>
             </div>
 
+            {/* Sort row */}
+            <div className={styles.sortRow}>
+              <div className={styles.inputGroup}>
+                <label className={styles.inputLabel}>Sort By</label>
+                <div className={styles.customSelect} ref={sortDropdownRef}>
+                  <div
+                    className={helpers.clx(
+                      styles.selectedOption,
+                      isSortDropdownOpen && styles.selectedOptionOpen
+                    )}
+                    onClick={() => setIsSortDropdownOpen((p) => !p)}
+                  >
+                    <img
+                      src={arrowGrey}
+                      className={helpers.clx(styles.arrow, isSortDropdownOpen && styles.arrowReversed)}
+                      alt=""
+                    />
+                    {SORT_FIELDS.find((sf) => sf.value === sortField)?.label ?? "Select field"}
+                  </div>
+                  {isSortDropdownOpen && (
+                    <div className={styles.dropdownMenu}>
+                      {SORT_FIELDS.map((sf) => (
+                        <div
+                          key={sf.value}
+                          className={styles.dropdownItem}
+                          onClick={() => { setSortField(sf.value); setIsSortDropdownOpen(false); }}
+                        >
+                          {sf.label}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className={styles.sortDirGroup}>
+                <button
+                  type="button"
+                  className={`${styles.sortDirBtn} ${sortDir === "asc" ? styles.sortDirBtnActive : ""}`}
+                  onClick={() => setSortDir("asc")}
+                >
+                  Oldest first
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.sortDirBtn} ${sortDir === "desc" ? styles.sortDirBtnActive : ""}`}
+                  onClick={() => setSortDir("desc")}
+                >
+                  Latest First
+                </button>
+              </div>
+            </div>
+
             {/* Results table */}
             <div className={styles.tableContainer}>
               <ModuleMain marginBottom="0rem">
@@ -830,7 +1069,7 @@ const DbSearch = () => {
                     )}
                     {!loading &&
                       !error &&
-                      rows.map((item, idx) => {
+                      sortedRows.map((item, idx) => {
                         const clickable = Boolean(item?.charcode);
                         return (
                           <tr
@@ -881,6 +1120,14 @@ const DbSearch = () => {
                                 }
                                 else if (field === "processing_delivery_date") {
                                   raw = item[field]?.split?.("T")[0] || item?.locations?.processing_delivery?.time?.split?.("T")[0] || "";
+                                }
+                                // Computed dry weight
+                                else if (field === "dry_weight") {
+                                  const w = parseFloat(item.weight);
+                                  const m = parseFloat(item.moisture_content);
+                                  raw = (!isNaN(w) && !isNaN(m))
+                                    ? String(Math.round(w * (1 - m / 100)))
+                                    : "";
                                 }
                                 // Handle other fields
                                 else {
